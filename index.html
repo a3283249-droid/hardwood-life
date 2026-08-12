@@ -286,10 +286,12 @@ canvas{max-width:100%;border-radius:12px;border:1px solid var(--line)}
 .dice-btn:active{transform:scale(.94)}
 
 /* 稱號 / 全美排名 / 里程碑 */
-.title-badge{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin:2px 3px 0 0;vertical-align:middle}
+.title-badge{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin:2px 3px 0 0;vertical-align:middle;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.title-badge:active{transform:scale(.94);opacity:.8}
 .title-badge.good{color:#7BE0A3;border:1px solid rgba(63,191,127,.5);background:rgba(63,191,127,.1)}
 .title-badge.bad{color:#FF8A8A;border:1px solid rgba(216,50,63,.5);background:rgba(216,50,63,.1)}
 .title-row{margin-top:4px;line-height:1.6}
+.title-hint{font-size:9.5px;color:var(--faint);margin-left:4px;vertical-align:middle}
 .usrank{display:inline-block;font-size:11px;font-weight:700;color:#4DA3FF;border:1px solid rgba(77,163,255,.5);
   background:rgba(77,163,255,.1);border-radius:999px;padding:1px 8px;vertical-align:middle}
 .usrank-line{background:rgba(77,163,255,.1);border:1px solid rgba(77,163,255,.4);border-radius:10px;
@@ -861,9 +863,23 @@ EVENTS["pro"].push(
    o:[{l:"全力操練防守",i:"🛡️",h:"衝防守",f:r=>({low:mk("跟不太上",{defense:1},{health:-4}),mid:mk("防守意識提升",{defense:3,iq:1}),high:mk("蛻變成鎖將",{defense:4,athletic:1,iq:1})}[tier(r)])},
       {l:"保留體力顧進攻",i:"🎯",h:"衝進攻",f:r=>({low:mk("防守被針對",{shooting:1}),mid:mk("進攻更犀利",{shooting:2,three:1}),high:mk("進攻火力全開",{shooting:3,three:2})}[tier(r)])}]}
 );
-/* ---------- 追加事件（第五批：含台籃雙合約） ---------- */
+/* ---------- CBL 中國聯賽專屬事件 ---------- */
 EVENTS["pro"].push(
-  {t:"雙重合約風波",x:"混亂的自由市場中，你的經紀人竟同時和兩個聯盟的球隊都簽了約！合約糾紛鬧上新聞，聯盟要你儘速表態。",cond:lg=>["SBL","P+","TPBL"].includes(lg),
+  {t:"跨省移地長征",x:"中國幅員遼闊，接連的客場長征讓身體疲憊不堪。",cond:lg=>lg==="CBL",
+   o:[{l:"咬牙硬撐征戰",i:"✈️",h:"衝戰績",f:r=>({low:mk("舟車勞頓，狀態下滑、還小傷",{},{health:-8,morale:-4,win:-.05}),mid:mk("習慣長征節奏",{athletic:1},{win:.02}),high:mk("越戰越勇，客場之王！",{athletic:1,iq:1},{fame:5,win:.06})}[tier(r)])},
+      {l:"與教練協調輪休",i:"🛌",h:"護健康",f:r=>({low:mk("被質疑不夠拚",{},{morale:-3,health:6}),mid:mk("養好體力再拚",{},{health:12}),high:mk("調度得宜，關鍵戰火力全開",{athletic:1},{health:14,win:.04})}[tier(r)])}]},
+  {t:"外援政策衝擊",x:"球隊重金簽下大牌外援，本土球員的球權與定位被壓縮。",cond:lg=>lg==="CBL",
+   o:[{l:"證明本土也能扛",i:"🇹🇼",h:"骰高上位",f:r=>({low:mk("被外援掩蓋光芒",{shooting:1},{morale:-4}),mid:mk("和外援相得益彰",{pass:1,iq:1},{fame:3}),high:mk("本土之光壓過外援，全場暴動！",{shooting:2,three:1,iq:1},{fame:12,morale:6})}[tier(r)])},
+      {l:"甘當綠葉打體系",i:"🍃",h:"衝團隊",f:r=>({low:mk("存在感稀薄",{pass:1}),mid:mk("體系潤滑劑",{pass:2,defense:1},{win:.03}),high:mk("無私串聯，球隊戰績起飛",{pass:2,iq:1,defense:1},{win:.08,morale:4})}[tier(r)])}]},
+  {t:"CBA 全明星週末",x:"你入選 CBL 全明星賽，扣籃／三分大賽的邀約也接踵而來。",cond:lg=>lg==="CBL",
+   o:[{l:"參加技術挑戰賽",i:"🎪",h:"衝名氣",f:r=>({low:mk("失手有點糗",{},{fame:3,health:-3}),mid:mk("穩健演出，人氣上升",{three:1},{fame:8}),high:mk("技驚全場，登上熱搜！",{three:1,athletic:1},{fame:16,morale:5})}[tier(r)])},
+      {l:"專心備戰正賽",i:"🎯",h:"衝表現",f:r=>({low:mk("狀態普通",{shooting:1}),mid:mk("正賽穩定發揮",{shooting:2},{fame:4}),high:mk("明星賽 MVP 等級演出！",{shooting:2,pass:1},{fame:10,morale:4})}[tier(r)])}]},
+  {t:"季後賽外援限制",x:"季後賽外援上場時間受限，本土球員得扛起更多責任。",cond:lg=>lg==="CBL",
+   o:[{l:"挺身扛起球隊",i:"💪",h:"骰高晉級",f:r=>({low:mk("責任過重，表現失常",{shooting:1},{morale:-4,playoff:true,playoffOut:true}),mid:mk("扛住壓力，帶隊過關",{shooting:2,iq:1},{fame:4,playoff:true,champ:.08}),high:mk("本土核心一戰成名，率隊晉級！",{shooting:2,defense:1,iq:1},{fame:9,morale:5,playoff:true,champ:.18})}[tier(r)])},
+      {l:"靠團隊分擔",i:"🤝",h:"衝團隊",f:r=>({low:mk("群龍無首",{iq:1},{playoff:true,playoffOut:true}),mid:mk("團隊籃球奏效",{pass:1,defense:1},{playoff:true,champ:.06}),high:mk("鐵血團隊，眾志成城晉級！",{pass:2,defense:1,iq:1},{playoff:true,champ:.14,morale:4})}[tier(r)])}]}
+);
+EVENTS["pro"].push(
+  {t:"雙重合約風波",noRisk:true,x:"混亂的自由市場中，你的經紀人竟同時和兩個聯盟的球隊都簽了約！合約糾紛鬧上新聞，聯盟要你儘速表態。",cond:lg=>["SBL","P+","TPBL"].includes(lg),
    o:[{l:"忍痛付違約金解決",i:"💸",h:"破財消災",f:r=>({low:mk("賠了大錢，還被罰款",{},{money:-800,morale:-5}),mid:mk("付清違約金，風波平息",{},{money:-400,morale:-2}),high:mk("律師談成和解，損失縮到最小",{iq:1},{money:-150})}[tier(r)])},
       {l:"擺爛兩邊都想毀約",i:"🙈",h:"名氣重挫",f:r=>({low:mk("兩邊撕破臉，聯盟重罰、形象崩盤",{},{fame:-40,morale:-12,money:-300,title:"contractMess"}),mid:mk("硬拗過關但風評變差",{},{fame:-22,morale:-6,title:"contractMess"}),high:mk("僥倖脫身，名聲仍受損",{},{fame:-12,title:"contractMess"})}[tier(r)])},
       {l:"公開道歉、誠意溝通",i:"🙇",h:"衝形象",f:r=>({low:mk("誠意被質疑",{},{fame:-8,morale:-3}),mid:mk("態度誠懇，球迷諒解",{iq:1},{fame:-2,morale:2}),high:mk("危機處理教科書，好感不減反增",{iq:1},{fame:6,morale:4})}[tier(r)])}]},
@@ -1134,11 +1150,19 @@ function prospectScore(){
   const prodBonus=clamp((prod-16)*.62,0,14);
   return draftStock() + prodBonus;
 }
-/* 自由市場：以「有效行情」決定可簽聯盟；低於水準線的聯盟不會給約（可能完全沒約→退休） */
-function proOffers(ovArg){
+/* 市場身價：近兩季若打出明星等級表現，即使 OVR 略降，行情仍維持高檔（避免明星球員隔年沒人簽的矛盾） */
+function marketValue(){
   const ov=overall();
-  const eff=Math.round(ov + clamp((recentProd()-24)*.32,0,5));
-  let targets=proTargetLeagues(eff).filter(lg=>ov >= (LEAGUE_STANDARD[lg]||0)-6);
+  const recent=G.seasonHistory.filter(s=>s.stage==="pro").slice(-2);
+  const bestSS=recent.length?Math.max(...recent.map(s=>s.seasonScore||0)):0;
+  const perfFloor = bestSS>=104?93 : bestSS>=92?90 : bestSS>=80?88 : bestSS>=72?85 : bestSS>=62?80 : 0;
+  return Math.max(ov, perfFloor);
+}
+/* 自由市場：以「市場身價」決定可簽聯盟；低於水準線的聯盟不會給約（可能完全沒約→退休） */
+function proOffers(ovArg){
+  const ov=overall(), mv=marketValue();
+  const eff=Math.round(mv + clamp((recentProd()-24)*.32,0,5));
+  let targets=proTargetLeagues(eff).filter(lg=>mv >= (LEAGUE_STANDARD[lg]||0)-6);
   // 已在較高聯盟的球員，不會被「降級」到明顯較低的聯盟（除非那是唯一選擇）
   if(isPro()){
     const curRank=LEAGUE_RANK[G.league]||0;
@@ -1146,7 +1170,8 @@ function proOffers(ovArg){
     if(notLower.length) targets=notLower;
   }
   const offers=[];
-  if(isPro()&&G.contract && ov>=(LEAGUE_STANDARD[G.league]||0)-6){
+  // 母隊續約：以身價判斷（打出身價的老將母隊會續留）
+  if(isPro() && mv>=(LEAGUE_STANDARD[G.league]||0)-6){
     offers.push({type:"pro",league:G.league,team:G.team,years:rint(1,3),resign:true,tag:"母隊續約"});
   }
   const seen=new Set();
@@ -1207,7 +1232,7 @@ function beginTraining(){
   const n=4; const evs=[];
   for(let i=0;i<n;i++){ if(!pool.length) pool=full.slice();
     const idx=rint(0,pool.length-1); const base=pool.splice(idx,1)[0];
-    evs.push(withRiskOption(base)); }
+    evs.push(base.noRisk ? {t:base.t,x:base.x,o:base.o} : withRiskOption(base)); }
   G.seasonEvents=evs; G.eventIdx=0; G.phase="training"; G.lastAttr={...G.attr};
   G._memInjury=null;
   G._seasonMods={winBoost:0, champBoost:0, tourneyBoost:0, playoffForce:false, playoffOut:false};
@@ -1338,26 +1363,27 @@ function afterReview(){
     q.push("collegeDecision");
   } else { // 職業
     // 釋出檢定：能力明顯低於聯盟水準線 → 有機率被球隊釋出（需重找下家，找不到就退休）
-    const ov=overall(), std=LEAGUE_STANDARD[G.league]||60;
+    const ov=overall(), std=LEAGUE_STANDARD[G.league]||60, mv=marketValue();
     let waived=false;
-    if(G.contract && ov < std-3){
-      const gap=std-3-ov;
+    if(G.contract && mv < std-3){
+      const gap=std-3-mv;
       const poorSeason = s.seasonScore<40;
       const wChance=clamp(.16 + gap*.08 + (poorSeason?.15:0), .16, .9);
       if(chance(wChance)){ waived=true; }
     }
-    if(waived){ G._waived=true; G.contract=null; q.push("freeAgency"); }
+    if(waived){ G._waived=true; G.contract=null; }
     else if(G.contract) G.contract.yearsLeft--;
-    if(!waived){
-      if(!G.contract || G.contract.yearsLeft<=0) q.push("freeAgency");
-      else {
-        if(overseasJumpAvailable()) q.push("overseasOffer");
-        else if(chance(.18)) q.push("trade");
-      }
+    const contractDone = waived || !G.contract || G.contract.yearsLeft<=0;
+    if(contractDone){
+      // 合約到期（或被釋出）才是「老將十字路口」的時機，且排在自由市場之前
+      if(isPro()&&G.age>=35) q.push("retireOption");
+      q.push("freeAgency");
+    } else {
+      // 合約還在（多年約）：不會被要求退休，也不會吃掉剩餘年限
+      if(overseasJumpAvailable()) q.push("overseasOffer");
+      else if(chance(.18)) q.push("trade");
     }
   }
-  // 老將可選擇退休（35 歲後）
-  if(isPro()&&G.age>=35) q.push("retireOption");
   q.push("nextSeason");
   G.offseason=q; processOffseason();
 }
@@ -1735,7 +1761,12 @@ function grantTitle(id){
 }
 function titleBadgesHTML(){
   if(!G.titles||!G.titles.length)return "";
-  return G.titles.map(t=>`<span class="title-badge ${t.good?"good":"bad"}" title="${t.desc}${t.effect?"（"+t.effect+"）":""}">${t.name}</span>`).join("");
+  return `<div class="title-wrap">`+G.titles.map((t,i)=>`<span class="title-badge ${t.good?"good":"bad"}" data-title-idx="${i}" onclick="showTitleInfo(${i})">${t.name}</span>`).join("")+`<span class="title-hint">（點稱號看說明）</span></div>`;
+}
+function showTitleInfo(i){
+  const t=G.titles&&G.titles[i]; if(!t)return;
+  const msg=`${t.name}｜${t.desc}${t.effect&&t.effect!=="—"?"（"+t.effect+"）":""}`;
+  toast(msg,4200);
 }
 // 各種情境檢查
 function teamCityMatchesHome(team,home){ return team && home && team.indexOf(home)===0; }
@@ -1809,9 +1840,15 @@ function computeHallOfFame(){
   const nbaSeasons=G.seasonHistory.filter(s=>s.league==="NBA").length;
   const naismithScore=Math.round(nba + (G.awardLog||[]).filter(a=>a.league==="NBA").reduce((s,a)=>
     s+(a.award==="MVP"?130:a.award==="FMVP"?90:a.award==="冠軍"?60:a.award==="年度一隊"?55:a.award==="年度二隊"?35:a.award==="年度三隊"?24:a.award.includes("明星賽")?26:a.award.includes("王")?30:12),0));
+  // 中國籃球名人堂：以 CBL 資歷與榮譽為主
+  const cbl=ev["CBL"]||0;
+  const cblSeasons=G.seasonHistory.filter(s=>s.league==="CBL").length;
+  const chinaScore=Math.round(cbl + (G.awardLog||[]).filter(a=>a.league==="CBL").reduce((s,a)=>
+    s+(a.award==="MVP"?90:a.award==="FMVP"?55:a.award==="冠軍"?45:a.award==="本土MVP"?40:a.award.includes("明星賽")?18:a.award.includes("王")?22:a.award==="DPOY"?24:a.award==="ROTY"?14:10),0));
   return {
     taiwanScore, taiwan: taiwanScore>=880,
     naismithScore, nbaSeasons, naismith: G.madeNBA && nbaSeasons>=5 && naismithScore>=850,
+    chinaScore, cblSeasons, china: cblSeasons>=4 && chinaScore>=560,
   };
 }
 /* ---------- 退休劇情 ---------- */
@@ -1827,26 +1864,60 @@ const RETIRE_SCENES={
   legend:[
     {e:"🎽",t:"球衣高懸穹頂",x:(g)=>`在爆滿的主場，燈光聚焦，你的 ${g.jersey} 號球衣緩緩升上球館穹頂。曾並肩作戰的傳奇球星與後輩齊聚致敬，家人與摯友在場邊拭淚——這座城市，永遠記得你的名字。`},
     {e:"🏛️",t:"傳奇的謝幕",x:(g)=>`退休記者會座無虛席，鎂光燈此起彼落。大螢幕播放著你生涯的每一記關鍵球，全場起立鼓掌長達數分鐘。你舉起麥克風，哽咽卻堅定：「謝謝籃球，成就了我的一生。」`},
+    {e:"🗽",t:"名留青史",x:(g)=>`聯盟宣布將你的引退日訂為紀念日，主場外豎起了你的雕像。孩子們指著雕像問：「這是誰？」大人們笑著回答：「這是我們的英雄。」`},
+    {e:"🎬",t:"最後一舞",x:(g)=>`生涯最後一戰，你在終場前被換下場，全場觀眾起立、對手也停下腳步為你鼓掌。你環顧這片奮戰半生的球場，深深一鞠躬——謝幕。`},
   ],
   star:[
     {e:"👏",t:"體面的告別",x:(g)=>`主場為你舉辦了溫馨的歡送賽，隊友輪流上前擁抱。雖然沒有球衣退休那般盛大，但看台上「謝謝你」的巨幅布條，已說明了一切。`},
     {e:"🎤",t:"功成身退",x:(g)=>`你在球隊的季末派對上宣布退休，教練與隊友紛紛致詞。多年征戰，你為球隊留下了難以取代的回憶，也贏得了同行的敬重。`},
+    {e:"📺",t:"轉戰主播台",x:(g)=>`退役後，你受邀擔任賽事球評。鏡頭前妙語如珠、分析精闢，觀眾這才發現：原來你不只會打球，還很會說球。`},
+    {e:"👔",t:"西裝筆挺回歸",x:(g)=>`幾年後你以球隊管理層的身分重返球館，西裝取代了球衣。看著場上拚戰的年輕人，你彷彿看見當年的自己。`},
   ],
   role:[
     {e:"🤝",t:"默默離場",x:(g)=>`沒有盛大的儀式，你在更衣室收拾好背包，向陪伴多年的球隊道別。走出球館時，幾位死忠球迷在門口等著，只為和你合照留念。`},
+    {e:"🎓",t:"轉任基層教練",x:(g)=>`掛靴後你回到母校當起助理教練。把畢生所學傳授給下一代，看著孩子們進步，你比自己得分還開心。`},
+    {e:"🏢",t:"平凡的轉身",x:(g)=>`你脫下球衣，走進了朝九晚五的生活。同事們偶爾會問：「聽說你以前打職業？」你笑而不答，只在午休時投進一顆漂亮的垃圾桶三分。`},
   ],
   journey:[
     {e:"🧳",t:"漂泊的終點",x:(g)=>`輾轉多隊的生涯畫下句點。你脫下球衣，望著空蕩的球場出神——雖然沒能大紅大紫，但你確實在這片木地板上，拚盡了全力。`},
+    {e:"🚌",t:"最後一趟客場",x:(g)=>`最後一趟客場巴士上，你望著窗外飛逝的城市燈火。這些年住過的旅館、打過的球館多到數不清，但每一站，你都全力以赴過。`},
+    {e:"🍺",t:"球友的慶功",x:(g)=>`沒有鎂光燈，只有幾個老球友替你辦了場小酌。大家舉杯：「敬那些拚過的日子！」你笑著乾杯，眼角有點濕。`},
   ],
   obscure:[
     {e:"🍜",t:"廟口的老闆",x:(g)=>`沒有鎂光燈，沒有歡送會，你的退休沒人注意到。多年後，有球迷在廟口的麵攤認出你——原來昔日的球員，如今是這間小吃店的老闆，笑著多送你一顆滷蛋：「以前啊，我也是打球的。」`},
     {e:"🏀",t:"社區球場的傳說",x:(g)=>`職業夢碎，你回到家鄉。如今每逢週末，社區球場上總有個熟練的身影陪孩子們鬥牛。沒人知道他曾經站上職業舞台，但孩子們都喊他一聲「老師」。`},
+    {e:"🚚",t:"另一種人生",x:(g)=>`你收起球鞋，開起了貨車。長長的公路上，收音機正播著球賽，你跟著哼了兩句，握著方向盤的手，還是當年那雙投籃的手。`},
   ],
   undrafted:[
     {e:"📃",t:"落選的那一夜",x:(g)=>`選秀會的名單一路念到最後，始終沒有你的名字。場館燈光暗下，你默默收起球鞋。或許籃球夢到此為止，但人生的下半場，才正要開始——你決定轉換跑道，重新出發。`},
     {e:"🥡",t:"轉身之後",x:(g)=>`沒有球隊願意給機會，你收起不甘，脫下球衣。幾年後你在夜市擺起小攤，生意還不錯。偶爾有人問起，你只是笑笑：「以前差一點就打職業了呢。」`},
+    {e:"🎒",t:"回到校園",x:(g)=>`籃球這條路走到了盡頭，你重拾書本回到校園。多年後你成了體育老師，把對籃球的熱愛，用另一種方式延續下去。`},
   ],
 };
+/* ---------- 球衣退休：依「各隊」效力年資 × 戰績 × 榮譽 判定 ---------- */
+function jerseyRetiredTeams(){
+  const pro=G.seasonHistory.filter(s=>s.stage==="pro");
+  if(!pro.length)return [];
+  const byTeam={};
+  pro.forEach(s=>{ const k=s.league+"|"+s.team;
+    if(!byTeam[k]) byTeam[k]={team:s.team,league:s.league,seasons:0,ssSum:0,star:0,champ:0};
+    const b=byTeam[k]; b.seasons++; b.ssSum+=(s.seasonScore||0);
+    const starTh=(s.league==="NBA"||s.league==="日職 B.League"||s.league==="CBL")?76:73;
+    if((s.seasonScore||0)>=starTh) b.star++;
+    if(s.champion) b.champ++;
+  });
+  const result=[];
+  Object.values(byTeam).forEach(b=>{
+    const avg=b.ssSum/b.seasons;
+    // 資格：長期效力(≥6季) 且 在該隊有成就（奪冠 / 多次明星級 / 平均影響力高）
+    const qualifies = b.seasons>=6 && (b.champ>=1 || b.star>=3 || avg>=(b.league==="NBA"?82:72));
+    // 或：該隊生涯代表隊(≥8季)即使成就普通也退休球衣
+    const loyalty = b.seasons>=8 && avg>=(b.league==="NBA"?70:60);
+    if(qualifies||loyalty) result.push({team:b.team,league:b.league,seasons:b.seasons});
+  });
+  // 最多顯示 3 隊，年資高的優先
+  return result.sort((a,b)=>b.seasons-a.seasons).slice(0,3);
+}
 function endCareer(){
   G.retired=true;
   // 隱藏稱號結算
@@ -1857,8 +1928,9 @@ function endCareer(){
   const sc=hofScore();
   G._hofScore=sc;
   G._hallOfFame=computeHallOfFame();
-  G._jerseyRetired=(G.careerAwards["冠軍"]>=3&&G.careerAwards["明星賽"]>=5)||G.careerAwards["明星賽"]>=10||(G._hallOfFame&&G._hallOfFame.naismith);
-  G._hof=G._hallOfFame.taiwan||G._hallOfFame.naismith;
+  G._jerseyTeams=jerseyRetiredTeams();
+  G._jerseyRetired = G._jerseyTeams.length>0 || (G._hallOfFame&&G._hallOfFame.naismith);
+  G._hof=G._hallOfFame.taiwan||G._hallOfFame.naismith||G._hallOfFame.china;
   let tier=retirementTier();
   if(G._undrafted) tier="undrafted"; // 落選轉跑道專屬
   G._retireScene=pick(RETIRE_SCENES[tier]||RETIRE_SCENES.obscure);
@@ -1939,7 +2011,7 @@ function fanForum(){
    算 morale/fame 相關評語
    ========================================================================= */
 const FANS=["籃球癡籃球狂","板凳觀察家","與督玫瑰","德威司機","gury鴨腿","數據控小李","熱血鄉民","半場記者",
-  "夜貓球迷","戰術宅","板橋劉的華","打鐵大隊長","鍵盤教練","第六人","菜市場球評","轉播達人,南港彭于晏,資深勇迷"];
+  "夜貓球迷","戰術宅","板橋劉的華","打鐵大隊長","鍵盤教練","第六人","菜市場球評","轉播達人","南港彭于晏","資深勇迷"];
 function fanComments(s){
   const tierc = s.champion?"champ": s.seasonScore>=90?"elite": s.seasonScore>=68?"good": s.seasonScore>=45?"mid":"bad";
   const pools={
@@ -1970,8 +2042,8 @@ function fanComments(s){
    Render
    ========================================================================= */
 function isPro(){return G&&G.stage==="pro";}
-function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");
-  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);}
+function toast(msg,ms){const t=$("#toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),ms||2200);}
 
 function render(){
   if(!G){ return renderStart(); }
@@ -2356,6 +2428,8 @@ function returnToTaiwan(){
   if(teamCityMatchesHome(team,G.home)) grantTitle("homecoming");
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(team);
   G.fame=clamp(G.fame+6,0,100); G.morale=clamp(G.morale+8,0,100);
+  // 已直接簽約，跳過後續自由市場步驟（避免又重簽）
+  G.offseason=(G.offseason||[]).filter(x=>x!=="freeAgency"&&x!=="overseasOffer"&&x!=="trade");
   toast(`旅外歸來！回台加盟 ${team}（${lname(lg)}）`);
   processOffseason();
 }
@@ -2529,7 +2603,7 @@ function careerSummaryHTML(){
 }
 
 /* ---------- End / 名人堂 ---------- */
-const HOF_TH={taiwan:880, naismith:850};
+const HOF_TH={taiwan:880, naismith:850, china:560};
 function hallOfFameHTML(){
   const h=G._hallOfFame||computeHallOfFame();
   const card=(name,inducted,score,th,note)=>`
@@ -2540,22 +2614,25 @@ function hallOfFameHTML(){
       <div class="hof-score">資歷分 ${score} ／ 門檻 ${th}</div>
       ${note?`<div class="hof-note">${note}</div>`:""}
     </div>`;
-  const ceremony = (h.taiwan||h.naismith) ? hofCeremonyHTML(h) : "";
+  const ceremony = (h.taiwan||h.naismith||h.china) ? hofCeremonyHTML(h) : "";
+  const cards=[card("台灣籃球名人堂",h.taiwan,h.taiwanScore,HOF_TH.taiwan,"依台灣聯盟資歷與中華隊貢獻")];
+  if(h.cblSeasons>0 || h.china) cards.push(card("中國籃球名人堂",h.china,h.chinaScore,HOF_TH.china,lname("CBL")+" 資歷與榮譽"));
+  cards.push(card("奈史密斯名人堂",h.naismith,h.naismithScore,HOF_TH.naismith,lname("NBA")+" 殿堂，入選難度極高"));
   return `<div class="hof-title">名人堂票選結果</div>
-    <div class="hof-grid">
-      ${card("台灣籃球名人堂",h.taiwan,h.taiwanScore,HOF_TH.taiwan,"依台灣聯盟資歷與中華隊貢獻")}
-      ${card("奈史密斯名人堂",h.naismith,h.naismithScore,HOF_TH.naismith,lname("NBA")+" 殿堂，入選難度極高")}
-    </div>${ceremony}`;
+    <div class="hof-grid">${cards.join("")}</div>${ceremony}`;
 }
 function hofCeremonyHTML(h){
   const yr=G.year+3; // 退休三年後受提名
-  const which = h.naismith&&h.taiwan ? "台灣籃球名人堂與奈史密斯名人堂雙殿堂"
-    : h.naismith ? "奈史密斯名人堂" : "台灣籃球名人堂";
+  const names=[]; if(h.taiwan)names.push("台灣籃球名人堂"); if(h.china)names.push("中國籃球名人堂"); if(h.naismith)names.push("奈史密斯名人堂");
+  const which = names.length>1 ? names.slice(0,-1).join("、")+"與"+names[names.length-1]+"多重殿堂" : names[0];
   const bodies=[];
   if(h.naismith) bodies.push(`跨海而來的祝賀影片在會場輪番播放，昔日對手與隊友齊聲推崇——一位來自台灣的孩子，最終在世界最高殿堂留下名字。`);
+  if(h.china) bodies.push(`在中國賽場的每一次長征與拚搏都被記得，全場起立向這位遠道而來、卻打出一片天的球員致敬。`);
   if(h.taiwan) bodies.push(`從 HBL 的青澀少年，到扛起中華隊的中流砥柱，你的名字成了台灣籃球一整個世代的共同記憶。`);
   const speech = h.naismith
     ? `站上講台，你望著滿場觀眾，深吸一口氣：「我來自一個籃球不是主流的地方，但正因如此，我更想證明——夢想沒有國界。」`
+    : h.china
+    ? `你握著麥克風，感慨道：「離鄉背井打拚的日子不容易，謝謝所有相信我的人。這份榮耀，我會永遠記得。」`
     : `你握著麥克風，聲音微顫：「謝謝這片土地，謝謝每一個曾為我加油的人。這座獎，屬於台灣籃球。」`;
   return `<div class="hof-ceremony">
     <div class="hofc-tag">🏛️ 名人堂提名</div>
@@ -2613,7 +2690,7 @@ function renderEnd(){
     </div>
     <div class="hof-block">
       ${hallOfFameHTML()}
-      ${G._jerseyRetired?`<div class="jersey-retire">🎽 球衣退休 · ${G.team} 為你高懸 ${G.jersey} 號</div>`:""}
+      ${(G._jerseyTeams&&G._jerseyTeams.length)?`<div class="jersey-retire">🎽 球衣退休 · ${G._jerseyTeams.map(j=>`${j.team}（${j.seasons} 季）`).join("、")} 為你高懸 ${G.jersey} 號</div>`:(G._jerseyRetired?`<div class="jersey-retire">🎽 傳奇殿堂 · ${G.jersey} 號永久紀念</div>`:"")}
     </div>
     ${fanForumHTML()}
     <div class="panel">${careerSummaryHTML().replace('<div class="label">生涯總結</div>','<div class="label">生涯數據</div>')}</div>
