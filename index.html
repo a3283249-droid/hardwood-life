@@ -588,7 +588,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="v1.8.0";
+const VERSION="v1.8.1";
 const NAME_POOL=["林逐夢","陳冠宇","張立安","黃柏睿","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -1882,8 +1882,8 @@ function fanForum(){
 /* =========================================================================
    算 morale/fame 相關評語
    ========================================================================= */
-const FANS=["籃球癡籃球狂","鬼禿","與督玫瑰","德威司機","阿明看球","數據控小李","熱血鄉民","半場記者",
-  "夜貓球迷","鍵盤教練","板橋劉的華","打鐵大隊長","雲端教練","gury雞腿","菜市場球評","轉播達人"];
+const FANS=["籃球癡籃球狂","板凳觀察家","與督玫瑰","德威司機","gury鴨腿","數據控小李","熱血鄉民","半場記者",
+  "夜貓球迷","戰術宅","板橋劉的華","打鐵大隊長","鍵盤教練","第六人","菜市場球評","轉播達人,南港彭于晏,資深勇迷"];
 function fanComments(s){
   const tierc = s.champion?"champ": s.seasonScore>=90?"elite": s.seasonScore>=68?"good": s.seasonScore>=45?"mid":"bad";
   const pools={
@@ -1896,7 +1896,7 @@ function fanComments(s){
     mid:["中規中矩，還有進步空間。","有幾場很亮眼，穩定性再加強。","防守不錯，進攻可以更兇。","不功不過的一季。","期待明年更上一層樓。",
       "還在找定位，別急。","輪替戰力該有的表現。","偶爾驚喜，偶爾工具人。","再多點侵略性就好了。","平穩，但想看到更多。"],
     bad:["這季狀態有點掙扎啊…","是不是有傷？看起來很勉強。","加油，球迷還是相信你的。","數據下滑，該調整了。","希望教練幫他找回信心。",
-      "手感整季冰冷，心疼。","被聯盟研究透了嗎？","低潮總會過去的，撐住。","上場時間變少了，可惜。","狀態回不來有點擔心。"],
+      "手感整季冰冷，心疼。","被聯盟研究透了嗎？","低潮總會過去的，撐住。","上場時間變少了，可惜。","狀態回不來有點擔心。,該退休了吧 根本0作用",],
   };
   const base=pools[tierc].slice();
   const out=[];const used=new Set();
@@ -2018,12 +2018,18 @@ function bindAllocate(){
   const au=s.querySelector("#allocAuto");if(au)au.addEventListener("click",allocAuto);
   const rs=s.querySelector("#allocReset");if(rs)rs.addEventListener("click",allocReset);
 }
+function renderAllocateInPlace(){
+  // 只就地更新加點面板，不重建整頁、不捲動 → 點下方能力值時不會跳回頂端
+  const s=$("#stage"); if(!s){ render(); return; }
+  s.innerHTML=allocateHTML();
+  bindAllocate();
+}
 function allocCap(){ return Math.min(99, G.potential+4); } // 加點天花板：潛力+4
 function allocChange(k,dir){
   const al=G._alloc, cur=al.base[k]+al.add[k];
   if(dir>0){ if(cur>=allocCap())return; const c=allocCost(cur); if(al.spLeft<c)return; al.add[k]++; al.spLeft-=c; }
   else { if(al.add[k]<=0)return; const c=allocCost(cur-1); al.add[k]--; al.spLeft+=c; }
-  render();
+  renderAllocateInPlace();
 }
 function allocAuto(){
   const w=POSITIONS[G.pos].w, order=[...ATTR_KEYS].sort((x,y)=>w[y]-w[x]);
@@ -2032,9 +2038,9 @@ function allocAuto(){
     for(const k of order){ const cur=G._alloc.base[k]+G._alloc.add[k], c=allocCost(cur);
       if(cur<allocCap() && G._alloc.spLeft>=c){ G._alloc.add[k]++; G._alloc.spLeft-=c; done=false; break; } }
     if(done)break; }
-  render();
+  renderAllocateInPlace();
 }
-function allocReset(){ ATTR_KEYS.forEach(k=>G._alloc.add[k]=0); G._alloc.spLeft=G._alloc.sp; render(); }
+function allocReset(){ ATTR_KEYS.forEach(k=>G._alloc.add[k]=0); G._alloc.spLeft=G._alloc.sp; renderAllocateInPlace(); }
 function commitAllocation(){
   ATTR_KEYS.forEach(k=>G.attr[k]=clamp(G.attr[k]+G._alloc.add[k],15,99));
   G._alloc=null; beginTraining();
@@ -2967,7 +2973,8 @@ function renderStart(){
           <p class="small mt8" style="color:var(--faint)">相同的種子碼＋相同的選擇，會得到完全一樣的生涯發展。</p></div>
       </div>
       <button class="btn gold" id="startBtn">開始籃球人生 🏀</button>
-      <p class="small center mt12" style="padding-bottom:20px">每個決定都會改變你的生涯軌跡。準備好了嗎？</p>
+      <p class="small center mt12">每個決定都會改變你的生涯軌跡。準備好了嗎？</p>
+      <p class="small center" style="padding-bottom:24px;color:var(--faint)">聯絡我：<a href="https://www.threads.com/@twbasketball__life" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:none;font-weight:700">twbasketball__life</a></p>
     </div>`;
   const homes=["台北","新北","桃園","台中","台南","高雄","新竹","彰化","花蓮","屏東"];
   let home=homes[0];
