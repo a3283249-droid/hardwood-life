@@ -286,7 +286,7 @@ canvas{max-width:100%;border-radius:12px;border:1px solid var(--line)}
 .dice-btn:active{transform:scale(.94)}
 
 /* 稱號 / 全美排名 / 里程碑 */
-.title-badge{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin:2px 3px 0 0;vertical-align:middle;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.title-badge{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin:0;flex:0 0 auto;vertical-align:middle;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .title-badge:active{transform:scale(.94);opacity:.8}
 .title-badge.good{color:#7BE0A3;border:1px solid rgba(63,191,127,.5);background:rgba(63,191,127,.1)}
 .title-badge.bad{color:#FF8A8A;border:1px solid rgba(216,50,63,.5);background:rgba(216,50,63,.1)}
@@ -295,7 +295,26 @@ canvas{max-width:100%;border-radius:12px;border:1px solid var(--line)}
 .title-badge.legend-red { color: #FF6666; border: 1px solid rgba(255,102,102,.5); background: rgba(255,102,102,.1); }
 .title-badge.legend-blue { color: #4DA3FF; border: 1px solid rgba(77,163,255,.5); background: rgba(77,163,255,.1); }
 .title-badge.legend-purple { color: #D088FF; border: 1px solid rgba(208,136,255,.5); background: rgba(208,136,255,.1); }
-.title-row{margin-top:4px;line-height:1.6}
+/* 稱號容器：一般情境（例如退休結算頁）空間夠，允許自動換行一次看完 */
+.title-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+
+/* HUD 內的稱號列：鎖單行 + 橫向滑動，稱號再多也不會把頂端狀態列往下撐開 */
+.hud-name .title-row{
+  margin-top:4px;
+  max-width:100%;
+  overflow-x:auto;              /* 超出寬度 → 橫向滑動 */
+  overflow-y:hidden;            /* 鎖死垂直方向，高度恆定不被撐開 */
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;         /* Firefox 隱藏捲軸 */
+  -ms-overflow-style:none;      /* 舊版 Edge 隱藏捲軸 */
+  padding-bottom:2px;
+  touch-action:pan-x;           /* 只吃橫向手勢，不搶頁面垂直捲動 */
+  overscroll-behavior-x:contain;/* 滑到底不牽動外層 */
+}
+/* HUD 內強制單行，讓內容以實際寬度延展以觸發橫向捲動 */
+.hud-name .title-wrap{display:inline-flex;flex-wrap:nowrap;white-space:nowrap}
+/* 隱藏橫向捲軸，畫面保持乾淨（玩家仍可滑動） */
+.hud-name .title-row::-webkit-scrollbar{display:none}
 .title-hint{font-size:9.5px;color:var(--faint);margin-left:4px;vertical-align:middle}
 .usrank{display:inline-block;font-size:11px;font-weight:700;color:#4DA3FF;border:1px solid rgba(77,163,255,.5);
   background:rgba(77,163,255,.1);border-radius:999px;padding:1px 8px;vertical-align:middle}
@@ -2482,26 +2501,42 @@ function leagueEval(lg){
   const ss=G.seasonHistory.filter(s=>s.stage==="pro"&&s.league===lg);
   if(!ss.length)return null;
   const n=ss.length, gp=ss.reduce((a,s)=>a+s.gp,0);
-  const avgSS=ss.reduce((a,s)=>a+s.seasonScore,0)/n; // 每季平均影響力（品質核心）
+  const scores=ss.map(s=>s.seasonScore||0).sort((a,b)=>b-a);
+  const avgSS=scores.reduce((a,v)=>a+v,0)/n;            // 生涯平均（名人堂分數沿用，門檻不變）
+  // 巔峰品質：取表現最好的約 60%（至少 3 季，或全部）平均，避免菜鳥季／傷季／暮年季稀釋輝煌生涯
+  const primeN=clamp(Math.ceil(n*0.6), Math.min(3,n), n);
+  const primeSS=scores.slice(0,primeN).reduce((a,v)=>a+v,0)/primeN;
+  const qualitySS=primeSS*0.65 + avgSS*0.35;           // 綜合品質（標籤用，以巔峰為主）
   const la=(G.awardLog||[]).filter(a=>a.league===lg);
   const cnt=name=>la.filter(a=>a.award===name).length;
   const inc=sub=>la.filter(a=>a.award.includes(sub)).length;
   const mvp=cnt("MVP"), champ=cnt("冠軍"), allStar=cnt("明星賽");
+  const localMvp=mvp+cnt("本土MVP")+cnt("國內MVP");     // 各聯盟 MVP 都算「分量」（僅供標籤，不影響名人堂分）
   const allNBA1=cnt("年度一隊"), allNBAany=inc("年度")+cnt("最佳陣容");
+  const scoringTitles=cnt("得分王")+cnt("籃板王")+cnt("助攻王");
   const awardPts= mvp*70 + champ*40 + allNBA1*40 + cnt("年度二隊")*28 + cnt("年度三隊")*18
     + allStar*16 + inc("王")*16 + cnt("DPOY")*22 + cnt("ROTY")*14 + (inc("新秀")&&inc("隊"))*8;
-  // 評價分：以「每季品質」為主、資歷與榮譽為輔（避免打很久就變傳奇）
+  // 評價分（名人堂沿用）：維持以生涯平均為基準，門檻不受標籤改動影響
   const score=Math.round(clamp(avgSS-30,0,90)*5 + n*7 + awardPts);
   const labels=LEAGUE_LABELS[lg]||LEAGUE_LABELS["SBL"];
   const elite=(lg==="NBA"||lg==="日職 B.League"||lg==="CBL"||lg==="KRBL");
-  const T = elite ? [44,56,66,80,92,104] : [40,52,62,74,86,98]; // 分界
-  let idx = avgSS<T[0]?0 : avgSS<T[1]?1 : avgSS<T[2]?2 : avgSS<T[3]?3 : avgSS<T[4]?4 : avgSS<T[5]?5 : 6;
-  // 榮譽門檻限制頂級標籤（品質高但沒榮譽 → 封頂在先發）
-  if(idx>=4 && allStar<2 && allNBAany===0) idx=Math.min(idx,3);      // 明星級需真的常打明星賽
-  if(idx>=5 && allStar<3 && allNBAany===0 && mvp===0) idx=Math.min(idx,4); // 當家球星需分量
-  if(idx>=6 && !(mvp>=1 || allNBA1>=2 || (champ>=1&&allStar>=5))) idx=5; // 聯盟門面需重大榮譽
-  // 傳奇巨星(7)：必須具備 MVP／多次年度一隊／冠軍＋常態全明星
-  if(idx>=6 && (mvp>=2 || (mvp>=1&&champ>=1) || allNBA1>=3)) idx=7;
+  const T = elite ? [44,56,66,78,88,100] : [40,52,62,72,82,92]; // 分界（略降頂層，讓真正的明星／門面可及）
+  // (1) 品質級別：由巔峰加權品質決定
+  let qIdx = qualitySS<T[0]?0 : qualitySS<T[1]?1 : qualitySS<T[2]?2 : qualitySS<T[3]?3 : qualitySS<T[4]?4 : qualitySS<T[5]?5 : 6;
+  // (2) 榮譽級別：由實際成就決定，可往上抬（讓戰績輝煌者不被平均稀釋）
+  let aIdx=0;
+  if(allStar>=1 || allNBAany>=1 || scoringTitles>=1) aIdx=Math.max(aIdx,3);        // 有過明星/最佳陣容/單項王 → 至少稱職先發
+  if(allStar>=2 || allNBAany>=1) aIdx=Math.max(aIdx,4);                             // 常態明星 → 明星球員
+  if(allStar>=3 || localMvp>=1 || allNBA1>=1 || (champ>=1&&allStar>=2)) aIdx=Math.max(aIdx,5); // 有分量 → 當家球星
+  if(localMvp>=1 && (allStar>=4 || allNBA1>=1 || champ>=1)) aIdx=Math.max(aIdx,6);  // 重大榮譽 → 聯盟門面
+  if(mvp>=2 || (mvp>=1&&champ>=1) || allNBA1>=3) aIdx=Math.max(aIdx,7);             // 傳奇巨星
+  // (3) 取品質與榮譽的較高者
+  let idx=Math.max(qIdx,aIdx);
+  // (4) 資歷保護：頂層標籤需足夠樣本，避免短暫客串被灌成傳奇（同時提高門檻可信度）
+  if(n<2) idx=Math.min(idx, aIdx>=5?4:3);                    // 只打 1 季：頂多明星球員（無重大榮譽則封在先發）
+  if(n<3 && aIdx<5) idx=Math.min(idx,4);                     // 2 季且無重大榮譽：頂多明星球員
+  if(idx>=6 && n<4 && !(localMvp>=1||allNBA1>=1)) idx=5;     // 聯盟門面需 ≥4 季或硬榮譽
+  if(idx>=7 && n<5 && mvp<2) idx=6;                          // 傳奇需 ≥5 季或多座 MVP
   idx=clamp(idx,0,labels.length-1);
   return {league:lg, score, label:labels[idx], seasons:n, avgSS:Math.round(avgSS)};
 }
@@ -2864,7 +2899,7 @@ function fanForum(){
 /* =========================================================================
    算 morale/fame 相關評語
    ========================================================================= */
-const FANS=["籃球癡籃球狂","板凳觀察家","與督玫瑰","德威司機","gury鴨腿","數據控小李","前徹步","史蓋",
+const FANS=["籃球癡籃球狂","觀眾就愛看","與督玫瑰","德威司機","gury鴨腿","數據控小李","前徹步","史蓋",
   "夜貓球迷","戰術宅","板橋劉的華","GM","鍵盤教練","第六人","菜市場球評","gm","南港彭于晏","資深勇迷"];
 function fanComments(s){
   const tierc = s.champion?"champ": s.seasonScore>=90?"elite": s.seasonScore>=68?"good": s.seasonScore>=45?"mid":"bad";
