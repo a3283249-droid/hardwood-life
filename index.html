@@ -602,8 +602,8 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.1.8.11";
-const NAME_POOL=["林逐夢","陳冠宇","張立安","黃柏睿","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
+const VERSION="V.1.8.13";
+const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
 function randomName(){ return pick(NAME_POOL); }
@@ -642,8 +642,11 @@ function overall(attr=G.attr,pos=G.pos){
   return Math.round(s/sw);
 }
 function fmtMoney(wan){ // wan = 萬
-  if(wan>=10000) return (wan/10000).toFixed(2).replace(/\.?0+$/,"")+"億";
-  if(wan>=1) return Math.round(wan).toLocaleString()+"萬";
+  if(wan === 0) return "0";
+  const sign = wan < 0 ? "-" : "";
+  const val = Math.abs(wan); // 取絕對值來計算單位
+  if(val>=10000) return sign + (val/10000).toFixed(2).replace(/\.?0+$/,"")+"億";
+  if(val>=1) return sign + Math.round(val).toLocaleString()+"萬";
   return "0";
 }
 
@@ -862,7 +865,8 @@ EVENTS["pro"].push(
   {t:"防守專項訓練",x:"防守教練替你安排魔鬼防守特訓。",
    o:[{l:"全力操練防守",i:"🛡️",h:"衝防守",f:r=>({low:mk("跟不太上",{defense:1},{health:-4}),mid:mk("防守意識提升",{defense:3,iq:1}),high:mk("蛻變成鎖將",{defense:4,athletic:1,iq:1})}[tier(r)])},
       {l:"保留體力顧進攻",i:"🎯",h:"衝進攻",f:r=>({low:mk("防守被針對",{shooting:1}),mid:mk("進攻更犀利",{shooting:2,three:1}),high:mk("進攻火力全開",{shooting:3,three:2})}[tier(r)])}]}
-);
+   
+    );
 /* ---------- CBL 中國聯賽專屬事件 ---------- */
 EVENTS["pro"].push(
   {t:"跨省移地長征",x:"中國幅員遼闊，接連的客場長征讓身體疲憊不堪。",cond:lg=>lg==="CBL",
@@ -888,8 +892,57 @@ EVENTS["pro"].push(
       {l:"保守參與避免受傷",i:"🛟",h:"護健康",f:r=>({low:mk("被嫌不夠投入",{},{fame:-2}),mid:mk("平安下莊",{},{health:4}),high:mk("輕鬆寫意還小露一手",{iq:1},{fame:3,health:2})}[tier(r)])}]},
   {t:"新科技護具",x:"贊助商送來最新科技護具，據說能降低受傷、提升爆發力。",
    o:[{l:"積極採用新裝備",i:"🦿",h:"賭一把",f:r=>({low:mk("不太適應，反而卡卡",{athletic:-1},{morale:-2}),mid:mk("護具給力，狀態穩定",{},{health:6}),high:mk("如虎添翼，體能飆升",{athletic:2},{health:8})}[tier(r)])},
-      {l:"相信自己的身體",i:"💪",h:"衝球商",f:r=>({low:mk("固執己見",{iq:1}),mid:mk("自我管理有成",{iq:1},{health:4}),high:mk("身體開發到極致",{athletic:1,iq:1},{health:6})}[tier(r)])}]}
-);
+      {l:"相信自己的身體",i:"💪",h:"衝球商",f:r=>({low:mk("固執己見",{iq:1}),mid:mk("自我管理有成",{iq:1},{health:4}),high:mk("身體開發到極致",{athletic:1,iq:1},{health:6})}[tier(r)])}]},
+  {t:"深夜酒駕", x:"與隊友去居酒屋吃消夜，聚會結束後在討論該如何回去。你喝了不少酒。", cond: lg => ["SBL","P+","TPBL"].includes(lg),
+   noRisk: true,
+   o:[{l:"自行開車回家", i:"🚗", h:"請三思這個選擇", f: r => {
+        G._memInjury = "drunk_driving"; // 觸發特製的生涯結束標籤
+        return mk("酒駕上路被警方攔查！球團立刻祭出嚴懲，宣布開除並永不錄用！你的籃球生涯就此毀滅。", {}, {fame: -100, morale: -50, title: "evilDrunk"});
+      }},
+      {l:"找代駕", i:"📱", h:"花小錢保平安", f: r => ({
+        low: mk("等了很久代駕才來，隔天有點累", {}, {money: -5, health: -4}),
+        mid: mk("安全回到家，花費一點代駕費", {}, {money: -1}),
+        high: mk("安全到家，還順路送隊友回去，獲得敬重", {iq: 1}, {money: -15, morale: 5})
+      }[tier(r)])}]},
+  {t:"隊友桃色風波", x:"在網路上看到自己的隊友因為桃色風波陷入輿論風暴，記者都在問你的看法。你該怎麼做？", cond: lg => ["SBL","P+","TPBL"].includes(lg),
+   noRisk: true,
+   o:[{l:"迅速切割，遠離隊友", i:"✂️", h:"明哲保身", f: r => ({
+        low: mk("隊友私下抱怨『一點都不挺我』，休息室氣氛降到冰點", {}, {morale: -8}),
+        mid: mk("成功避開風暴，不受影響", {iq: 1}),
+        high: mk("隊友最終自主宣布退休。你順勢接收了他的球權，數據大增", {shooting: 2}, {fame: 3, morale: 2})
+      }[tier(r)])},
+      {l:"是隊友就該挺！", i:"🤝", h:"高風險：可能被拖累", f: r => ({
+        low: mk("確定是被拖累！隊友罪證確鑿，你盲目挺他導致形象大翻車", {}, {fame: -25, morale: -15}),
+        mid: mk("引發兩極評價，但隊友很感激你", {}, {fame: -5, morale: 5}),
+        high: mk("原來是假消息！隊友獲清白，你們的兄弟情傳為佳話", {pass: 1, iq: 1}, {fame: 12, morale: 10})
+      }[tier(r)])}]},
+
+  {t:"洋將無預警落跑", x:"比賽日當天，教練面色鐵青地宣布，隊中跟你同位置的洋將突然搭飛機離台了！", cond: lg => ["SBL","P+","TPBL"].includes(lg),
+   noRisk: true,
+   o:[{l:"教練，我上！", i:"🔥", h:"扛下洋將空缺", f: r => ({
+        low: mk("體能跟對抗性完全扛不住，表現災難", {shooting: -1}, {morale: -5, health: -3}),
+        mid: mk("頂住壓力，勉強填補了空缺", {defense: 1, shooting: 1}, {fame: 3}),
+        high: mk("大爆發！你證明了本土球員也能打出洋將級別的統治力！", {shooting: 2, rebound: 1, athletic: 1}, {fame: 10, morale: 8})
+      }[tier(r)])},
+      {l:"建議教練改打小球戰術", i:"🧠", h:"用智商解決問題", f: r => ({
+        low: mk("戰術磨合不佳，球隊慘敗", {iq: -1}, {morale: -3}),
+        mid: mk("戰術奏效，用速度彌補了劣勢", {pass: 1, iq: 1}, {morale: 3}),
+        high: mk("小球戰術大成功！你成為了體系的核心大腦", {pass: 2, iq: 2, defense: 1}, {fame: 5, morale: 5})
+      }[tier(r)])}]},
+
+  {t:"籃球博士的密訓", x:"賽後，你收到一則訊息，「籃球博士」覺得你很有潛力，決定私下訓練你。", cond: lg => ["SBL","P+","TPBL"].includes(lg),
+   noRisk: true,
+   o:[{l:"接受博士密訓", i:"🎓", h:"傳奇的指點", f: r => ({
+        low: mk("訓練菜單太操，導致你隔天比賽腳軟", {}, {health: -8, morale: -2}),
+        mid: mk("學到了許多進攻的小撇步", {shooting: 2, iq: 1}),
+        high: mk("完美繼承博士的無解翻身跳投！", {shooting: 3, iq: 2, three: 1}, {fame: 5})
+      }[tier(r)])},
+      {l:"專注於球隊原有訓練", i:"🛡️", h:"保守應對", f: r => ({
+        low: mk("錯失了名師指點的機會", {iq: -1}),
+        mid: mk("維持球隊體系內的穩定成長", {defense: 1}, {health: 3}),
+        high: mk("用自己的方式打出名堂，證明不需特訓也很強", {athletic: 1, shooting: 1}, {morale: 4})
+      }[tier(r)])}]}     
+    );
 EVENTS["高中"].push(
   {t:"甲組乙組抉擇",x:"是留在強度較高的甲級球隊坐板凳，還是去乙級當主力？",cond:lg=>lg==="高中",
    o:[{l:"留甲級磨練",i:"🪑",h:"衝實力",f:r=>({low:mk("上場太少，悶",{iq:1},{morale:-3}),mid:mk("跟高手練，底子變扎實",{defense:1,iq:1}),high:mk("板凳匪徒一鳴驚人",{shooting:1,defense:1,iq:1},{fame:4})}[tier(r)])},
@@ -1012,7 +1065,7 @@ function intlEventForYear(y){
   if(c===0){evs.push({name:"亞洲盃",th:72,games:5,medalP:.22,prestige:2});}
   if(c===1){evs.push({name:"亞運",th:74,games:5,medalP:.25,prestige:2});}
   if(c===2){evs.push({name:"世界盃資格賽",th:76,games:6,medalP:.2,prestige:2});}
-  if(c===3){evs.push({name:"世界盃",th:82,games:5,medalP:.12,prestige:3});}
+  if(c===3 && G._qualifiedWorldCup){evs.push({name:"世界盃",th:82,games:5,medalP:.12,prestige:3});}
   // 奧運：極難，需超高能力
   if(c===0&&overall()>=88){evs.push({name:"奧運",th:88,games:5,medalP:.1,prestige:4});}
   return evs;
@@ -1060,6 +1113,7 @@ function simulateIntl(ev){
   const rec={year:G.year,event:ev.name,ppg:round(ppg),rpg:round(rpg),apg:round(apg),
     medal:medal?place.replace(/^[^\s]+\s/,""):"",place,advanced,mvp,age:G.age,injuryNote};
   G.intlHistory.push(rec);
+  if (ev.name === "世界盃資格賽") G._qualifiedWorldCup = advanced;
   G.fame+=medal?ev.prestige*3:ev.prestige;
   return rec;
 }
@@ -1273,7 +1327,11 @@ function applyEffects(e){
     if(d>0){
       const cap=Math.min(99,G.potential+4);
       if(G.attr[k]>=G.potential) d=(_rng()<.5?1:0); // 已達潛力，幾乎練不動
-      const nv=clamp(G.attr[k]+d,15,cap);
+      
+      // 確保當前屬性如果已經超過 cap，不會被強制往下拉
+      const actualCap = Math.max(G.attr[k], cap); 
+      const nv=clamp(G.attr[k]+d, 15, actualCap);
+      
       d=nv-G.attr[k]; G.attr[k]=nv;
     } else {
       const nv=clamp(G.attr[k]+d,15,99); d=nv-G.attr[k]; G.attr[k]=nv;
@@ -1322,8 +1380,11 @@ function playSeason(){
 function seasonInjuryCheck(){
   const age=G.age;
   // 由事件觸發的強制受傷（如地貼滑倒賽季報銷）
-  if(G._memInjury){
+ if(G._memInjury){
     const forced=G._memInjury; G._memInjury=null;
+    if(forced === "drunk_driving") {
+      return {major: true, career: true, text: "【生涯告終】你因為酒駕被逮，球團祭出重罰開除，永不錄用！你的籃球生涯就此身敗名裂。"};
+    }
     ATTR_KEYS.forEach(k=>{const fast=(k==="athletic"||k==="defense")?1.6:1;
       G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,5)*fast),15,99);});
     G.health=clamp(G.health-rnd(25,45),5,100);
@@ -1337,7 +1398,7 @@ function seasonInjuryCheck(){
       G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,6)*fast),15,99);});
     G.health=clamp(G.health-rnd(20,45),5,100);
     const career=isPro()&&chance(clamp(.1+(age-30)*.05,.05,.7));
-    return {major:true,career,text:career?"生涯重傷，恐怕得高掛球鞋…":"賽季報銷的重傷，能力明顯下滑。"};
+    return {major:true, career, text:career?"【重大傷病警告】醫生判定你的傷勢嚴重，無法再負荷高強度的職業賽事！本賽季結束後你將被迫退休...":"【嚴重受傷】賽季報銷的重傷！你將缺席剩餘賽事，能力也受到影響而明顯下滑。"};
   }
   if(chance(.25)){ G.health=clamp(G.health-rnd(6,16),20,100);
     return {major:false,text:"小傷不斷，影響了部分出賽。"}; }
@@ -1745,6 +1806,7 @@ const TITLE_DEFS={
   ringless:{name:"無冕之王",good:false,desc:"生涯超過 10 季卻從未奪冠",effect:"士氣 -3",buff:{morale:-3}},
   fragile:{name:"薄玻璃",good:false,desc:"（隱藏）生涯 3 次以上重傷",effect:"體能 -3",buff:{athletic:-3}},
   contractMess:{name:"合約風暴",good:false,desc:"（隱藏）曾捲入雙重合約糾紛",effect:"名氣 -5",buff:{fame:-5}},
+  evilDrunk:{name:"罪大惡極",good:false,desc:"因酒駕遭球團開除，斷送職業生涯",effect:"名氣歸零",buff:{fame:-100}},
 };
 function hasTitle(id){ return (G.titles||[]).some(t=>t.id===id); }
 function grantTitle(id){
@@ -1989,6 +2051,11 @@ function fanForum(){
   if(G._undrafted){ add("暖心鄉民","落選很殘酷，但轉換跑道也是一種勇氣，祝福他人生下半場。",rint(90,450));
     add("選秀鄉民","那年選秀完全沒被叫到名字，唉，籃球夢真的燒錢又燒命。",rint(30,220)); }
   if((G.titles||[]).some(x=>x.id==="undraftedHero")) add("逆襲粉","落選還能打上職業，這種不放棄的故事我最愛。",rint(160,700));
+  if((G.titles||[]).some(x=>x.id==="evilDrunk")) add("憤怒球迷",pick([
+    "酒駕真的垃圾，滾出籃壇剛好而已！",
+    "活該被開除，公眾人物還做這種最壞示範！",
+    "好好一個球員自己把生涯毀了，可悲至極。"
+  ]),rint(3000,8000));
   // 通用結語（依整體評價）
   const legacyPool = hof.naismith||hof.taiwan
     ? ["生涯回顧影片我看到哭，謝謝你的每一顆球。","這種等級的球員，一個世代出一個而已。","以後帶小孩看球一定跟他說有這號人物。"]
@@ -2042,6 +2109,12 @@ function fanComments(s){
    Render
    ========================================================================= */
 function isPro(){return G&&G.stage==="pro";}
+function getContractText() {
+  if (isPro() && G.contract) {
+    return `<span style="font-size:12px; color:var(--dim); margin-left:8px; padding-left:8px; border-left:1px solid var(--line);">合約剩 ${G.contract.yearsLeft} 年 / 年薪 ${fmtMoney(G.contract.salary)}</span>`;
+  }
+  return "";
+}
 function toast(msg,ms){const t=$("#toast");t.textContent=msg;t.classList.add("show");
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),ms||2200);}
 
@@ -2123,7 +2196,7 @@ function allocateHTML(){
       </div></div>`;
   }).join("");
   return `<div class="season-hd"><span class="stage">${stageName} · 季前特訓</span><span class="yr">${G.year} 賽季</span></div>
-    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}　<span class="arche">${archetype()}</span></div>
+    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team} ${getContractText()} <span class="arche">${archetype()}</span></div>
     ${al.bonus?`<div class="usrank-line" style="color:var(--gold);border-color:rgba(242,184,75,.4);background:rgba(242,184,75,.08)">🏆 上季大賽表現優異，獲得 <b>+${al.bonus}</b> 額外訓練點！</div>`:""}
     <div class="panel">
       <div class="alloc-top">
@@ -2183,7 +2256,7 @@ function trainingHTML(){
     G.stage==="大學"?`大學 ${["大一","大二","大三","大四"][Math.min(G.collegeYears-1,3)]}`:lname(G.league);
   if(!ev){ // 已完成，準備打賽季
     return `<div class="season-hd"><span class="stage">${stageName}</span><span class="yr">${G.year} 賽季</span></div>
-      <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}</div>
+      <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
       <div class="turn-track">${track}</div>
       <div class="panel center">
         <div class="label">季前訓練完成</div>
@@ -2192,7 +2265,7 @@ function trainingHTML(){
       </div>`;
   }
   return `<div class="season-hd"><span class="stage">${stageName}</span><span class="yr">${G.year} 賽季 · 訓練 ${done+1}/${G.seasonEvents.length}</span></div>
-    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}</div>
+    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
     <div class="turn-track">${track}</div>
     <div class="panel" id="evpanel">
       <div class="label">${["事件","事件","事件"][0]} · 抉擇</div>
@@ -2243,7 +2316,11 @@ function resolveOption(i){
     if(outcome.attr) for(const k in outcome.attr){const d=outcome.attr[k]; if(!d) continue;
       deltas.push(`<span class="delta ${d>=0?"pos":"neg"}">${ATTR_LABEL[k]} ${d>=0?"+":""}${d}</span>`);}
     if(outcome.health)deltas.push(`<span class="delta ${outcome.health>=0?"pos":"neg"}">健康 ${outcome.health>=0?"+":""}${outcome.health}</span>`);
-    if(outcome.money)deltas.push(`<span class="delta pos">$ +${fmtMoney(outcome.money)}</span>`);
+    if(outcome.money){
+  const isPos = outcome.money > 0;
+  // 如果是正數加上 + 號，如果是負數，fmtMoney 已經自帶 - 號了
+  deltas.push(`<span class="delta ${isPos ? "pos" : "neg"}">$ ${isPos ? "+" : ""}${fmtMoney(outcome.money)}</span>`);
+}
     if(outcome.fame)deltas.push(`<span class="delta ${outcome.fame>=0?"pos":"neg"}">名氣 ${outcome.fame>=0?"+":""}${outcome.fame}</span>`);
     if(outcome.morale)deltas.push(`<span class="delta ${outcome.morale>=0?"pos":"neg"}">士氣 ${outcome.morale>=0?"+":""}${outcome.morale}</span>`);
     const good=tier(roll)==="high", bad=tier(roll)==="low";
@@ -2287,7 +2364,7 @@ function reviewHTML(){
   const msHTML=newMilestones.length?`<div class="ms-row">${newMilestones.map(m=>`<span class="badge gold-badge">🎯 ${m.text}</span>`).join("")}</div>`:"";
   const titleHTML=G._newTitle?`<div class="title-earned">🏷️ 獲得稱號：<b>${G._newTitle}</b></div>`:"";
   return `<div class="season-hd"><span class="stage">${stageName} · 賽季回顧</span><span class="yr">${s.year}｜${s.age}歲</span></div>
-    <div class="team-line"><span class="team-dot" style="background:${teamColors(s.team).p}"></span>${s.team}</div>
+    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
     ${usRankHTML}
     <div class="panel">
       <div class="review-record">
@@ -3135,7 +3212,7 @@ function renderStart(){
       <p class="small center mt12">每個決定都會改變你的生涯軌跡。準備好了嗎？</p>
       <p class="small center" style="padding-bottom:24px;color:var(--faint)">聯絡我：<a href="https://www.threads.com/@twbasketball__life" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:none;font-weight:700">twbasketball__life</a></p>
     </div>`;
-  const homes=["台北","新北","基隆","桃園","新竹","苗栗","台中","彰化","台南","高雄","屏東","花蓮","台東"];
+  const homes=["台北","新北","基隆","桃園","新竹","苗栗","台中","彰化","雲林","台南","高雄","屏東","花蓮","台東"];
   let home=homes[0];
   const hc=$("#homeChips");
   homes.forEach((h,i)=>{const el=document.createElement("button");el.className="chip"+(i===0?" on":"");
