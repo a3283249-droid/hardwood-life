@@ -290,6 +290,11 @@ canvas{max-width:100%;border-radius:12px;border:1px solid var(--line)}
 .title-badge:active{transform:scale(.94);opacity:.8}
 .title-badge.good{color:#7BE0A3;border:1px solid rgba(63,191,127,.5);background:rgba(63,191,127,.1)}
 .title-badge.bad{color:#FF8A8A;border:1px solid rgba(216,50,63,.5);background:rgba(216,50,63,.1)}
+/* 彩蛋專屬稱號顏色 */
+.title-badge.legend-yellow { color: #F2C230; border: 1px solid rgba(242,194,48,.5); background: rgba(242,194,48,.1); }
+.title-badge.legend-red { color: #FF6666; border: 1px solid rgba(255,102,102,.5); background: rgba(255,102,102,.1); }
+.title-badge.legend-blue { color: #4DA3FF; border: 1px solid rgba(77,163,255,.5); background: rgba(77,163,255,.1); }
+.title-badge.legend-purple { color: #D088FF; border: 1px solid rgba(208,136,255,.5); background: rgba(208,136,255,.1); }
 .title-row{margin-top:4px;line-height:1.6}
 .title-hint{font-size:9.5px;color:var(--faint);margin-left:4px;vertical-align:middle}
 .usrank{display:inline-block;font-size:11px;font-weight:700;color:#4DA3FF;border:1px solid rgba(77,163,255,.5);
@@ -453,6 +458,13 @@ const PRO_TEAMS={
     {n:"山東雄鷹",p:"#D8323F",s:"#1E5BB0"},{n:"四川熊貓",p:"#17171C",s:"#2E9E5B"},
     {n:"南京同曦電",p:"#17A2B8",s:"#E9E9EC"},{n:"青島雄風",p:"#1F8F6E",s:"#F2C230"},
   ],
+  KRBL:[
+    {n:"釜山鐵盾",p:"#1E3A6B",s:"#D8323F"},{n:"首爾聖騎",p:"#D8323F",s:"#17171C"},
+    {n:"水原聲爆",p:"#F0592C",s:"#17171C"},{n:"昌原獵隼",p:"#C41E3A",s:"#E9E9EC"},
+    {n:"安養赤參",p:"#B01E2E",s:"#F2C230"},{n:"首爾雷鳴",p:"#1E5BB0",s:"#C7CDD6"},
+    {n:"蔚山驕陽",p:"#F0892C",s:"#12294D"},{n:"原州火種",p:"#2E9E5B",s:"#12294D"},
+    {n:"大邱飛馬",p:"#17A2B8",s:"#E9E9EC"},{n:"高陽天弓",p:"#4DA3FF",s:"#12294D"},
+  ],
 };
 const TEAM_COLORS={};
 const TEAMS={
@@ -488,8 +500,14 @@ const SCHOOLS={
   "NCAA D1":["UCLA","Duke","Kansas","Kentucky","North Carolina","Gonzaga","Michigan State","Arizona","Villanova","Baylor","UConn","Houston","Indiana","Michigan"],
   "NCAA D2":["Nova Southeastern","Northwest Missouri State","West Texas A&M","Cal Poly Pomona","Lincoln Memorial","Fort Hays State","Augustana (SD)","Ferris State","Barry University","Minnesota State","Colorado Mesa","Nova SE"],
 };
-function schoolPick(lg,exclude){let pool=(SCHOOLS[lg]||TEAMS[lg]||["學校"]).filter(t=>t!==exclude);return pick(pool.length?pool:(SCHOOLS[lg]||["學校"]));}
-
+function schoolPick(lg, exclude) { 
+  // 檢查 exclude 是不是陣列，不是的話包成陣列
+  const ex = Array.isArray(exclude) ? exclude : [exclude]; 
+  let pool = (SCHOOLS[lg]||TEAMS[lg]||["學校"]).filter(t => !ex.includes(t)); 
+  // 如果可選池空了（例如學校太少），就退而求其次只排除自己
+  if(!pool.length) pool = (SCHOOLS[lg]||TEAMS[lg]||["學校"]).filter(t => t !== G.team);
+  return pick(pool.length ? pool : (SCHOOLS[lg]||["學校"])); 
+}
 /* ---------- 球員類型（依屬性判定） ---------- */
 function archetype(attr=G.attr,pos=G.pos){
   const a=attr, ov=overall(attr,pos);
@@ -524,14 +542,24 @@ function simulateTournament(ov,teamStr,season){
   const tb=(G._seasonMods&&G._seasonMods.tourneyBoost)||0;
   const strength=chengchi?0.99:clamp(teamStr*.6 + (ov-55)*.012 + .12 + tb, .2, .97);
   const log=[]; let alive=true, champ=false;
+  let facedTeams = [G.team]; // 建立一個陣列，先放入自己的球隊
+
   for(let i=0;i<rounds.length;i++){
     const deep=i/rounds.length;
     const pWin=chengchi?0.99:clamp(strength - deep*.28 + rnd(-.08,.08), .06, .96);
-    const win=chance(pWin);
+    let win = chance(pWin);
+    if (G._seasonMods) {
+      if (G._seasonMods.tourneyMinIdx !== undefined && i < G._seasonMods.tourneyMinIdx) win = true; // 強制晉級到指定輪次
+      if (G._seasonMods.tourneyMaxIdx !== undefined && i === G._seasonMods.tourneyMaxIdx) win = false; // 強制在該輪淘汰
+    }
     const base=rint(58,78);
     const us = base + (win?rint(1,16):-rint(1,14));
     const them = base + (win?-rint(1,10):rint(1,15));
-    const opp = schoolPick(lg, G.team);
+    
+    // 抽籤時，傳入 facedTeams 陣列來排除已經遇過的學校
+    const opp = schoolPick(lg, facedTeams); 
+    facedTeams.push(opp); // 打完後，把這個對手加入已交手名單
+    
     log.push({round:rounds[i], opp, us:Math.max(40,us), them:Math.max(40,them), win});
     if(!win){ alive=false; break; }
   }
@@ -585,24 +613,25 @@ function simulateTournament(ov,teamStr,season){
 const LEAGUE_DISPLAY={
   "SBL":"S-B-L發展聯盟","TPBL":"T-PBL","P+":"P-聯盟",
   "日職 B.League":"日本職業籃球聯盟","NBA":"美國職業籃球聯盟","CBL":"C-B-L中國聯賽",
+  "KRBL":"K-R-B-L韓國聯賽",
 };
 function lname(lg){ return LEAGUE_DISPLAY[lg]||lg; }
 /* 聯盟層級（用於報價/跳級/排序，數字越大越高） */
-const LEAGUE_RANK={SBL:1,"P+":2,"TPBL":2,"發展聯盟":3,"日職 B.League":4,"CBL":4,"NBA":5};
+const LEAGUE_RANK={SBL:1,"P+":2,"TPBL":2,"發展聯盟":3,"日職 B.League":4,"CBL":4,"KRBL":4,"NBA":5};
 /* ---------- 聯盟難度（越高越難刷數據） ---------- */
-const DIFF={"高中":.55,"UBA":.72,"NCAA D2":.82,"NCAA D1":.98,"發展聯盟":1.02,"SBL":.88,"P+":1.0,"TPBL":1.0,"日職 B.League":1.16,"CBL":1.2,"NBA":1.62};
+const DIFF={"高中":.55,"UBA":.72,"NCAA D2":.82,"NCAA D1":.98,"發展聯盟":1.02,"SBL":.88,"P+":1.0,"TPBL":1.0,"日職 B.League":1.16,"CBL":1.2,"KRBL":1.14,"NBA":1.62};
 /* ---------- 薪資基準（單位：萬新台幣 / 年；續約/巔峰行情，會依能力縮放） ---------- */
-const PAY={"發展聯盟":[120,600],SBL:[150,900],"P+":[300,2200],TPBL:[300,2200],"日職 B.League":[1200,7000],CBL:[1500,9000],NBA:[4000,90000]};
+const PAY={"發展聯盟":[120,600],SBL:[150,900],"P+":[300,2200],TPBL:[300,2200],"日職 B.League":[1200,7000],CBL:[1500,9000],KRBL:[1000,6000],NBA:[4000,90000]};
 /* ---------- 新秀合約行情（較低，之後靠續約成長） ---------- */
-const ROOKIE_PAY={"發展聯盟":[80,300],SBL:[80,350],"P+":[150,650],TPBL:[150,650],"日職 B.League":[400,1600],CBL:[500,2000],NBA:[1500,9000]};
+const ROOKIE_PAY={"發展聯盟":[80,300],SBL:[80,350],"P+":[150,650],TPBL:[150,650],"日職 B.League":[400,1600],CBL:[500,2000],KRBL:[400,1500],NBA:[1500,9000]};
 /* ---------- 可自選報名的台灣選秀（隊數 / 行情門檻） ---------- */
-const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:5,bar:61},"CBL":{teams:20,bar:84}};
+const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:5,bar:61},"CBL":{teams:20,bar:84},"KRBL":{teams:10,bar:80}};
 
 /* =========================================================================
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.1.8.13";
+const VERSION="V.1.8.2";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -616,8 +645,25 @@ function newGame(name,pos,home,jersey,seed){
   const t=POSITIONS[pos].tmpl;const attr={};
   ATTR_KEYS.forEach(k=>attr[k]=clamp(Math.round(t[k]*.94+rnd(-5,5)),18,58));
   const jn = (jersey===undefined||jersey===null||jersey==="")? rint(0,35) : clamp(parseInt(jersey)||0,0,99);
+  const baseH = {PG: 176, SG: 184, SF: 191, PF: 197, C: 202}[pos];
+  let height = baseH + rint(-5, 5); 
+  let weight = Math.round(Math.pow(height/100, 2) * rnd(20, 23));
+  let eggTitle = null;
+
+  // 3% 機率觸發「傳奇彩蛋 Build」
+  if (chance(0.03)) {
+    if (pos === "PG") { height = 193; weight = 91; eggTitle = "tripleDouble"; }
+    else if (pos === "SG") {
+      if (chance(0.5)) { height = 198; weight = 96; eggTitle = "foreverKobe"; }
+      else { height = 192; weight = 92; eggTitle = "beastLin"; }
+    }
+    else if (pos === "SF") { height = 206; weight = 113; eggTitle = "theKing"; }
+    else if (pos === "PF") { height = 201; weight = 103; eggTitle = "theWorm"; }
+    else if (pos === "C") { height = 211; weight = 129; eggTitle = "joker"; }
+  }
   G={
     name,pos,home,jersey:jn,
+    height, weight, _growthBoost: 0,
     attr, potential:(function(){let p=rint(70,83);if(chance(.16))p+=rint(3,10);return clamp(p,70,95);})(),
     age:16, year:2026, stage:"高中", grade:1, league:"高中", team:schoolPick("高中"),
     health:100, money:0, morale:70, fame:5,
@@ -632,6 +678,7 @@ function newGame(name,pos,home,jersey,seed){
     seasonEvents:[], eventIdx:0, offseason:[], lastReview:null, lastAttr:{...attr},
     phase:"training",
   };
+  if(eggTitle) grantTitle(eggTitle);
   startSeason();
 }
 
@@ -729,7 +776,26 @@ EVENTS["高中"].push(
       {l:"提前跟工作人員反映",i:"🧹",h:"求穩",f:r=>({low:mk("被說想太多",{iq:1}),mid:mk("地貼被撕掉，安心比賽",{},{health:2}),high:mk("避免一場災難，隊友感謝你",{iq:1},{morale:4})}[tier(r)])}]},
   {t:"宵夜鹽酥雞",x:"練球完學長揪吃鹽酥雞加珍奶，但你正在控制體態。",
    o:[{l:"開吃！補充能量",i:"🍗",h:"爽但傷體態",f:r=>({low:mk("吃太多有點胖了",{athletic:-1},{morale:4}),mid:mk("小確幸，心情變好",{},{morale:5}),high:mk("吃飽練更兇",{athletic:1},{morale:6})}[tier(r)])},
-      {l:"忍住，回家加練",i:"🥗",h:"衝自律",f:r=>({low:mk("嘴饞難耐",{iq:1}),mid:mk("自律有回報",{athletic:2,defense:1}),high:mk("體態與意志都升級",{athletic:2,defense:1,iq:1},{morale:2})}[tier(r)])}]}
+      {l:"忍住，回家加練",i:"🥗",h:"衝自律",f:r=>({low:mk("嘴饞難耐",{iq:1}),mid:mk("自律有回報",{athletic:2,defense:1}),high:mk("體態與意志都升級",{athletic:2,defense:1,iq:1},{morale:2})}[tier(r)])}]},
+  {t:"發育期的選擇", x:"教練提醒你，現在是長高的黃金期。吃得營養、早點睡覺，或許還能再竄高幾公分，這會大大影響你未來的籃球路。", cond: lg => lg === "高中",
+   noRisk: true,
+   o:[{l:"早睡早起＋狂喝牛奶", i:"🥛", h:"有機率促進長高", f: r => {
+        // 特別處理：將 growthBoost 存入系統，在季末 applyAging 時發揮作用
+        if(r >= 5) {
+          G._growthBoost = 0.4;
+          return mk("作息超健康，感覺骨骼正在生長！", {athletic: 1}, {health: 8, morale: 2});
+        } else if(r >= 3) {
+          G._growthBoost = 0.15;
+          return mk("身體變得更加結實", {}, {health: 5});
+        } else {
+          return mk("狂喝牛奶結果乳糖不耐拉肚子...", {athletic: -1}, {health: -4});
+        }
+      }},
+      {l:"半夜打電動吃宵夜", i:"🍜", h:"影響發育，但心情好", f: r => ({
+        low: mk("熬夜隔天練球遲到，被教練大罵", {iq: -1}, {morale: -5}),
+        mid: mk("雖然晚睡，但排位上去了，心情不錯", {}, {morale: 4}),
+        high: mk("電玩中竟然領悟了空間感(!?)，球商提升", {pass: 1, iq: 1}, {morale: 8})
+      }[tier(r)])}]}
 );
 EVENTS["college"].push(
   {t:"移地訓練營",x:"學校安排赴美移地訓練，對抗強度完全不同。",cond:lg=>lg==="UBA",
@@ -750,10 +816,17 @@ EVENTS["college"].push(
       {l:"補強選秀報告弱點",i:"🧱",h:"補弱項",f:r=>({low:mk("進步有限",{three:1}),mid:mk("弱點補強",{three:2,pass:1}),high:mk("全面性大加分",{three:2,pass:2,defense:1})}[tier(r)])}]},
   {t:"客場長征",x:"美國大學聯盟拉車數千公里客場，舟車勞頓考驗體能。",cond:lg=>lg.startsWith("NCAA"),
    o:[{l:"咬牙征戰",i:"🚌",h:"賭體力",f:r=>({low:mk("疲勞累積，狀態下滑",{},{health:-8}),mid:mk("客場也照打",{defense:1},{fame:2}),high:mk("客場英雄，全隊歸心",{defense:1,iq:1},{fame:5,morale:4})}[tier(r)])},
-      {l:"專業恢復管理",i:"🧊",h:"護健康",f:r=>({low:mk("恢復普通",{},{health:4}),mid:mk("體能維持良好",{},{health:9}),high:mk("越戰越勇",{athletic:1},{health:10,morale:2})}[tier(r)])}]}
+      {l:"專業恢復管理",i:"🧊",h:"護健康",f:r=>({low:mk("恢復普通",{},{health:4}),mid:mk("體能維持良好",{},{health:9}),high:mk("越戰越勇",{athletic:1},{health:10,morale:2})}[tier(r)])}]},
+  {t:"NIL 商業代言",noRisk:true,x:"全美大學體育協會（NCAA）開放了 NIL（姓名、形象、肖像權）收益。一家當地知名企業捧著大把鈔票找你拍廣告，但教練擔心這會影響球隊氣氛。",cond:lg=>lg.startsWith("NCAA"),
+   o:[{l:"接下代言名利雙收",i:"💵",h:"衝金錢與名氣",f:r=>({low:mk("隊友眼紅，休息室氣氛變差",{},{money:300,morale:-8,fame:5}),mid:mk("稍微分心，但賺進第一桶金",{shooting:-1},{money:500,fame:8}),high:mk("成為校園吸金王，還請全隊吃大餐！",{iq:1},{money:800,fame:15,morale:5})}[tier(r)])},
+      {l:"拒絕誘惑專注球場",i:"🏀",h:"護團隊",f:r=>({low:mk("經紀人很失望",{},{morale:-2}),mid:mk("教練大讚你的成熟",{defense:1},{morale:4}),high:mk("無雜念的專注，球技大幅進化！",{shooting:2,athletic:1,iq:1},{fame:3,morale:8})}[tier(r)])}]},
+  {t:"世仇宿敵之戰",noRisk:true,x:"今晚作客同分區的世仇死對頭，幾千名狂熱的學生球迷對你狂噴垃圾話，甚至在你罰球時舉著你的搞笑大頭海報。",cond:lg=>lg.startsWith("NCAA"),
+   o:[{l:"享受噓聲，瘋狂單打",i:"🔥",h:"高風險",f:r=>({low:mk("被情緒反噬，打出災難級表現",{shooting:-2},{morale:-6,fame:-3}),mid:mk("頂住壓力，投進關鍵球讓全場安靜",{shooting:2},{fame:6}),high:mk("狂砍高分，把對手主場打成圖書館！",{shooting:3,three:2,athletic:1},{fame:12,morale:10})}[tier(r)])},
+      {l:"冷靜應對，用戰術擊潰他們",i:"🧠",h:"衝球商",f:r=>({low:mk("打得太保守，球隊落敗",{iq:1},{morale:-3}),mid:mk("無懼干擾，穩定串聯全隊",{pass:2,iq:1},{morale:3}),high:mk("冷血殺手！完美指揮官讓主場球迷絕望",{pass:3,iq:2,defense:1},{fame:8,morale:6})}[tier(r)])}]}
 );
+
 EVENTS["pro"].push(
-  {t:"洋將卡位",x:"球隊簽了強力洋將，你的上場時間受到威脅。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL"].includes(lg),
+  {t:"洋將卡位",x:"球隊簽了強力洋將，你的上場時間受到威脅。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","KRBL"].includes(lg),
    o:[{l:"用表現搶回位置",i:"🔥",h:"高風險",f:r=>({low:mk("越急越亂，被冰",{shooting:1},{morale:-5}),mid:mk("站穩輪替",{shooting:2,defense:1},{morale:2}),high:mk("力壓洋將，教練重用",{shooting:2,defense:2,iq:1},{fame:5,morale:5})}[tier(r)])},
       {l:"當最佳配角",i:"🧩",h:"衝組織",f:r=>({low:mk("存在感偏低",{pass:1}),mid:mk("串聯全隊",{pass:2,iq:1},{morale:2}),high:mk("體系關鍵拼圖",{pass:3,iq:2},{fame:3})}[tier(r)])}]},
   {t:"NBA 台灣海外賽",x:"NBA 宣布在台灣舉辦海外賽，你將以旅外球星之姿回鄉獻技，全台為之瘋狂！",cond:lg=>lg==="NBA",
@@ -785,13 +858,13 @@ EVENTS["college"].push(
       {l:"低調保留實力",i:"🤫",h:"護心態",f:r=>({low:mk("被說態度消極",{},{morale:-2}),mid:mk("穩紮穩打",{iq:2}),high:mk("神祕感反而加分",{iq:2,defense:1},{fame:3})}[tier(r)])}]}
 );
 EVENTS["pro"].push(
-  {t:"季後賽關鍵戰",x:"系列賽搶七，主場球迷聲嘶力竭，勝者晉級。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","NBA","發展聯盟"].includes(lg),
+  {t:"季後賽關鍵戰",x:"系列賽搶七，主場球迷聲嘶力竭，勝者晉級。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","KRBL","NBA","發展聯盟"].includes(lg),
    o:[{l:"要球單打決勝",i:"🔥",h:"骰高晉級奪冠",f:r=>({low:mk("關鍵失誤，搶七飲恨（止步季後賽）",{shooting:1},{morale:-6,playoff:true,playoffOut:true}),mid:mk("穩定輸出，帶隊搶七晉級！",{shooting:2,iq:1},{fame:4,playoff:true,champ:.12}),high:mk("生涯代表作，一戰封神、直闖冠軍！",{shooting:3,three:1,iq:1},{fame:10,morale:6,playoff:true,champ:.3})}[tier(r)])},
       {l:"組織帶動全隊",i:"🎛️",h:"骰高晉級",f:r=>({low:mk("團隊熄火，搶七落敗（止步季後賽）",{pass:1},{morale:-2,playoff:true,playoffOut:true}),mid:mk("全隊開火，搶七晉級！",{pass:2,iq:1},{fame:3,playoff:true,champ:.1}),high:mk("大師運籌帷幄，率隊過關斬將！",{pass:3,iq:2,defense:1},{fame:6,morale:4,playoff:true,champ:.22})}[tier(r)])}]},
-  {t:"交易大限補強",x:"交易大限前，球團有機會換來一名即戰力，補強戰力衝擊季後賽。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","NBA"].includes(lg),
+  {t:"交易大限補強",x:"交易大限前，球團有機會換來一名即戰力，補強戰力衝擊季後賽。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","KRBL","NBA"].includes(lg),
    o:[{l:"力挺球團豪賭補強",i:"🔀",h:"衝戰績",f:r=>({low:mk("化學效應不佳，戰績下滑",{iq:1},{morale:-3,win:-.06}),mid:mk("補強奏效，戰績提升",{iq:1},{win:.08,morale:3}),high:mk("神級補強，球隊躍升爭冠行列！",{iq:1,pass:1},{win:.16,morale:6,champ:.08})}[tier(r)])},
       {l:"信任原班人馬",i:"🤝",h:"衝默契",f:r=>({low:mk("陣容老化，競爭力不足",{},{win:-.04,morale:-2}),mid:mk("默契滿分，穩定發揮",{iq:1},{win:.05,morale:4}),high:mk("原班人馬爆發，跌破眾人眼鏡！",{iq:1,defense:1},{win:.1,morale:6})}[tier(r)])}]},
-  {t:"更衣室內鬨",x:"隊內兩派人馬鬧不合，休息室氣氛降到冰點。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","NBA","發展聯盟"].includes(lg),
+  {t:"更衣室內鬨",x:"隊內兩派人馬鬧不合，休息室氣氛降到冰點。",cond:lg=>["SBL","P+","TPBL","日職 B.League","CBL","KRBL","NBA","發展聯盟"].includes(lg),
    o:[{l:"挺身調解、凝聚全隊",i:"🕊️",h:"衝團隊",f:r=>({low:mk("兩邊都得罪，火上加油",{iq:1},{morale:-5,win:-.08}),mid:mk("居中協調，風波平息",{iq:2,pass:1},{morale:4,win:.04}),high:mk("化危機為轉機，全隊空前團結！",{iq:2,pass:1},{morale:8,win:.12})}[tier(r)])},
       {l:"專注自己不淌渾水",i:"🙉",h:"顧數據",f:r=>({low:mk("氣氛惡化拖累戰績",{shooting:1},{win:-.1,morale:-4}),mid:mk("獨善其身，數據穩定",{shooting:2},{win:-.03}),high:mk("用個人表現硬扛，數據亮眼",{shooting:2,three:1},{fame:4})}[tier(r)])}]}
 );
@@ -806,10 +879,36 @@ EVENTS["高中"].push(
    o:[{l:"扛下王牌責任硬拚",i:"⚔️",h:"衝賽會",f:r=>({low:mk("硬碰硬吃鱉，提前出局",{shooting:1},{morale:-4,tourney:-.08}),mid:mk("咬牙突圍，殺出重圍",{shooting:2,defense:1},{tourney:.06,fame:3}),high:mk("以下剋上爆冷晉級，全場沸騰！",{shooting:2,defense:1,iq:1},{tourney:.16,fame:8,morale:5})}[tier(r)])},
       {l:"穩紮穩打靠團隊",i:"🧱",h:"衝默契",f:r=>({low:mk("被強度打亂節奏",{iq:1},{tourney:-.04}),mid:mk("團隊籃球奏效",{iq:1,pass:1},{tourney:.05}),high:mk("鐵血防守撐到最後，晉級！",{defense:2,iq:1},{tourney:.12,morale:4})}[tier(r)])}]}
 );
+EVENTS["高中"].push(
+  {t:"剃平頭宣誓",noRisk:true,x:"HBL 預賽即將開打，教練為了凝聚球隊向心力，要求全隊一起剃平頭展現「一生只有一次HBL」的決心。但你其實很在意自己的髮型。",cond:lg=>lg==="高中",
+   o:[{l:"二話不說，帶頭剃光",i:"✂️",h:"衝士氣與名氣",f:r=>({low:mk("理髮阿姨失手，剃得像狗啃的",{},{morale:-2,fame:2}),mid:mk("展現決心！全隊士氣大振",{defense:1},{morale:5}),high:mk("平頭造型意外帥氣，成為媒體焦點！",{athletic:1,defense:1},{morale:8,fame:8})}[tier(r)])},
+      {l:"試圖跟教練溝通保留髮型",i:"🗣️",h:"做自己",f:r=>({low:mk("教練大發雷霆，罰你跑操場",{athletic:1},{morale:-5,health:-4}),mid:mk("教練勉強同意，但隊友覺得你不合群",{},{morale:-3}),high:mk("用實力證明不用剃頭也能贏球！",{shooting:2,iq:1},{fame:4})}[tier(r)])}]},
+
+  {t:"外卡一日兩戰",noRisk:true,x:"HBL 特有的殘酷外卡賽，球隊必須在一天內連打兩場高強度比賽才能晉級八強。打到第二場第四節，你的雙腿已經快抽筋了。",cond:lg=>lg==="高中",
+   o:[{l:"燃燒生命，硬扛勝負",i:"🔥",h:"高風險高回報",f:r=>({
+        low:mk("體力透支嚴重拉傷，慘遭淘汰",{athletic:-1},{health:-15,morale:-8,tourneyMax:2}),
+        mid:mk("咬牙撐過死局，帶隊殺入八強！",{athletic:1,defense:1},{fame:5,tourneyMin:3}),
+        high:mk("燃燒殆盡的超神表現！不僅殺入八強，更感動全台灣球迷",{shooting:2,athletic:2,iq:1},{fame:15,morale:10,tourneyMin:3})
+      }[tier(r)])},
+      {l:"相信隊友，扮演誘餌",i:"🤝",h:"衝組織與球商",f:r=>({
+        low:mk("隊友手軟，遺憾結束賽季",{pass:1},{morale:-5,tourneyMax:2}),
+        mid:mk("團隊合作發揮，順利挺進八強",{pass:2,iq:1},{tourneyMin:3}),
+        high:mk("完美的戰術誘餌！兵不血刃挺進八強",{pass:2,iq:2,defense:1},{fame:6,morale:5,tourneyMin:3})
+      }[tier(r)])}]}
+);
 EVENTS["college"].push(
   {t:"季後賽定位戰",x:"聯賽尾聲的關鍵戰役，勝了搶下好籤，敗了恐提前打包。",cond:lg=>lg==="UBA"||lg.startsWith("NCAA"),
    o:[{l:"關鍵戰扛全隊",i:"🎯",h:"衝賽會",f:r=>({low:mk("關鍵戰失常，排名下滑",{shooting:1},{morale:-3,tourney:-.07}),mid:mk("穩住勝局，卡到好位置",{shooting:2,iq:1},{tourney:.07,fame:3}),high:mk("大心臟制勝，氣勢如虹！",{shooting:2,three:1,iq:1},{tourney:.15,fame:7,morale:5})}[tier(r)])},
       {l:"保留主力備戰季後賽",i:"♟️",h:"賭策略",f:r=>({low:mk("輪休失算，狀態掉檔",{},{tourney:-.05,health:4}),mid:mk("養精蓄銳，季後賽再拚",{},{tourney:.03,health:8}),high:mk("休整得宜，季後賽火力全開！",{athletic:1,iq:1},{tourney:.1,health:6})}[tier(r)])}]}
+);
+EVENTS["college"].push(
+  {t:"對決勁爆外籍生",noRisk:true,x:"UBA 賽場上各隊紛紛招募體能勁爆的外籍生（外籍生條款）。今晚你要對位一名身高兩米、彈跳力驚人的外籍中鋒，禁區宛如禁飛區。",cond:lg=>lg==="UBA",
+   o:[{l:"正面硬碰硬挑戰他",i:"💪",h:"衝對抗性",f:r=>({low:mk("被狠狠血帽好幾次，受到震撼教育",{shooting:-1},{morale:-5}),mid:mk("雖然吃力，但逐漸習慣高強度對抗",{athletic:2,defense:1},{}),high:mk("在對手頭上完成隔扣！全場暴動！",{athletic:2,shooting:2,rebound:1},{fame:12,morale:8})}[tier(r)])},
+      {l:"利用腳步與球商智取",i:"🧠",h:"衝球商",f:r=>({low:mk("假動作騙不到對手，失誤頻傳",{iq:1},{morale:-2}),mid:mk("用時間差與拋投穩定取分",{iq:2,shooting:1},{}),high:mk("完美買到犯規讓對手提早畢業，智商壓制！",{iq:3,pass:2,defense:1},{fame:6,morale:5})}[tier(r)])}]},
+
+  {t:"狂熱的校園主場週",noRisk:true,x:"本週 UBA 預賽在你們學校的體育館舉行，全校師生和啦啦隊把場館塞得水洩不通，走在校園裡都能感受到同學們的期待。",cond:lg=>lg==="UBA",
+   o:[{l:"人來瘋大秀特秀",i:"🎪",h:"衝名氣",f:r=>({low:mk("太想表現狂打鐵，在同學面前出糗",{shooting:-1},{fame:-3,morale:-4}),mid:mk("表現活躍，成為校園風雲人物",{athletic:1,shooting:1},{fame:8,morale:4}),high:mk("主場戰神！破紀錄神蹟讓全校陷入瘋狂",{shooting:2,three:2,athletic:1},{fame:16,morale:10})}[tier(r)])},
+      {l:"保持平常心穩定輸出",i:"🧘‍♂️",h:"求穩",f:r=>({low:mk("打得太低調，風頭都被隊友搶走",{},{morale:-2}),mid:mk("穩紮穩打帶隊拿下全勝",{iq:1,defense:1},{fame:4}),high:mk("冷靜沉著的領袖氣質，深獲球探肯定",{iq:2,pass:2,defense:1},{fame:8,morale:6})}[tier(r)])}]}
 );
 EVENTS["高中"].push(
   {t:"體育班與升學抉擇",x:"導師找你談，要衝學科還是全心打球？",cond:lg=>lg==="高中",
@@ -834,12 +933,22 @@ EVENTS["pro"].push(
   {t:"更衣室領袖之爭",x:"隊內老將退役後，更衣室的領導權出現真空。",
    o:[{l:"挺身成為領袖",i:"👑",h:"衝領導",f:r=>({low:mk("威望不足被質疑",{iq:1},{morale:-3}),mid:mk("逐漸服眾",{iq:2,pass:1},{morale:3}),high:mk("成為隊魂，全隊擁戴",{iq:2,pass:2,defense:1},{fame:6,morale:6})}[tier(r)])},
       {l:"專注打好自己",i:"🎯",h:"衝個人",f:r=>({low:mk("被說太獨",{shooting:1},{morale:-2}),mid:mk("數據穩定",{shooting:2}),high:mk("用表現說話，數據爆棚",{shooting:2,three:1,athletic:1},{fame:4})}[tier(r)])}]},
-  {t:"合約年表現",x:"這是合約最後一年，打好了能換一份大約。",
+  {t:"合約年表現",x:"這是合約關鍵年，打好了能換一份大約。",
    o:[{l:"拚命刷數據",i:"📈",h:"高風險",f:r=>({low:mk("用力過猛，效率低下",{shooting:1},{morale:-4}),mid:mk("數據亮眼，行情看漲",{shooting:2,pass:1},{fame:5}),high:mk("生涯年！大約在望",{shooting:2,three:1,pass:1,athletic:1},{fame:10,morale:6})}[tier(r)])},
       {l:"以團隊勝利為重",i:"🤝",h:"衝勝率",f:r=>({low:mk("犧牲數據卻沒贏",{iq:1},{morale:-2}),mid:mk("團隊至上，教練賞識",{defense:1,iq:1},{fame:3}),high:mk("無私打法贏得尊重與勝利",{defense:2,iq:2},{fame:6,morale:5})}[tier(r)])}]},
   {t:"傷後復健",x:"上季的傷勢讓你需要一段時間復健，能否回到巔峰是未知數。",
    o:[{l:"激進快速復出",i:"⚡",h:"高風險",f:r=>({low:mk("操之過急，傷勢復發",{athletic:-2},{health:-10,morale:-5}),mid:mk("如期回歸",{},{health:6}),high:mk("超前進度，狀態滿血",{athletic:1},{health:14,morale:4})}[tier(r)])},
       {l:"按部就班調養",i:"🧊",h:"護健康",f:r=>({low:mk("復健枯燥難熬",{},{morale:-2,health:6}),mid:mk("穩紮穩打恢復",{},{health:12}),high:mk("養好傷還練了球商",{iq:1},{health:16,morale:2})}[tier(r)])}]}
+);
+/* ---------- G-League 發展聯盟專屬擴充事件 ---------- */
+EVENTS["pro"].push(
+  {t:"自私的農場隊友",noRisk:true,x:"發展聯盟的每個人都想拿漂亮數據拚 NBA 雙向合約。今晚有 NBA 球探在場，你的後衛隊友為了刷數據，完全不傳球，眼裡只有籃框。",cond:lg=>lg==="發展聯盟",
+   o:[{l:"配合他，專注防守與籃板",i:"🛡️",h:"衝防守與評價",f:r=>({low:mk("跟著折返跑，完全隱形",{pass:-1},{morale:-4}),mid:mk("苦工屬性獲得肯定，球探在筆記上記下一筆",{defense:2,rebound:1},{fame:3}),high:mk("抓下進攻籃板補籃絕殺！你是完美的拼圖",{defense:2,rebound:2,iq:1},{fame:8,morale:5})}[tier(r)])},
+      {l:"搶下籃板自己帶球推進",i:"⚡",h:"爭奪鎂光燈",f:r=>({low:mk("發生失誤，教練認為你不受控",{iq:-1},{morale:-5,fame:-2}),mid:mk("成功自己創造得分機會",{shooting:1,athletic:1},{fame:4}),high:mk("展現出色的持球能力！球探對你眼睛一亮",{pass:2,shooting:2,athletic:1},{fame:12,morale:6})}[tier(r)])}]},
+
+  {t:"紅眼商用客機長征",noRisk:true,x:"不同於 NBA 的豪華包機，發展聯盟球隊只能搭乘一般商用客機。為了趕上明天的背靠背比賽，全隊正在機場睡眼惺忪地等待嚴重延誤的紅眼航班。",cond:lg=>lg==="發展聯盟",
+   o:[{l:"隨遇而安，在地毯上補眠",i:"🛌",h:"護健康",f:r=>({low:mk("睡得腰酸背痛，隔天比賽沒力",{},{health:-6,morale:-2}),mid:mk("勉強恢復了一些體力",{},{health:6}),high:mk("深層睡眠！滿血復活迎接背靠背比賽",{athletic:1},{health:12,morale:3})}[tier(r)])},
+      {l:"趁機研究對手比賽錄影",i:"💻",h:"衝球商",f:r=>({low:mk("看到一半筆電沒電，還惹得一身疲憊",{},{health:-8,morale:-3}),mid:mk("看破對手戰術，犧牲睡眠值得了",{iq:2,defense:1},{health:-4}),high:mk("完全破解對手防線！隔天比賽如入無人之境",{iq:3,pass:2,shooting:1},{fame:5,health:-2})}[tier(r)])}]}
 );
 /* ---------- 追加事件（第四批） ---------- */
 EVENTS["高中"].push(
@@ -867,6 +976,24 @@ EVENTS["pro"].push(
       {l:"保留體力顧進攻",i:"🎯",h:"衝進攻",f:r=>({low:mk("防守被針對",{shooting:1}),mid:mk("進攻更犀利",{shooting:2,three:1}),high:mk("進攻火力全開",{shooting:3,three:2})}[tier(r)])}]}
    
     );
+/* ---------- NBA 專屬擴充事件 ---------- */
+EVENTS["pro"].push(
+  {t:"「大夢」的休賽季特訓",noRisk:true,x:"傳奇中鋒「大夢」開設了要價不菲的私人訓練營，傳授他那如夢似幻的低位腳步與進攻技巧。許多超級球星都曾向他拜師。",cond:lg=>lg==="NBA",
+   o:[{l:"支付高昂學費拜師",i:"💰",h:"花大錢升級",f:r=>({low:mk("腳步太複雜，學得一知半解",{iq:1},{money:-500,morale:-2}),mid:mk("掌握了低位單打的訣竅",{shooting:2,iq:1},{money:-500}),high:mk("完美繼承夢幻腳步！禁區進攻無解",{shooting:3,iq:2,athletic:1},{money:-500,fame:5,morale:5})}[tier(r)])},
+      {l:"看影片自己練就好",i:"💻",h:"省錢",f:r=>({low:mk("練成四不像，實戰一直走步被抓",{shooting:-1,iq:-1},{morale:-3}),mid:mk("省下學費，稍微摸到一點皮毛",{shooting:1},{health:2}),high:mk("你是籃球天才！看影片就學會了七成",{shooting:2,athletic:1},{fame:3,morale:5})}[tier(r)])}]},
+
+  {t:"全國轉播與負荷管理",noRisk:true,x:"今晚是全美直播的焦點戰役，但你已經連續出賽多場，身體有些緊繃。球隊醫學團隊強烈建議你今晚執行「負荷管理」輪休。",cond:lg=>lg==="NBA",
+   o:[{l:"拒絕輪休，為球迷上場",i:"🔥",h:"高風險",f:r=>({low:mk("疲勞導致比賽中腿部拉傷！",{athletic:-1},{health:-15,morale:-5}),mid:mk("平穩打完比賽，球迷大讚你的硬漢精神",{},{fame:8,health:-5}),high:mk("帶傷狂砍高分！硬漢形象深植全美",{shooting:2,defense:1},{fame:15,morale:8,health:-8})}[tier(r)])},
+      {l:"聽從醫囑，穿西裝看球",i:"👔",h:"護健康",f:r=>({low:mk("被傳奇老將和球評在電視上狂噴「草莓族」",{},{fame:-8,morale:-4,health:8}),mid:mk("養精蓄銳，身體恢復得不錯",{},{health:15}),high:mk("在板凳席熱情為隊友歡呼，展現領袖氣質",{iq:1,pass:1},{health:15,morale:3})}[tier(r)])}]},
+
+  {t:"超級強團的誘惑",noRisk:true,x:"另一支球隊的超級巨星私下傳訊息給你，暗示只要你合約一到（或主動喊出「賣我」），就能聯手組成震驚聯盟的「超級大團」。",cond:lg=>lg==="NBA",
+   o:[{l:"積極響應，準備組團",i:"🤝",h:"衝戰績但傷名氣",f:r=>({low:mk("消息走漏！被母隊球迷狂燒球衣",{},{fame:-15,morale:-8,win:-.05}),mid:mk("暗中佈局，未來爭冠機率大增",{},{win:.12,fame:-5}),high:mk("組成史詩級巨頭陣容！全聯盟瑟瑟發抖",{iq:1,pass:1},{win:.25,fame:-8,morale:5})}[tier(r)])},
+      {l:"回絕招募，自己的江山自己打",i:"👑",h:"衝名氣與士氣",f:r=>({low:mk("孤立無援，球隊戰績陷入泥沼",{},{win:-.1,morale:-5}),mid:mk("帶領現有陣容穩扎穩打",{defense:1,iq:1},{win:.02,morale:4}),high:mk("孤膽英雄！單核帶隊擊敗超級強權，名留青史！",{shooting:2,defense:2,iq:1},{fame:18,morale:12,win:.08})}[tier(r)])}]},
+
+  {t:"聖誕大戰的舞台",noRisk:true,x:"NBA 聖誕大戰是收視率最高的例行賽。贊助商為你準備了超炫的聖誕限定專屬球鞋，全世界的目光都在你身上。",cond:lg=>lg==="NBA",
+   o:[{l:"瘋狂秀操作，主宰鏡頭",i:"🎄",h:"高風險",f:r=>({low:mk("瘋狂失誤變五大好糗，聖誕夜被全美嘲笑",{pass:-1},{fame:-5,morale:-8}),mid:mk("幾次精彩好球登上 Highlight",{athletic:1},{fame:8}),high:mk("打破聖誕大戰得分紀錄！專屬球鞋賣到缺貨",{shooting:2,three:1},{fame:20,money:300,morale:10})}[tier(r)])},
+      {l:"平常心，打出團隊籃球",i:"🎁",h:"衝團隊",f:r=>({low:mk("打得太養生，被批星味不足",{},{fame:-3,morale:-2}),mid:mk("無私球風串聯全隊，拿下勝利",{pass:2,iq:1},{win:.04}),high:mk("穿針引線拿下大三元！完美的聖誕禮物",{pass:3,iq:2,rebound:1},{fame:10,morale:8,win:.08})}[tier(r)])}]}
+);    
 /* ---------- CBL 中國聯賽專屬事件 ---------- */
 EVENTS["pro"].push(
   {t:"跨省移地長征",x:"中國幅員遼闊，接連的客場長征讓身體疲憊不堪。",cond:lg=>lg==="CBL",
@@ -880,7 +1007,42 @@ EVENTS["pro"].push(
       {l:"專心備戰正賽",i:"🎯",h:"衝表現",f:r=>({low:mk("狀態普通",{shooting:1}),mid:mk("正賽穩定發揮",{shooting:2},{fame:4}),high:mk("明星賽 MVP 等級演出！",{shooting:2,pass:1},{fame:10,morale:4})}[tier(r)])}]},
   {t:"季後賽外援限制",x:"季後賽外援上場時間受限，本土球員得扛起更多責任。",cond:lg=>lg==="CBL",
    o:[{l:"挺身扛起球隊",i:"💪",h:"骰高晉級",f:r=>({low:mk("責任過重，表現失常",{shooting:1},{morale:-4,playoff:true,playoffOut:true}),mid:mk("扛住壓力，帶隊過關",{shooting:2,iq:1},{fame:4,playoff:true,champ:.08}),high:mk("本土核心一戰成名，率隊晉級！",{shooting:2,defense:1,iq:1},{fame:9,morale:5,playoff:true,champ:.18})}[tier(r)])},
-      {l:"靠團隊分擔",i:"🤝",h:"衝團隊",f:r=>({low:mk("群龍無首",{iq:1},{playoff:true,playoffOut:true}),mid:mk("團隊籃球奏效",{pass:1,defense:1},{playoff:true,champ:.06}),high:mk("鐵血團隊，眾志成城晉級！",{pass:2,defense:1,iq:1},{playoff:true,champ:.14,morale:4})}[tier(r)])}]}
+      {l:"靠團隊分擔",i:"🤝",h:"衝團隊",f:r=>({low:mk("群龍無首",{iq:1},{playoff:true,playoffOut:true}),mid:mk("團隊籃球奏效",{pass:1,defense:1},{playoff:true,champ:.06}),high:mk("鐵血團隊，眾志成城晉級！",{pass:2,defense:1,iq:1},{playoff:true,champ:.14,morale:4})}[tier(r)])}]},
+      {t:"魔鬼客場與主場哨",noRisk:true,x:"來到以剽悍著稱的魔鬼客場，全場球迷鼓噪不說，裁判的哨音也明顯偏袒主隊，你已經吞下兩次莫名其妙的體毛犯規。",cond:lg=>lg==="CBL",
+   o:[{l:"怒噴裁判，據理力爭",i:"🤬",h:"高風險",f:r=>({low:mk("連吞兩次技術犯規被驅逐出場！被聯盟重罰",{},{money:-200,morale:-8,fame:-5}),mid:mk("施壓有效，下半場哨音稍有收斂",{iq:1},{morale:2}),high:mk("激發全隊血性！帶著怒火在客場完成大逆轉",{shooting:2,athletic:1,defense:1},{fame:12,morale:10,win:.05})}[tier(r)])},
+      {l:"吞下委屈，改變打法",i:"🧊",h:"衝防守與球商",f:r=>({low:mk("打得畏首畏尾，發揮慘淡",{shooting:-1},{morale:-4}),mid:mk("適應尺度，用更聰明的方式打球",{iq:2,defense:1},{}),high:mk("不留破綻！用完美的無球跑動與防守擊潰對手",{iq:3,defense:2,pass:1},{fame:6,morale:5})}[tier(r)])}]},
+  {t:"微博熱搜風暴",noRisk:true,x:"上一場比賽最後的致命失誤，讓你被對岸網友罵上微博熱搜，私訊裡塞滿了極端球迷的酸言酸語與人身攻擊。",cond:lg=>lg==="CBL",
+   o:[{l:"網上回嗆，正面硬剛",i:"📱",h:"極高風險",f:r=>({low:mk("引發公關危機，球團出面要求你道歉",{},{fame:-15,morale:-10,money:-100}),mid:mk("粉絲與黑粉大戰，流量密碼GET",{},{fame:15,morale:-2}),high:mk("霸氣發文並在下一場砍下50分打臉！黑粉轉鐵粉",{shooting:3,three:1},{fame:20,morale:12})}[tier(r)])},
+      {l:"關閉社群，用下一場洗白",i:"🔇",h:"護心理",f:r=>({low:mk("心魔難除，下一場依然手軟",{shooting:-1},{morale:-5}),mid:mk("遠離喧囂，心態回穩",{iq:1},{morale:4}),high:mk("化悲憤為力量！用統治級的表現讓酸民閉嘴",{athletic:2,rebound:1,defense:1},{fame:10,morale:8})}[tier(r)])}]}
+
+    );
+/* ---------- KRBL 韓國聯賽專屬事件 ---------- */
+EVENTS["pro"].push(
+  {t:"外援雙塔壓制",x:"KRBL 每隊可登錄兩名外援，你的球隊也砸錢補進強力洋將，本土球員的出手數被壓縮。",cond:lg=>lg==="KRBL",
+   o:[{l:"與外援分工共存",i:"🤝",h:"衝團隊",f:r=>({low:mk("角色被邊緣化",{pass:1},{morale:-4}),mid:mk("擋拆配合日趨純熟",{pass:2,iq:1},{win:.03}),high:mk("本土＋外援雙引擎，戰績起飛",{pass:2,iq:1,defense:1},{win:.08,fame:5})}[tier(r)])},
+      {l:"力拚本土第一人",i:"🇰🇷",h:"骰高上位",f:r=>({low:mk("硬尬外援反被蓋",{shooting:1},{morale:-3}),mid:mk("站穩本土主力",{shooting:2,three:1},{fame:4}),high:mk("本土之光壓過洋將，全場沸騰！",{shooting:2,three:1,iq:1},{fame:12,morale:6})}[tier(r)])}]},
+  {t:"嚴苛的前後輩文化",noRisk:true,x:"韓國聯賽有著極度嚴格的學長學弟制。球隊聚餐時，老將半強迫地要你遵守傳統幫忙烤肉、倒酒，並對前輩絕對服從。",cond:lg=>lg==="KRBL",
+   o:[{l:"入境隨俗，做足面子",i:"🍶",h:"衝團隊",f:r=>({low:mk("應酬喝太多，隔天宿醉腿軟",{athletic:-1},{health:-8,morale:-2}),mid:mk("老將很滿意，你在隊內人緣大增",{pass:1,iq:1},{morale:5}),high:mk("徹底融入球隊！前輩們在場上瘋狂做球給你",{pass:2,iq:1,shooting:1},{fame:4,morale:8})}[tier(r)])},
+      {l:"婉拒應酬，專注球場",i:"🙅‍♂️",h:"做自己",f:r=>({low:mk("被球隊小團體排擠，接不到球",{pass:-1},{morale:-6,fame:-2}),mid:mk("井水不犯河水，用實力說話",{shooting:1},{health:4}),high:mk("狂砍高分震懾全隊，贏得『外援特權』",{shooting:2,athletic:1},{fame:8,morale:4})}[tier(r)])}]},
+  {t:"KRBL 全明星週",x:"你入選 KRBL 全明星賽，扣籃與三分大賽的邀約接踵而來，首爾場館一票難求。",cond:lg=>lg==="KRBL",
+   o:[{l:"參加三分大賽",i:"🎯",h:"衝名氣",f:r=>({low:mk("手感不佳早早出局",{},{fame:3,health:-2}),mid:mk("穩健演出，人氣上升",{three:1},{fame:8}),high:mk("破紀錄奪冠，登上韓網熱搜！",{three:2},{fame:15,morale:5})}[tier(r)])},
+      {l:"專心備戰正賽",i:"⭐",h:"衝表現",f:r=>({low:mk("表現平平",{shooting:1}),mid:mk("正賽穩定發揮",{shooting:2},{fame:4}),high:mk("明星賽 MVP 等級演出！",{shooting:2,pass:1},{fame:10,morale:4})}[tier(r)])}]},
+  {t:"六強季後賽卡位戰",x:"KRBL 例行賽僅前六名晉級季後賽，賽季尾聲你的球隊正卡在第六與第七之間浮沉。",cond:lg=>lg==="KRBL",
+   o:[{l:"挺身接管收官戰",i:"🔥",h:"骰高晉級",f:r=>({low:mk("關鍵戰失常，遺憾止步",{shooting:1},{morale:-4,playoff:false}),mid:mk("扛住壓力擠進第六",{shooting:2,iq:1},{fame:4,playoff:true,champ:.05}),high:mk("最終戰絕殺晉級，全隊擁抱！",{shooting:2,defense:1,iq:1},{fame:9,morale:6,playoff:true,champ:.12})}[tier(r)])},
+      {l:"穩守團隊節奏",i:"🛡️",h:"衝防守",f:r=>({low:mk("進攻停滯被逆轉",{defense:1},{playoff:false}),mid:mk("鐵桶防守守住晉級",{defense:2,iq:1},{playoff:true,champ:.04}),high:mk("防守封鎖對手，強勢晉級！",{defense:2,iq:1,athletic:1},{playoff:true,champ:.1,morale:4})}[tier(r)])}]},
+  {t:"韓式魔鬼體能",noRisk:true,x:"韓國球風極度強調跑動與全場壓迫。教練在季中安排了著名的『跑山』與無限折返跑特訓，你的體力正瀕臨崩潰。",cond:lg=>lg==="KRBL",
+   o:[{l:"死咬牙關撐到底",i:"🏃‍♂️",h:"衝體能",f:r=>({low:mk("操勞過度，大腿嚴重拉傷",{athletic:-1},{health:-12,morale:-4}),mid:mk("熬過地獄特訓，體能與對抗性大增",{athletic:2,defense:1},{health:-4}),high:mk("蛻變成跑不死的神人，第四節依舊滿血！",{athletic:3,defense:1,iq:1},{fame:5,morale:6})}[tier(r)])},
+      {l:"要求科學化訓練減量",i:"🧊",h:"護健康",f:r=>({low:mk("教練痛批你『態度軟弱』，把你冰在板凳",{},{morale:-8,fame:-3}),mid:mk("養足體能，場上發揮穩定",{},{health:8}),high:mk("超高效率打臉傳統訓練，教練無話可說",{iq:2,shooting:1},{health:10,morale:5})}[tier(r)])}]},    
+);
+/* ---------- 日職 B.League 擴充事件 ---------- */
+EVENTS["pro"].push(
+  {t:"嚴謹的日式體系",noRisk:true,x:"日本教練極度要求戰術紀律與細節，甚至連跑位路線差半步、掩護角度不對，都會被立刻吹哨暫停糾正。",cond:lg=>lg==="日職 B.League",
+   o:[{l:"放下身段，徹底融入體系",i:"📋",h:"衝組織與球商",f:r=>({low:mk("想太多反而失去球感",{shooting:-1},{morale:-2}),mid:mk("成為戰術齒輪，效率提升",{iq:2,pass:1},{win:.04}),high:mk("大腦升級！成為場上的戰術發動機",{iq:3,pass:2,defense:1},{morale:5,win:.08})}[tier(r)])},
+      {l:"用個人能力打破僵局",i:"⚡",h:"高風險",f:r=>({low:mk("教練大怒，把你冰在板凳上",{iq:-1},{morale:-6,fame:-2}),mid:mk("雖然不聽話，但能把球投進",{shooting:2},{fame:3}),high:mk("日職少見的無解單打！教練為你特許開綠燈",{shooting:3,athletic:2},{fame:10,morale:4})}[tier(r)])}]},
+
+  {t:"動漫聯名主題日",noRisk:true,x:"球隊與知名籃球動漫推出聯名企劃，邀請你Cosplay成裡面的人氣角色拍攝宣傳照，並在主場主題日亮相。",cond:lg=>lg==="日職 B.League",
+   o:[{l:"恥力全開，熱情參與",i:"📸",h:"衝名氣與外快",f:r=>({low:mk("造型太崩壞，變成網路迷因...",{},{fame:5,morale:-5,money:100}),mid:mk("宣傳效果極佳，周邊賣到缺貨",{},{fame:10,money:300,morale:3}),high:mk("帥出新高度！連原作者都發推特稱讚你",{iq:1},{fame:18,money:500,morale:8})}[tier(r)])},
+      {l:"婉拒拍攝，專注訓練",i:"🏀",h:"做自己",f:r=>({low:mk("被球團高層認為不合群",{},{morale:-3}),mid:mk("把時間拿去練投籃",{three:1,shooting:1},{}),high:mk("用場上的 Highlight 證明自己才是主角",{athletic:1,shooting:2},{fame:4,morale:5})}[tier(r)])}]}
 );
 EVENTS["pro"].push(
   {t:"雙重合約風波",noRisk:true,x:"混亂的自由市場中，你的經紀人竟同時和兩個聯盟的球隊都簽了約！合約糾紛鬧上新聞，聯盟要你儘速表態。",cond:lg=>["SBL","P+","TPBL"].includes(lg),
@@ -950,7 +1112,7 @@ EVENTS["高中"].push(
 );
 EVENTS["college"].push(
   {t:"系隊校隊之爭",x:"系隊和校隊都想要你，行程無法兼顧。",cond:lg=>lg==="UBA"||lg.startsWith("NCAA"),
-   o:[{l:"專注校隊拚成績",i:"🏆",h:"衝榮譽",f:r=>({low:mk("被系上抱怨",{iq:1},{morale:-2}),mid:mk("校隊戰績亮眼",{shooting:1,defense:1},{fame:4}),high:mk("帶校隊打進四強",{shooting:2,defense:1,iq:1},{fame:8})}[tier(r)])},
+   o:[{l:"專注校隊拚成績",i:"🏆",h:"衝榮譽",f:r=>({low:mk("被系上抱怨",{iq:1},{morale:-2}),mid:mk("校隊戰績亮眼",{shooting:1,defense:1},{fame:4,tourney:.05}),high:mk("校隊戰績一路狂飆",{shooting:2,defense:1,iq:1},{fame:8,tourney:.15})}[tier(r)])},
       {l:"兼顧人情兩邊跑",i:"🏃",h:"賭體力",f:r=>({low:mk("蠟燭兩頭燒累垮",{},{health:-8,morale:-2}),mid:mk("人緣爆棚",{},{morale:5,fame:2}),high:mk("兩邊都發光，人氣暴漲",{athletic:1},{fame:6,morale:4})}[tier(r)])}]}
 );
 function posMult(){ // 依位置調整籃板/助攻/阻攻
@@ -962,7 +1124,7 @@ function posMult(){ // 依位置調整籃板/助攻/阻攻
     stl: p==="PG"?1.2:p==="SG"?1.1:1,
   };
 }
-function leagueGP(lg){return {"高中":24,"UBA":28,"NCAA D2":30,"NCAA D1":32,"發展聯盟":50,"SBL":30,"P+":40,"TPBL":40,"日職 B.League":56,"CBL":46,"NBA":74}[lg]||30;}
+function leagueGP(lg){return {"高中":24,"UBA":28,"NCAA D2":30,"NCAA D1":32,"發展聯盟":50,"SBL":30,"P+":40,"TPBL":40,"日職 B.League":56,"CBL":46,"KRBL":54,"NBA":74}[lg]||30;}
 
 function simulateSeason(){
   const a=G.attr, diff=DIFF[G.league]||1, m=posMult(), ov=overall();
@@ -974,22 +1136,26 @@ function simulateSeason(){
   // 受傷影響出賽
   if(G.health<70) gp=Math.round(gp*clamp(G.health/85,.4,1));
   gp=clamp(gp,8,gp);
-
+  
   const noise=()=>rnd(.85,1.15);
+  const hFactor = clamp((G.height - 195) / 100, -0.25, 0.25);
+
   let ppg=( (a.shooting*.5 + a.three*.32 + a.athletic*.18)/diff )*.48*usage*noise();
-  let rpg=( (a.rebound*.72 + a.athletic*.22)/diff )*.135*m.reb*noise();
+  let rpg=( (a.rebound*.72 + a.athletic*.22)/diff )*.135*m.reb*noise() * (1 + hFactor * 1.5);
   let apg=( (a.pass*.7 + a.iq*.3)/diff )*.078*m.ast*noise();
-  let spg=( (a.defense*.5 + a.athletic*.3 + a.iq*.2)/diff )*.027*m.stl*noise();
-  let bpg=( (a.defense*.5 + a.athletic*.5)/diff )*.032*m.blk*noise();
-  const fg=clamp(.36 + (a.shooting-40)*.0028 + rnd(-.02,.02),.33,.62);
-  const tp=clamp(.20 + (a.three-40)*.0038 + rnd(-.03,.03),.16,.44);
+ let spg=( (a.defense*.5 + a.athletic*.3 + a.iq*.2)/diff )*.027*m.stl*noise() * (1 - hFactor * 0.5);
+  let bpg=( (a.defense*.5 + a.athletic*.5)/diff )*.032*m.blk*noise() * (1 + hFactor * 1.8);
+  const fg=clamp(.36 + (a.shooting-40)*.0028 + (hFactor*0.05) + rnd(-.02,.02),.33,.62); // 高個子離框近，FG%略高
+  const tp=clamp(.20 + (a.three-40)*.0038 - (Math.max(0, hFactor)*0.03) + rnd(-.03,.03),.16,.44); // 太高會微扣三分基礎率
 
   ppg=clamp(ppg,1.5,40); rpg=clamp(rpg,.5,17); apg=clamp(apg,.3,11.5);
   spg=clamp(spg,.1,2.8); bpg=clamp(bpg,0,3.8);
 
   // 隊伍強度與戰績（含事件影響：交易補強、內鬨、關鍵戰等）
   const mods=G._seasonMods||{winBoost:0,champBoost:0,playoffForce:false,playoffOut:false};
-  const teamStr=clamp(rnd(.32,.68)+ (ov-60)*.006 + (mods.winBoost||0), .15,.95);
+  // 檢查合約是否為「爭冠球隊」，若是，整支球隊實力會自帶巨大 Buff
+  const contractBuff = (G.contract && G.contract.cType === "contender") ? 0.16 : 0;
+  const teamStr=clamp(rnd(.32,.68)+ (ov-60)*.006 + (mods.winBoost||0) + contractBuff, .15,.95);
   const winPct=clamp(teamStr+rnd(-.08,.08),.12,.9);
   const w=Math.round(gp*winPct), l=gp-w;
 
@@ -1025,12 +1191,20 @@ function computeAwards(s){
   const ss=s.seasonScore;
   const lg=G.league, yr=G.year;
   const rec=(name)=>{ aw.push(name); logAward(lg,name,yr); };
+  
   // 高階聯盟門檻更高
-  const eliteLg=(G.league==="NBA"||G.league==="日職 B.League"||G.league==="CBL");
+  const eliteLg=(G.league==="NBA"||G.league==="日職 B.League"||G.league==="CBL"||G.league==="KRBL");
   const starTh=pro?(eliteLg?76:73):62, mvpTh=pro?(eliteLg?103:112):92, dpoyTh=84;
+  
+  // 1. 先判定是否為 MVP
+  let isMVP = false;
+  if(ss>=mvpTh&&s.winPct>.58){ G.careerAwards.MVP++; rec("MVP"); isMVP = true; }
+  
+  // 2. 明星賽與最佳陣容 (只要是 MVP 必定入選)
   if(ss>=starTh){ G.careerAwards["明星賽"]++; rec("明星賽"); }
-  if(ss>=starTh+9){ G.careerAwards["最佳陣容"]++; rec("最佳陣容"); }
-  if(ss>=mvpTh&&s.winPct>.58){ G.careerAwards.MVP++; rec("MVP"); }
+  // 排除 NBA，因為 NBA 在下方有專屬的「年度一/二/三隊」
+  if((ss>=starTh+9 || isMVP) && G.league !== "NBA"){ G.careerAwards["最佳陣容"]++; rec("最佳陣容"); }
+  
   if(G.attr.defense>=dpoyTh&&ss>=starTh+3&&chance(.5)){ G.careerAwards.DPOY++; rec("DPOY"); }
   if(isRookie&&ss>=(pro?60:0)&&chance(.7)){ G.careerAwards.ROTY++; rec("ROTY"); }
   if(pro){
@@ -1038,17 +1212,21 @@ function computeAwards(s){
     if(s.rpg>=(eliteLg?11:13) && chance(.4)){ G.careerAwards["籃板王"]++; rec("籃板王"); }
     if(s.apg>=(eliteLg?8.5:10) && chance(.4)){ G.careerAwards["助攻王"]++; rec("助攻王"); }
   }
-  // NBA 專屬：年度球隊（一/二/三隊）＋ 新秀球隊（僅新秀年）
+  
+  // NBA 專屬：年度球隊（MVP 強制年度一隊）
   if(G.league==="NBA"){
-    const team = ss>=104?"年度一隊": ss>=92?"年度二隊": ss>=82?"年度三隊": null;
+    const team = (ss>=104 || isMVP) ? "年度一隊" : ss>=92 ? "年度二隊" : ss>=82 ? "年度三隊" : null;
     if(team){ G.careerAwards[team]=(G.careerAwards[team]||0)+1; rec(team); }
     if(isRookie){
       const rk = ss>=80?"新秀一隊": ss>=62?"新秀二隊": null;
       if(rk){ G.careerAwards[rk]=(G.careerAwards[rk]||0)+1; rec(rk); }
     }
   }
-  // CBL 專屬：本土 MVP（外籍球員林立，本土之光更難得）
+  
+  // CBL 專屬：本土 MVP
   if(G.league==="CBL" && ss>=starTh+6 && s.winPct>.5 && chance(.5)){ G.careerAwards["本土MVP"]=(G.careerAwards["本土MVP"]||0)+1; rec("本土MVP"); }
+  // KRBL 專屬：國內 MVP（韓國聯賽本土球員 MVP 傳統）
+  if(G.league==="KRBL" && ss>=starTh+6 && s.winPct>.5 && chance(.5)){ G.careerAwards["國內MVP"]=(G.careerAwards["國內MVP"]||0)+1; rec("國內MVP"); }
   if(s.champion){ G.careerAwards["冠軍"]++; rec("冠軍"); if(s.fmvp){G.careerAwards.FMVP++; rec("FMVP");} }
   if(pro) G.rookieDone=true;
   return aw;
@@ -1123,6 +1301,23 @@ function simulateIntl(ev){
    ========================================================================= */
 function applyAging(){
   const age=G.age, pot=G.potential, ov=overall();
+  // --- 身高體重發育系統 ---
+  if(age <= 19) {
+    // 基礎長高機率隨年紀遞減，加上事件帶來的隱藏 buff
+    let growthChance = 0.5 - (age - 16) * 0.15 + (G._growthBoost || 0);
+    if(chance(growthChance)) {
+      let gainH = rint(1, 4); // 長高 1~4 公分
+      let gainW = Math.round(gainH * 0.8) + rint(1, 2); // 變壯
+      G.height += gainH;
+      G.weight += gainW;
+      toast(`發育期！你長高了 ${gainH} 公分！目前 ${G.height}cm`, 3500);
+    }
+  } else if (age <= 24) {
+    // 20~24 歲不會長高，但會自然增肌
+    if(chance(0.4)) G.weight += rint(1, 2);
+  }
+  G._growthBoost = 0; // 結算後歸零
+  // --- 發育系統結束 ---
   let base;
   if(age<=19) base=1.8; else if(age<=22) base=1.5; else if(age<=25) base=1.0;
   else if(age<=28) base=.75; else if(age<=30) base=.4;
@@ -1157,12 +1352,20 @@ function applyAging(){
 /* =========================================================================
    Offer / 合約 / 自由市場
    ========================================================================= */
-function makeContract(league,team,years,ovForPay){
+function makeContract(league,team,years,ovForPay,cType="normal"){
   const [lo,hi]=PAY[league]||[100,500];
   const t=clamp((ovForPay-58)/40,0,1.4);
-  let salary=Math.round((lo+(hi-lo)*Math.pow(t,1.6))* (isNBAstar(league,ovForPay)?rnd(.9,1.3):rnd(.8,1.1)));
+  let base=lo+(hi-lo)*Math.pow(t,1.6);
+  let mult=isNBAstar(league,ovForPay)?rnd(.9,1.3):rnd(.8,1.1);
+  
+  // 依照合約種類動態調整薪資倍率
+  if (cType === "max") mult = rnd(1.15, 1.4); 
+  else if (cType === "contender") mult = rnd(0.7, 0.85); // 降薪
+  else if (cType === "veteran") mult = rnd(0.5, 0.7); 
+  
+  let salary=Math.round(base*mult);
   salary=Math.max(lo,salary);
-  return {league,team,years,yearsLeft:years,salary};
+  return {league,team,years,yearsLeft:years,salary,cType};
 }
 function isNBAstar(lg,ov){return lg==="NBA"&&ov>=85;}
 
@@ -1170,41 +1373,68 @@ function collegeOffers(ov){
   const offers=[];const used={};
   const add=(lg,tag)=>{const team=schoolPick(lg,used[lg]);used[lg]=team;
     offers.push({type:"college",league:lg,team:team,tag});};
-  // 台灣 UBA 名校一定有；美國 NCAA 依能力決定資格（能力越高越可能打進 NBA）
-  if(ov>=70){ add("NCAA D1","🇺🇸 D1 名校"); add("NCAA D1","🇺🇸 D1"); add("UBA","🇹🇼 UBA 勁旅"); }
+    
+  // 計算靜態天賦優勢 (基準身高)
+  const baseH = { PG: 176, SG: 184, SF: 191, PF: 197, C: 202 }[G.pos];
+  const hDiff = G.height - baseH;
+  const isFreak = hDiff >= 6; // 靜態天賦極度驚人 (D1等級)
+  const isGreat = hDiff >= 3; // 靜態天賦優秀 (D2等級)
+
+  // 台灣 UBA 名校一定有；美國 NCAA 依能力或天賦決定資格
+  if(isFreak) { 
+    add("NCAA D1","🇺🇸 D1 全額獎學金"); add("NCAA D1","🇺🇸 D1 名校"); add("UBA","🇹🇼 UBA 勁旅"); 
+  }
+  else if(ov>=70){ 
+    add("NCAA D1","🇺🇸 D1 名校"); add("NCAA D1","🇺🇸 D1"); add("UBA","🇹🇼 UBA 勁旅"); 
+  }
+  else if(isGreat) { 
+    add("NCAA D2","🇺🇸 D2 全額獎學金"); add("NCAA D1","🇺🇸 D1"); add("UBA","🇹🇼 UBA 勁旅"); 
+  }
   else if(ov>=63){ add("NCAA D1","🇺🇸 D1"); add("NCAA D2","🇺🇸 D2"); add("UBA","🇹🇼 UBA 勁旅"); }
   else if(ov>=56){ add("NCAA D2","🇺🇸 D2"); add("UBA","🇹🇼 UBA 勁旅"); add("UBA","🇹🇼 UBA"); }
   else { add("UBA","🇹🇼 UBA 勁旅"); add("UBA","🇹🇼 UBA"); }
+  
   return offers.slice(0,3);
 }
+
 // 選秀行情：在美國 NCAA 打球有加成（更容易挑戰更高殿堂 / NBA）
 function draftStock(){
   const ov=overall();
   const bonus = G.league==="NCAA D1"?6 : G.league==="NCAA D2"?2 : 0;
   return ov + bonus;
 }
+
 function proTargetLeagues(ov){
   // 回傳可簽的職業聯盟（由高到低）— 門檻提高，旅外更難
   const t=[];
   if(ov>=87) t.push("NBA");
   if(ov>=80) t.push("CBL","日職 B.League");
+  if(ov>=79) t.push("KRBL");
   if(ov>=78) t.push("發展聯盟");
   if(ov>=72) t.push("TPBL","P+");
   if(ov>=58) t.push("SBL");
-  return t; // 可能為空（連 SBL 都打不上）
+  return t; 
 }
 /* 各聯盟「競爭水準線」：低於此線一截就有被釋出風險 */
-const LEAGUE_STANDARD={"SBL":56,"P+":68,"TPBL":68,"發展聯盟":74,"日職 B.League":80,"CBL":78,"NBA":86};
+const LEAGUE_STANDARD={"SBL":56,"P+":68,"TPBL":68,"發展聯盟":74,"日職 B.League":80,"CBL":78,"KRBL":77,"NBA":86};
 /* 近期產出（給選秀 / 海外報價參考） */
 function lastSeason(){ const h=G.seasonHistory; return h.length? h[h.length-1] : null; }
 function recentProd(){ const s=lastSeason(); return s? (s.prodScore||0) : 0; }
-/* 戰力行情：能力 + 美國加成 + 亮眼數據加成（上季數據好即使能力普通也會提升行情/順位） */
+/* 戰力行情：能力 + 美國加成 + 亮眼數據加成 + 身高紅利 */
 function prospectScore(){
   const prod=recentProd();
   const prodBonus=clamp((prod-16)*.62,0,14);
-  return draftStock() + prodBonus;
+  
+  // 身高對行情的影響 (NBA 等頂級聯盟極度看重靜態天賦)
+  let heightBonus = 0;
+  if(G.height >= 208) heightBonus = 4; 
+  else if(G.height >= 200) heightBonus = 2;
+  else if(G.height <= 180) heightBonus = -3; 
+  else if(G.height <= 173) heightBonus = -7; 
+  
+  return draftStock() + prodBonus + heightBonus;
 }
-/* 市場身價：近兩季若打出明星等級表現，即使 OVR 略降，行情仍維持高檔（避免明星球員隔年沒人簽的矛盾） */
+/* 市場身價：近兩季若打出明星等級表現，即使 OVR 略降，行情仍維持高檔 */
 function marketValue(){
   const ov=overall();
   const recent=G.seasonHistory.filter(s=>s.stage==="pro").slice(-2);
@@ -1212,32 +1442,74 @@ function marketValue(){
   const perfFloor = bestSS>=104?93 : bestSS>=92?90 : bestSS>=80?88 : bestSS>=72?85 : bestSS>=62?80 : 0;
   return Math.max(ov, perfFloor);
 }
-/* 自由市場：以「市場身價」決定可簽聯盟；低於水準線的聯盟不會給約（可能完全沒約→退休） */
+
+/* 自由市場：更加擬真的多維度報價邏輯 */
 function proOffers(ovArg){
   const ov=overall(), mv=marketValue();
   const eff=Math.round(mv + clamp((recentProd()-24)*.32,0,5));
   let targets=proTargetLeagues(eff).filter(lg=>mv >= (LEAGUE_STANDARD[lg]||0)-6);
-  // 已在較高聯盟的球員，不會被「降級」到明顯較低的聯盟（除非那是唯一選擇）
+  
   if(isPro()){
     const curRank=LEAGUE_RANK[G.league]||0;
     const notLower=targets.filter(lg=>(LEAGUE_RANK[lg]||0)>=curRank-1);
     if(notLower.length) targets=notLower;
   }
   const offers=[];
-  // 母隊續約：以身價判斷（打出身價的老將母隊會續留）
-  if(isPro() && mv>=(LEAGUE_STANDARD[G.league]||0)-6){
-    offers.push({type:"pro",league:G.league,team:G.team,years:rint(1,3),resign:true,tag:"母隊續約"});
+  const age = G.age;
+  
+  // 決定合約年限基準：年輕人長約，老將短約
+  const getYears = (lg, isVet) => {
+    if(isVet || age >= 34) return rint(1,2);
+    if(age <= 25) return lg==="NBA"?rint(3,4):rint(2,3);
+    return lg==="NBA"?rint(2,4):rint(1,3);
+  };
+
+  // 1. 母隊續約邏輯：考量士氣與戰績
+  let resignChance = 1;
+  if (G.morale < 40) resignChance -= 0.5; // 氣氛差，不想續
+  if (G.lastReview && !G.lastReview.playoff) resignChance -= 0.3; // 戰績爛，不想留
+  
+  if(isPro() && mv>=(LEAGUE_STANDARD[G.league]||0)-6 && chance(clamp(resignChance, 0.2, 1))){
+    let cType = "normal";
+    let tag = "母隊續約";
+    // 奪冠且氣氛好，球隊願意砸頂薪
+    if (G.morale > 75 && G.lastReview && G.lastReview.champion) { cType = "max"; tag = "母隊頂薪留人"; }
+    offers.push({type:"pro",league:G.league,team:G.team,years:getYears(G.league),resign:true,tag,cType});
   }
+  
   const seen=new Set();
   targets.forEach((lg,i)=>{
     if(seen.has(lg))return; seen.add(lg);
-    const yrs=lg==="NBA"?rint(1,4):rint(1,3);
-    const tag = lg==="發展聯盟"?"🇺🇸 發展聯盟": i===0?"最高殿堂":undefined;
-    offers.push({type:"pro",league:lg,team:randTeam(lg,isPro()?G.team:null),years:yrs,tag});
+    
+    if(i===0) { 
+      // 最高殿堂的報價，根據身價細分策略
+      if(mv >= (LEAGUE_STANDARD[lg]||0) + 5) {
+        offers.push({type:"pro",league:lg,team:randTeam(lg,isPro()?G.team:null),years:getYears(lg),tag:"頂薪挖角",cType:"max"});
+        // 老將巔峰期後，會有降薪加盟強隊的抉擇
+        if(age >= 28) offers.push({type:"pro",league:lg,team:randTeam(lg,isPro()?G.team:null),years:getYears(lg, true),tag:"爭冠球隊（降薪）",cType:"contender"});
+      } else {
+        offers.push({type:"pro",league:lg,team:randTeam(lg,isPro()?G.team:null),years:getYears(lg),tag:"輪替陣容",cType:"normal"});
+      }
+    } else {
+      // 降級聯盟的報價 (去較低聯盟通常會給核心地位與高薪)
+      const tag = lg==="發展聯盟"?"🇺🇸 發展聯盟" : "主力核心";
+      offers.push({type:"pro",league:lg,team:randTeam(lg,isPro()?G.team:null),years:getYears(lg),tag,cType:"max"});
+    }
   });
+  
   const uniq=[];const key=new Set();
-  offers.forEach(o=>{const k=o.league+"|"+o.team+"|"+o.resign;if(!key.has(k)){key.add(k);uniq.push(o);}});
-  return uniq.slice(0,5);
+  offers.forEach(o=>{
+    const k=o.league+"|"+o.team+"|"+o.resign;
+    if(!key.has(k)){
+      key.add(k);
+      // ★ 關鍵修正：在產生報價時直接固定薪水寫入物件，避免 UI 與實際簽約不同步
+      o.salary = makeContract(o.league, o.team, o.years, ov, o.cType).salary;
+      uniq.push(o);
+    }
+  });
+  
+  // 打亂陣列增加隨機感，然後取前 5 個
+  return uniq.sort(()=>Math.random()-0.5).slice(0,5);
 }
 /* ---------- 選秀計算 ---------- */
 function draftPick(league, ps){
@@ -1345,10 +1617,16 @@ function applyEffects(e){
   if(e.injure) G._memInjury=e.injure; // "season" | "career"
   if(e.title) grantTitle(e.title);
   // 影響戰績/季後賽/賽會的效果（不只加能力值）
-  if(G._seasonMods){
+ if(G._seasonMods){
     if(e.win) G._seasonMods.winBoost += e.win;
     if(e.champ) G._seasonMods.champBoost += e.champ;
     if(e.tourney) G._seasonMods.tourneyBoost += e.tourney;
+    
+    // --- 新增：強制錦標賽晉級與淘汰機制 ---
+    if(e.tourneyMin !== undefined) G._seasonMods.tourneyMinIdx = e.tourneyMin;
+    if(e.tourneyMax !== undefined) G._seasonMods.tourneyMaxIdx = e.tourneyMax;
+    // ----------------------------------
+    
     if(e.playoff) G._seasonMods.playoffForce = true;
     if(e.playoffOut) G._seasonMods.playoffOut = true;
   }
@@ -1527,9 +1805,9 @@ function toggleDraftLeague(lg){ G._draftPick[lg]=!G._draftPick[lg]; render(); }
 function confirmDraft(){
   const ov=overall(), ps=prospectScore();
   const offers=[];
-  // 台灣選秀（依報名，最多 3；CBL 另計）
-  let picked=Object.keys(G._draftPick).filter(lg=>G._draftPick[lg]&&lg!=="CBL");
-  if(!picked.length && !G._draftPick["CBL"]) picked=["SBL"]; // 至少報一個（除非只報 CBL）
+  // 台灣選秀（依報名，最多 3；CBL / KRBL 另計）
+  let picked=Object.keys(G._draftPick).filter(lg=>G._draftPick[lg]&&lg!=="CBL"&&lg!=="KRBL");
+  if(!picked.length && !G._draftPick["CBL"] && !G._draftPick["KRBL"]) picked=["SBL"]; // 至少報一個（除非只報海外）
   picked.slice(0,3).forEach(lg=>{
     const pick=draftPick(lg,ps);
     if(pick==null) return; // 該聯盟落選（行情不足）
@@ -1542,6 +1820,12 @@ function confirmDraft(){
     const cpick=draftPick("CBL",ps);
     if(cpick!=null){ offers.push({type:"draft",league:"CBL",team:randTeam("CBL"),pick:cpick,years:rint(2,3),
       salary:draftSalary("CBL",cpick,ov),tag:`${lname("CBL")} 第 ${cpick} 順位`}); }
+  }
+  // KRBL 韓國聯賽：大學後可選擇投入，門檻高、中選機率偏低（數據夠優秀才進得去）
+  if(G._draftPick["KRBL"]){
+    const kpick=draftPick("KRBL",ps);
+    if(kpick!=null){ offers.push({type:"draft",league:"KRBL",team:randTeam("KRBL"),pick:kpick,years:rint(2,3),
+      salary:draftSalary("KRBL",kpick,ov),tag:`${lname("KRBL")} 第 ${kpick} 順位`}); }
   }
   // 海外接觸（依戰力行情，門檻更高）— 發展聯盟為美國發展性聯盟，順位偏中後段
   const devPick=()=>Math.round(clamp(42-(ps-88)*1.1+rnd(-6,6),4,80));
@@ -1584,8 +1868,11 @@ function signDraft(offer){
 }
 function signOffer(offer){
   const ov=overall();
-  if(offer.resign){ G.team=offer.team; G.contract=makeContract(G.league,offer.team,offer.years,ov); }
-  else { G.league=offer.league; G.team=offer.team; G.contract=makeContract(offer.league,offer.team,offer.years,ov); }
+  G.league=offer.league; G.team=offer.team; 
+  
+  // 直接使用報價上的固定薪水、年限與合約類型
+  G.contract={league:offer.league,team:offer.team,years:offer.years,yearsLeft:offer.years,salary:offer.salary,cType:offer.cType};
+  
   if(G.league==="NBA"){ G.madeNBA=true; grantTitle("taiwanFirst"); }
   if(!offer.resign && teamCityMatchesHome(G.team,G.home)) grantTitle("homecoming");
   if(offer.tag==="最後機會") grantTitle("undraftedHero");
@@ -1737,6 +2024,7 @@ const LEAGUE_LABELS={
   "P+":["一日球員","板凳角色","輪替戰力","稱職先發","明星球員","當家球星","聯盟看板","本土傳奇"],
   "SBL":["一日球員","板凳角色","輪替戰力","稱職先發","明星球員","當家球星","聯盟看板","本土傳奇"],
   "CBL":["一日球員","板凳邊緣","輪替戰力","稱職先發","明星球員","當家球星","聯盟招牌","聯賽傳奇"],
+  "KRBL":["一日球員","板凳邊緣","輪替戰力","稱職先發","明星球員","當家球星","聯盟招牌","聯賽傳奇"],
 };
 function leagueEval(lg){
   const ss=G.seasonHistory.filter(s=>s.stage==="pro"&&s.league===lg);
@@ -1753,7 +2041,7 @@ function leagueEval(lg){
   // 評價分：以「每季品質」為主、資歷與榮譽為輔（避免打很久就變傳奇）
   const score=Math.round(clamp(avgSS-30,0,90)*5 + n*7 + awardPts);
   const labels=LEAGUE_LABELS[lg]||LEAGUE_LABELS["SBL"];
-  const elite=(lg==="NBA"||lg==="日職 B.League"||lg==="CBL");
+  const elite=(lg==="NBA"||lg==="日職 B.League"||lg==="CBL"||lg==="KRBL");
   const T = elite ? [44,56,66,80,92,104] : [40,52,62,74,86,98]; // 分界
   let idx = avgSS<T[0]?0 : avgSS<T[1]?1 : avgSS<T[2]?2 : avgSS<T[3]?3 : avgSS<T[4]?4 : avgSS<T[5]?5 : 6;
   // 榮譽門檻限制頂級標籤（品質高但沒榮譽 → 封頂在先發）
@@ -1766,7 +2054,7 @@ function leagueEval(lg){
   return {league:lg, score, label:labels[idx], seasons:n, avgSS:Math.round(avgSS)};
 }
 function allLeagueEvals(){
-  const order=["NBA","CBL","日職 B.League","發展聯盟","TPBL","P+","SBL"];
+  const order=["NBA","CBL","KRBL","日職 B.League","發展聯盟","TPBL","P+","SBL"];
   const seen=[]; G.seasonHistory.forEach(s=>{if(s.stage==="pro"&&!seen.includes(s.league))seen.push(s.league);});
   return order.filter(l=>seen.includes(l)).map(leagueEval).filter(Boolean);
 }
@@ -1797,6 +2085,11 @@ const TITLE_DEFS={
   ringCollector:{name:"戒指收藏家",good:true,desc:"生涯拿下 3 座以上總冠軍",effect:"球商 +1、士氣 +4",buff:{iq:1,morale:4}},
   goldGen:{name:"黃金世代",good:true,desc:"為中華隊奪得 2 面以上獎牌",effect:"名氣 +6",buff:{fame:6}},
   undraftedHero:{name:"落選逆襲",good:true,desc:"選秀落選後仍打上職業舞台",effect:"士氣 +6",buff:{morale:6}},
+  clutchAssassin: {name:"關鍵先生", good:true, desc:"在季後賽展現極致得分火力並奪冠", effect:"得分 +2、球商 +2", buff:{shooting:2, iq:2}},
+  defensiveAnchor: {name:"銅牆鐵壁", good:true, desc:"單季同時展現頂級的抄截與阻攻能力", effect:"防守 +3、體能 +1", buff:{defense:3, athletic:1}},
+  cashCow: {name:"行走印鈔機", good:true, desc:"生涯總收入突破 5 億台幣，名利雙收", effect:"名氣 +10、士氣 +5", buff:{fame:10, morale:5}},
+  evergreen: {name:"不老神木", good:true, desc:"38歲以上仍能在職業賽場穩定出賽", effect:"球商 +3、健康 +5", buff:{iq:3}},
+  grandSlam: {name:"大滿貫", good:true, desc:"從高中、大學一路到職業賽場皆奪得總冠軍", effect:"名氣 +15、士氣 +10、球商 +2", buff:{fame:15, morale:10, iq:2}},
   // 隱藏 / 特別
   flashPan:{name:"曇花一現",good:false,desc:"（隱藏）大學畢業後隨即退休，天賦未及綻放",effect:"—",buff:{}},
   babyFaced:{name:"高中神話",good:true,desc:"（隱藏）高中就打進職業，天縱英才",effect:"名氣 +8",buff:{fame:8}},
@@ -1807,13 +2100,22 @@ const TITLE_DEFS={
   fragile:{name:"薄玻璃",good:false,desc:"（隱藏）生涯 3 次以上重傷",effect:"體能 -3",buff:{athletic:-3}},
   contractMess:{name:"合約風暴",good:false,desc:"（隱藏）曾捲入雙重合約糾紛",effect:"名氣 -5",buff:{fame:-5}},
   evilDrunk:{name:"罪大惡極",good:false,desc:"因酒駕遭球團開除，斷送職業生涯",effect:"名氣歸零",buff:{fame:-100}},
+  overpaid: {name:"薪水小偷", good:false, desc:"領著頂薪合約，卻繳出極度慘淡的賽季表現", effect:"名氣 -10、士氣 -5", buff:{fame:-10, morale:-5}},
+  toxic: {name:"氣氛大師", good:false, desc:"球隊士氣降至冰點，更衣室毒瘤", effect:"球商 -2、防守 -1", buff:{iq:-2, defense:-1}},
+  // --- 傳奇彩蛋 Build ---
+  tripleDouble:{name:"大三元製造機",good:true,cssClass:"legend-blue",desc:"自帶全能體系，如魔術般不可思議",effect:"得分、籃板、組織 +3",buff:{shooting:3, rebound:3, pass:3}},
+  foreverKobe:{name:"永遠的老大",good:true,cssClass:"legend-yellow",desc:"曼巴精神永存，極致的得分直覺",effect:"得分 +4、體能 +3、球商 +2",buff:{shooting:4, athletic:3, iq:2}},
+  beastLin:{name:"球給志傑",good:true,cssClass:"legend-blue",desc:"野獸般的直覺，大心臟屬性",effect:"三分 +3、體能 +4、士氣 +10",buff:{three:3, athletic:4, morale:10}},
+  theKing:{name:"THE KING",good:true,cssClass:"legend-yellow",desc:"天選之子的無解靜態天賦",effect:"體能 +5、組織 +4、球商 +2",buff:{athletic:5, pass:4, iq:2}},
+  theWorm:{name:"小蟲",good:true,cssClass:"legend-red",desc:"不講理的籃板痴漢",effect:"籃板 +6、防守 +5、得分 -2",buff:{rebound:6, defense:5, shooting:-2}},
+  joker:{name:"小丑",good:true,cssClass:"legend-purple",desc:"主宰賽場的戰術魔術師",effect:"球商 +5、組織 +5、體能 -2",buff:{iq:5, pass:5, athletic:-2}},
 };
 function hasTitle(id){ return (G.titles||[]).some(t=>t.id===id); }
 function grantTitle(id){
   if(!TITLE_DEFS[id]||hasTitle(id))return;
   const d=TITLE_DEFS[id];
   G.titles=G.titles||[];
-  G.titles.push({id,name:d.name,good:d.good,desc:d.desc,effect:d.effect||""});
+  G.titles.push({id,name:d.name,good:d.good,cssClass:d.cssClass,desc:d.desc,effect:d.effect||""});
   if(d.buff){ for(const k in d.buff){
     if(k==="pot"){ G.potential=clamp(G.potential+d.buff[k],72,99); }
     else if(k in G.attr) G.attr[k]=clamp(G.attr[k]+d.buff[k],15,99);
@@ -1823,7 +2125,7 @@ function grantTitle(id){
 }
 function titleBadgesHTML(){
   if(!G.titles||!G.titles.length)return "";
-  return `<div class="title-wrap">`+G.titles.map((t,i)=>`<span class="title-badge ${t.good?"good":"bad"}" data-title-idx="${i}" onclick="showTitleInfo(${i})">${t.name}</span>`).join("")+`<span class="title-hint">（點稱號看說明）</span></div>`;
+  return `<div class="title-wrap">`+G.titles.map((t,i)=>`<span class="title-badge ${t.cssClass ? t.cssClass : (t.good?"good":"bad")}" data-title-idx="${i}" onclick="showTitleInfo(${i})">${t.name}</span>`).join("")+`<span class="title-hint">（點稱號看說明）</span></div>`;
 }
 function showTitleInfo(i){
   const t=G.titles&&G.titles[i]; if(!t)return;
@@ -1871,6 +2173,23 @@ function checkSeasonTitles(s){
   if(played.has("NBA")&&played.has("日職 B.League")&&(played.has("SBL")||played.has("P+")||played.has("TPBL"))) grantTitle("worldStage");
   // 人氣王：名氣曾破 95
   if(G.fame>=95) grantTitle("fanFavorite");
+  // 關鍵先生：職業聯賽、奪冠、且該季場均得分 >= 26
+  if(s.stage === "pro" && s.champion && s.ppg >= 26) grantTitle("clutchAssassin");
+  // 銅牆鐵壁：單季抄截 >= 2.0 且 阻攻 >= 1.5
+  if(s.stage === "pro" && s.spg >= 2.0 && s.bpg >= 1.5) grantTitle("defensiveAnchor");
+  // 行走印鈔機：生涯金錢大於等於 50000 萬 (5億)
+  if(G.money >= 50000) grantTitle("cashCow");
+  // 不老神木：年齡 >= 38 歲，且出賽場次大於聯盟總場次的 60%
+  if(s.stage === "pro" && G.age >= 38 && s.gp >= leagueGP(s.league) * 0.6) grantTitle("evergreen");
+  // 薪水小偷：領「頂薪」合約 (cType === "max")，但賽季表現分 (seasonScore) 低於 60
+  if(s.stage === "pro" && G.contract && G.contract.cType === "max" && s.seasonScore < 60) grantTitle("overpaid");
+  // 氣氛大師：士氣極低 (<= 15)
+  if(G.morale <= 15) grantTitle("toxic");
+  // 大滿貫：高中、大學、職業三階段皆奪冠
+  const wonHS = G.seasonHistory.some(h => h.stage === "高中" && h.champion);
+  const wonCollege = G.seasonHistory.some(h => h.stage === "大學" && h.champion);
+  const wonPro = G.seasonHistory.some(h => h.stage === "pro" && h.champion);
+  if (wonHS && wonCollege && wonPro) grantTitle("grandSlam");
 }
 /* ---------- 全美排名（旅美 NCAA 球員） ---------- */
 function computeUsRank(){
@@ -1907,10 +2226,16 @@ function computeHallOfFame(){
   const cblSeasons=G.seasonHistory.filter(s=>s.league==="CBL").length;
   const chinaScore=Math.round(cbl + (G.awardLog||[]).filter(a=>a.league==="CBL").reduce((s,a)=>
     s+(a.award==="MVP"?90:a.award==="FMVP"?55:a.award==="冠軍"?45:a.award==="本土MVP"?40:a.award.includes("明星賽")?18:a.award.includes("王")?22:a.award==="DPOY"?24:a.award==="ROTY"?14:10),0));
+  // 韓國籃球名人堂：以 KRBL 資歷與榮譽為主
+  const krbl=ev["KRBL"]||0;
+  const krblSeasons=G.seasonHistory.filter(s=>s.league==="KRBL").length;
+  const koreaScore=Math.round(krbl + (G.awardLog||[]).filter(a=>a.league==="KRBL").reduce((s,a)=>
+    s+(a.award==="MVP"?90:a.award==="FMVP"?55:a.award==="冠軍"?45:a.award==="國內MVP"?40:a.award.includes("明星賽")?18:a.award.includes("王")?22:a.award==="DPOY"?24:a.award==="ROTY"?14:10),0));
   return {
     taiwanScore, taiwan: taiwanScore>=880,
     naismithScore, nbaSeasons, naismith: G.madeNBA && nbaSeasons>=5 && naismithScore>=850,
     chinaScore, cblSeasons, china: cblSeasons>=4 && chinaScore>=560,
+    koreaScore, krblSeasons, korea: krblSeasons>=4 && koreaScore>=560,
   };
 }
 /* ---------- 退休劇情 ---------- */
@@ -1964,7 +2289,7 @@ function jerseyRetiredTeams(){
   pro.forEach(s=>{ const k=s.league+"|"+s.team;
     if(!byTeam[k]) byTeam[k]={team:s.team,league:s.league,seasons:0,ssSum:0,star:0,champ:0};
     const b=byTeam[k]; b.seasons++; b.ssSum+=(s.seasonScore||0);
-    const starTh=(s.league==="NBA"||s.league==="日職 B.League"||s.league==="CBL")?76:73;
+    const starTh=(s.league==="NBA"||s.league==="日職 B.League"||s.league==="CBL"||s.league==="KRBL")?76:73;
     if((s.seasonScore||0)>=starTh) b.star++;
     if(s.champion) b.champ++;
   });
@@ -2077,21 +2402,21 @@ function fanForum(){
 /* =========================================================================
    算 morale/fame 相關評語
    ========================================================================= */
-const FANS=["籃球癡籃球狂","板凳觀察家","與督玫瑰","德威司機","gury鴨腿","數據控小李","熱血鄉民","半場記者",
-  "夜貓球迷","戰術宅","板橋劉的華","打鐵大隊長","鍵盤教練","第六人","菜市場球評","轉播達人","南港彭于晏","資深勇迷"];
+const FANS=["籃球癡籃球狂","板凳觀察家","與督玫瑰","德威司機","gury鴨腿","數據控小李","前徹步","史蓋",
+  "夜貓球迷","戰術宅","板橋劉的華","GM","鍵盤教練","第六人","菜市場球評","gm","南港彭于晏","資深勇迷"];
 function fanComments(s){
   const tierc = s.champion?"champ": s.seasonScore>=90?"elite": s.seasonScore>=68?"good": s.seasonScore>=45?"mid":"bad";
   const pools={
     champ:["冠軍到手！這座城市為你瘋狂！","總冠軍賽神了，實至名歸的英雄。","把整支球隊扛在肩上，尊敬。","歷史級的一季，載入史冊！","從今天起你就是傳奇。",
-      "封王之夜我哭了，值得！","戒指入手，這就是贏家！","總冠軍賽那幾球，一輩子忘不了。","扛著球隊奪冠，這就是領袖。","香檳開起來，我們是冠軍！"],
+      "封王之夜我哭了，值得！","戒指入手，這就是贏家！","總冠軍賽那幾球，一輩子忘不了。","扛著球隊奪冠，這就是領袖。","香檳開起來，我們是冠軍！","WE DID IT!!"],
     elite:["這數據太誇張了吧，MVP 等級！","每場都在看神打球，賺到了。","聯盟第一人之爭，你必須有名字。","對手看到你就頭痛。","明星賽先發穩了。",
       "這季根本開外掛，太扯。","場均這數字，是要逆天嗎。","隨便一場都是集錦，過癮。","巔峰期的統治力，享受。","票投好投滿，明星賽見。"],
     good:["穩定輸出，球隊的定海神針。","進步好多，越來越可靠。","關鍵時刻總是他，信任感十足。","數據漂亮，值得這份合約。","希望季後賽也維持這狀態。",
       "越來越有大將之風。","這種穩定性教練最愛。","默默做好份內事的男人。","進步曲線很漂亮，繼續衝。","值得信賴的一季。"],
     mid:["中規中矩，還有進步空間。","有幾場很亮眼，穩定性再加強。","防守不錯，進攻可以更兇。","不功不過的一季。","期待明年更上一層樓。",
-      "還在找定位，別急。","輪替戰力該有的表現。","偶爾驚喜，偶爾工具人。","再多點侵略性就好了。","平穩，但想看到更多。"],
+      "還在找定位，別急。","輪替戰力該有的表現。","偶爾驚喜，偶爾工具人。","再多點侵略性就好了。","平穩，但想看到更多表現。"],
     bad:["這季狀態有點掙扎啊…","是不是有傷？看起來很勉強。","加油，球迷還是相信你的。","數據下滑，該調整了。","希望教練幫他找回信心。",
-      "手感整季冰冷，心疼。","被聯盟研究透了嗎？","低潮總會過去的，撐住。","上場時間變少了，可惜。","狀態回不來有點擔心。"],
+      "手感整季冰冷，心疼。","被聯盟研究透了嗎？","低潮總會過去的，撐住。","上場時間變少了，可惜。","狀態回不來有點擔心。","這數據可以原地退休了吧。","YT主播應該又要開始做影片開噴了。",],
   };
   const base=pools[tierc].slice();
   const out=[];const used=new Set();
@@ -2157,7 +2482,7 @@ function hudHTML(){
     <div class="hud-top">
       <div class="jersey" style="${jerseyStyle(G.team)}">${G.jersey}</div>
       <div class="hud-name"><div class="nm">${G.name} <span class="arche">${archetype()}</span>${(G.league==="NCAA D1"||G.league==="NCAA D2")&&G.lastReview&&G.lastReview.usRank?` <span class="usrank">🇺🇸全美#${G.lastReview.usRank}</span>`:""}</div>
-        <div class="meta">${POSITIONS[G.pos].abbr}｜${G.age}歲｜${G.stage==="pro"?lname(G.league):(G.stage==="大學"?lname(G.league):G.stage)} · ${G.team}</div>
+        <div class="meta">${POSITIONS[G.pos].abbr}｜${G.height}cm / ${G.weight}kg｜${G.age}歲｜${G.stage==="pro"?lname(G.league):(G.stage==="大學"?lname(G.league):G.stage)} · ${G.team}</div>
         ${G.titles&&G.titles.length?`<div class="title-row">${titleBadgesHTML()}</div>`:""}</div>
       <div class="hud-ov"><div class="v">${ov}</div><div class="l">OVR</div></div>
     </div>
@@ -2415,6 +2740,7 @@ function tourneyHTML(tj){
 }
 
 /* ---------- 高中畢業決策 ---------- */
+/* ---------- 高中畢業決策 ---------- */
 function hsDecisionHTML(){
   const ov=overall();
   const offersHTML=G._hsOffers.map((o,i)=>offerCardHTML(o,i,"college")).join("");
@@ -2424,23 +2750,45 @@ function hsDecisionHTML(){
       <p class="muted mt8">你的能力已達職業水準，可跳過大學直接投入選秀。可簽聯盟：<b style="color:var(--ink)">${G._proTargets.join("、")}</b></p>
       <button class="btn mt12" data-pro="1">跳級挑戰職業 🏀</button>
     </div>`:`<p class="small mt12 center">能力達 64 才能高中畢業直接挑戰職業（目前 OVR ${ov}）。</p>`;
-  return `<div class="season-hd"><span class="stage">高中畢業 · 抉擇</span></div>
+
+  // 判定是否觸發靜態天賦特殊劇情
+  const baseH = { PG: 176, SG: 184, SF: 191, PF: 197, C: 202 }[G.pos];
+  const hDiff = G.height - baseH;
+  
+  let title = "高中畢業 · 抉擇";
+  let desc = `依你的綜合表現（OVR ${ov}），收到以下升學 Offer。大學能磨練實力、增加曝光；也可直接拚職業。`;
+  
+  if (hDiff >= 6) {
+    title = "高中畢業 · 來自大洋彼岸的邀約";
+    desc = `【海外球探報告】你 <b style="color:var(--gold)">${G.height}cm / ${G.weight}kg</b> 的驚人靜態天賦引起了全美球探的瘋狂！美國 NCAA D1 學校捧著全額獎學金跨海來找你，承諾將你當作核心栽培。你可以選擇赴美追夢、留在台灣讀大學，或直接投入職業選秀。`;
+  } else if (hDiff >= 3) {
+    title = "高中畢業 · 靜態天賦的優勢";
+    desc = `【海外球探報告】美國球探注意到了你優異的靜態天賦（${G.height}cm），NCAA D2 學校願意提供全額獎學金讓你赴美挑戰。你可以選擇赴美、留在台灣，或直接投入職業。`;
+  }
+
+  return `<div class="season-hd"><span class="stage">${title}</span></div>
     <div class="panel center"><div class="label">你的下一步</div>
       <h2 style="font-size:22px;margin:8px 0">選擇你的籃球道路</h2>
-      <p class="muted">依你的表現（OVR ${ov}），收到以下升學 Offer。大學能磨練實力、增加曝光；也可直接拚職業。</p></div>
+      <p class="muted">${desc}</p></div>
     <div class="label" style="margin:4px 0 8px">升學 Offer</div>
     ${offersHTML}
     ${proHTML}`;
 }
 function offerCardHTML(o,i,kind){
-  const reco=o.tag&&(o.tag.includes("名校")||o.tag.includes("殿堂")||o.tag.includes("續約"));
-  const money=o.type==="pro"?`<div>年薪 <b>${fmtMoney(makeContract(o.league,o.team,o.years,overall()).salary)}</b></div>`:"";
+  const reco=o.tag&&(o.tag.includes("名校")||o.tag.includes("殿堂")||o.tag.includes("續約")||o.tag.includes("頂薪")||o.tag.includes("爭冠"));
+  const money=o.type==="pro"?`<div>年薪 <b>${fmtMoney(o.salary)}</b></div>`:"";
   const yrs=o.type==="pro"?`<div>合約 <b>${o.years}</b> 年</div>`:`<div>層級 <b>${lname(o.league)}</b></div>`;
-  return `<div class="offer ${reco?"reco":""}">
-    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}</div><div class="offer-team">${o.team}</div></div>
+  
+  // 取得球隊專屬配色
+  const tc = teamColors(o.team);
+  const btnTextCol = isLightColor(tc.p) ? "#17171C" : "#FFFFFF"; // 動態判斷文字深淺
+  const cardStyle = `border-left: 5px solid ${tc.p}; background: linear-gradient(145deg, var(--surface2) 65%, ${tc.p}15 100%);`;
+
+  return `<div class="offer ${reco?"reco":""}" style="${cardStyle}">
+    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}</div><div class="offer-team" style="color: ${tc.p}; text-shadow: 0 0 10px ${tc.p}30;">${o.team}</div></div>
       ${o.tag?`<span class="offer-tag">${o.tag}</span>`:""}</div>
     <div class="offer-body">${yrs}${money}</div>
-    <button class="btn small" data-offer="${i}">${o.type==="pro"?"簽下合約":"接受 Offer"}</button>
+    <button class="btn small" data-offer="${i}" style="background: ${tc.p}; color: ${btnTextCol}; box-shadow: 0 4px 12px -6px ${tc.p}; border: 1px solid ${tc.s}40;">${o.type==="pro"?"簽下合約":"接受 Offer"}</button>
   </div>`;
 }
 
@@ -2482,7 +2830,7 @@ function tradeHTML(){
 /* ---------- 退休選項 ---------- */
 function retireOptionHTML(){
   const t=careerTotals();
-  const abroad=["NBA","日職 B.League","發展聯盟","CBL"].includes(G.league);
+  const abroad=["NBA","日職 B.League","發展聯盟","CBL","KRBL"].includes(G.league);
   return `<div class="season-hd"><span class="stage">生涯抉擇</span><span class="yr">${G.age}歲</span></div>
     <div class="panel center"><div class="label">老將的十字路口</div>
       <h2 style="font-size:20px;margin:8px 0">要繼續打，還是功成身退？</h2>
@@ -2558,6 +2906,8 @@ function draftDeclareHTML(){
   }).join("");
   const cblOn=G._draftPick["CBL"];
   const cblChip=`<button class="dchip ${cblOn?"on":""}" data-dleague="CBL">${lname("CBL")}<span class="dchip-sub">${DRAFT_LEAGUES["CBL"].teams} 隊 · 高門檻</span></button>`;
+  const krblOn=G._draftPick["KRBL"];
+  const krblChip=`<button class="dchip ${krblOn?"on":""}" data-dleague="KRBL">${lname("KRBL")}<span class="dchip-sub">${DRAFT_LEAGUES["KRBL"].teams} 隊 · 高門檻</span></button>`;
   const overseasNote=[];
   if(ps>=94) overseasNote.push("🇺🇸 "+lname("NBA")+" 球探已在關注");
   if(ps>=88) overseasNote.push("🇯🇵 "+lname("日職 B.League")+" 有意接觸");
@@ -2576,8 +2926,8 @@ function draftDeclareHTML(){
       <div class="label">選擇報名的台灣聯盟（可複選，最多 3）</div>
       <div class="dchips mt8">${chips}</div>
       <div class="label" style="margin-top:14px">挑戰海外選秀（選填）</div>
-      <div class="dchips mt8">${cblChip}</div>
-      <p class="small mt8" style="color:var(--faint)">🇨🇳 ${lname("CBL")}：水準高、中選門檻嚴，數據夠亮眼才進得去。</p>
+      <div class="dchips mt8">${cblChip}${krblChip}</div>
+      <p class="small mt8" style="color:var(--faint)">🇨🇳 ${lname("CBL")}：水準高、中選門檻嚴，數據夠亮眼才進得去。<br>🇰🇷 ${lname("KRBL")}：韓國頂級聯賽，每隊限兩名外援，本土卡位激烈、中選門檻高。</p>
       ${overseasNote.length?`<div class="over-note mt12">${overseasNote.map(n=>`<div>${n}</div>`).join("")}</div>`:`<p class="small mt8" style="color:var(--faint)">目前戰力尚未吸引其他海外球隊，先打出身價吧。</p>`}
     </div>`;
 }
@@ -2593,15 +2943,21 @@ function draftOfferCardHTML(o,i){
   const pickTxt = o.league==="NBA"?(o.pick?`${lname("NBA")} 第 ${o.pick} 順位`:"落選"):
     o.pick? pickLabel(o.pick) : "海外簽約";
   const reco = o.pick===1 || o.league==="NBA" || o.league==="日職 B.League";
-  return `<div class="offer ${reco?"reco":""}">
-    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}</div><div class="offer-team">${o.team}</div></div>
+  
+  // 取得球隊專屬配色
+  const tc = teamColors(o.team);
+  const btnTextCol = isLightColor(tc.p) ? "#17171C" : "#FFFFFF";
+  const cardStyle = `border-left: 5px solid ${tc.p}; background: linear-gradient(145deg, var(--surface2) 65%, ${tc.p}15 100%);`;
+
+  return `<div class="offer ${reco?"reco":""}" style="${cardStyle}">
+    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}</div><div class="offer-team" style="color: ${tc.p}; text-shadow: 0 0 10px ${tc.p}30;">${o.team}</div></div>
       <span class="offer-tag">${o.tag||pickTxt}</span></div>
     <div class="offer-body">
       <div>順位 <b>${pickTxt}</b></div>
       <div>年薪 <b>${fmtMoney(o.salary)}</b></div>
       <div>合約 <b>${o.years}</b> 年</div>
     </div>
-    <button class="btn small" data-draft="${i}">加盟 ${o.team}</button>
+    <button class="btn small" data-draft="${i}" style="background: ${tc.p}; color: ${btnTextCol}; box-shadow: 0 4px 12px -6px ${tc.p}; border: 1px solid ${tc.s}40;">加盟 ${o.team}</button>
   </div>`;
 }
 /* ---------- 海外報價（合約中往更高聯盟） ---------- */
@@ -2680,7 +3036,7 @@ function careerSummaryHTML(){
 }
 
 /* ---------- End / 名人堂 ---------- */
-const HOF_TH={taiwan:880, naismith:850, china:560};
+const HOF_TH={taiwan:880, naismith:850, china:560, korea:560};
 function hallOfFameHTML(){
   const h=G._hallOfFame||computeHallOfFame();
   const card=(name,inducted,score,th,note)=>`
@@ -2694,17 +3050,19 @@ function hallOfFameHTML(){
   const ceremony = (h.taiwan||h.naismith||h.china) ? hofCeremonyHTML(h) : "";
   const cards=[card("台灣籃球名人堂",h.taiwan,h.taiwanScore,HOF_TH.taiwan,"依台灣聯盟資歷與中華隊貢獻")];
   if(h.cblSeasons>0 || h.china) cards.push(card("中國籃球名人堂",h.china,h.chinaScore,HOF_TH.china,lname("CBL")+" 資歷與榮譽"));
+  if(h.krblSeasons>0 || h.korea) cards.push(card("韓國籃球名人堂",h.korea,h.koreaScore,HOF_TH.korea,lname("KRBL")+" 資歷與榮譽"));
   cards.push(card("奈史密斯名人堂",h.naismith,h.naismithScore,HOF_TH.naismith,lname("NBA")+" 殿堂，入選難度極高"));
   return `<div class="hof-title">名人堂票選結果</div>
     <div class="hof-grid">${cards.join("")}</div>${ceremony}`;
 }
 function hofCeremonyHTML(h){
   const yr=G.year+3; // 退休三年後受提名
-  const names=[]; if(h.taiwan)names.push("台灣籃球名人堂"); if(h.china)names.push("中國籃球名人堂"); if(h.naismith)names.push("奈史密斯名人堂");
+  const names=[]; if(h.taiwan)names.push("台灣籃球名人堂"); if(h.china)names.push("中國籃球名人堂"); if(h.korea)names.push("韓國籃球名人堂"); if(h.naismith)names.push("奈史密斯名人堂");
   const which = names.length>1 ? names.slice(0,-1).join("、")+"與"+names[names.length-1]+"多重殿堂" : names[0];
   const bodies=[];
   if(h.naismith) bodies.push(`跨海而來的祝賀影片在會場輪番播放，昔日對手與隊友齊聲推崇——一位來自台灣的孩子，最終在世界最高殿堂留下名字。`);
   if(h.china) bodies.push(`在中國賽場的每一次長征與拚搏都被記得，全場起立向這位遠道而來、卻打出一片天的球員致敬。`);
+  if(h.korea) bodies.push(`韓國球迷沒有忘記你——那些在滿場加油聲中扛住外援、以本土之姿站上舞台的夜晚，如今被永久記在名人堂裡。`);
   if(h.taiwan) bodies.push(`從 HBL 的青澀少年，到扛起中華隊的中流砥柱，你的名字成了台灣籃球一整個世代的共同記憶。`);
   const speech = h.naismith
     ? `站上講台，你望著滿場觀眾，深吸一口氣：「我來自一個籃球不是主流的地方，但正因如此，我更想證明——夢想沒有國界。」`
@@ -2847,9 +3205,18 @@ function drawCareerCard(){
   // 稱號徽章
   (G.titles||[]).forEach(tt=>{const txt=tt.name;x.font="700 22px 'Noto Sans TC',sans-serif";
     const w=x.measureText(txt).width+28; if(ax+w>W-46){ax=46;ay+=42;}
-    x.fillStyle=tt.good?"rgba(63,191,127,.12)":"rgba(216,50,63,.12)";
-    x.strokeStyle=tt.good?"rgba(63,191,127,.55)":"rgba(216,50,63,.55)";roundRect(x,ax,ay-26,w,36,18);x.fill();x.stroke();
-    x.fillStyle=tt.good?"#7BE0A3":"#FF8A8A";x.fillText(txt,ax+14,ay);ax+=w+8;});
+   let bg = tt.good ? "rgba(63,191,127,.12)" : "rgba(216,50,63,.12)";
+    let border = tt.good ? "rgba(63,191,127,.55)" : "rgba(216,50,63,.55)";
+    let textCol = tt.good ? "#7BE0A3" : "#FF8A8A";
+    
+    // 辨識彩蛋顏色
+    if (tt.cssClass === "legend-yellow") { bg="rgba(242,194,48,.12)"; border="rgba(242,194,48,.55)"; textCol="#F2C230"; }
+    else if (tt.cssClass === "legend-red") { bg="rgba(255,102,102,.12)"; border="rgba(255,102,102,.55)"; textCol="#FF6666"; }
+    else if (tt.cssClass === "legend-blue") { bg="rgba(77,163,255,.12)"; border="rgba(77,163,255,.55)"; textCol="#4DA3FF"; }
+    else if (tt.cssClass === "legend-purple") { bg="rgba(208,136,255,.12)"; border="rgba(208,136,255,.55)"; textCol="#D088FF"; }
+
+    x.fillStyle=bg; x.strokeStyle=border; roundRect(x,ax,ay-26,w,36,18); x.fill(); x.stroke();
+    x.fillStyle=textCol; x.fillText(txt,ax+14,ay); ax+=w+8; });
   // 分聯盟榮譽（聚合）
   const gh=groupedAwards().filter(a=>!/^\d+分$/.test(a.award));
   x.font="600 21px 'Noto Sans TC',sans-serif";
@@ -3212,7 +3579,7 @@ function renderStart(){
       <p class="small center mt12">每個決定都會改變你的生涯軌跡。準備好了嗎？</p>
       <p class="small center" style="padding-bottom:24px;color:var(--faint)">聯絡我：<a href="https://www.threads.com/@twbasketball__life" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:none;font-weight:700">twbasketball__life</a></p>
     </div>`;
-  const homes=["台北","新北","基隆","桃園","新竹","苗栗","台中","彰化","雲林","台南","高雄","屏東","花蓮","台東"];
+  const homes=["台北","新北","基隆","宜蘭","桃園","新竹","苗栗","台中","彰化","雲林","台南","高雄","屏東","花蓮","台東"];
   let home=homes[0];
   const hc=$("#homeChips");
   homes.forEach((h,i)=>{const el=document.createElement("button");el.className="chip"+(i===0?" on":"");
