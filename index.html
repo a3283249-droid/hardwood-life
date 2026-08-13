@@ -356,6 +356,40 @@ canvas{max-width:100%;border-radius:12px;border:1px solid var(--line)}
 .forum-likes{font-size:12px;color:var(--faint);margin-top:6px}
 @media(max-width:400px){.hof-grid{grid-template-columns:1fr}}
 .ver-badge{position:absolute;top:10px;right:12px;z-index:5;font-family:Oswald,sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;color:var(--gold);background:rgba(242,184,75,.1);border:1px solid rgba(242,184,75,.4);border-radius:999px;padding:3px 10px}
+/* ---------- 瓊斯盃 ---------- */
+.jones-hero{text-align:center;padding:6px 0 2px}
+.jones-badge{display:inline-flex;align-items:center;gap:6px;font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.12em;font-size:12px;text-transform:uppercase;color:var(--gold);background:rgba(242,184,75,.08);border:1px solid rgba(242,184,75,.35);border-radius:999px;padding:4px 12px}
+.jones-team-tag{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px;margin-top:10px}
+.jones-scoreboard{display:flex;align-items:stretch;gap:0;background:#0d1626;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:10px 0}
+.jones-scoreboard .sb-team{flex:1;padding:14px 8px;text-align:center;position:relative}
+.jones-scoreboard .sb-team .fl{font-size:22px;line-height:1}
+.jones-scoreboard .sb-team .nm{font-size:12.5px;color:var(--dim);margin-top:4px;font-weight:600;line-height:1.25;min-height:32px;display:flex;align-items:center;justify-content:center}
+.jones-scoreboard .sb-team .sc{font-family:Oswald,sans-serif;font-weight:700;font-size:38px;line-height:1;margin-top:2px}
+.jones-scoreboard .sb-team.win .sc{color:var(--gold)}
+.jones-scoreboard .sb-team.lose .sc{color:var(--faint)}
+.jones-scoreboard .sb-mid{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 6px;border-left:1px solid var(--line);border-right:1px solid var(--line);background:#0b1220}
+.jones-scoreboard .sb-mid .vs{font-family:Oswald,sans-serif;font-weight:700;color:var(--faint);font-size:13px}
+.jones-scoreboard .sb-mid .rs{font-size:11px;font-weight:800;margin-top:3px}
+.jones-scoreboard .sb-mid .rs.w{color:var(--green)}
+.jones-scoreboard .sb-mid .rs.l{color:var(--red)}
+.jones-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.jones-table th{font-size:10px;letter-spacing:.06em;color:var(--faint);text-transform:uppercase;text-align:center;padding:5px 3px;border-bottom:1px solid var(--line)}
+.jones-table th.l,.jones-table td.l{text-align:left}
+.jones-table td{text-align:center;padding:7px 3px;border-bottom:1px solid rgba(255,255,255,.04)}
+.jones-table tr.me td{background:rgba(255,106,44,.10)}
+.jones-table tr.adv td{border-left:2px solid var(--green)}
+.jones-table tr.me td.l{font-weight:800;color:var(--ink)}
+.jones-table .flg{margin-right:5px}
+.jones-table .qual{color:var(--green);font-size:10px;font-weight:800}
+.jones-bracket{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.jones-bracket .bk{display:flex;justify-content:space-between;align-items:center;background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13.5px}
+.jones-bracket .bk .rd{font-size:10px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+.jones-keyplay{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px;color:var(--dim);line-height:1.6;margin-top:8px}
+.jones-mvp{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#2a2411,#1a1608);border:1px solid rgba(242,184,75,.5);color:var(--gold);border-radius:999px;padding:5px 14px;font-weight:800;font-size:13px;margin:6px auto}
+.stat5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
+.stat5 .s{background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:8px 2px;text-align:center}
+.stat5 .s .v{font-family:"Oswald";font-weight:700;font-size:19px}
+.stat5 .s .l{font-size:9.5px;color:var(--faint);margin-top:1px}
 </style>
 </head>
 <body>
@@ -544,14 +578,21 @@ function simulateTournament(ov,teamStr,season){
   const log=[]; let alive=true, champ=false;
   let facedTeams = [G.team]; // 建立一個陣列，先放入自己的球隊
 
+  // 【請找到迴圈內的這幾行】：
   for(let i=0;i<rounds.length;i++){
     const deep=i/rounds.length;
     const pWin=chengchi?0.99:clamp(strength - deep*.28 + rnd(-.08,.08), .06, .96);
+    // 將 const win=chance(pWin); 改成以下這段
+    
     let win = chance(pWin);
+    
+    // --- 新增：若有事件強制介入，覆蓋隨機勝負 ---
     if (G._seasonMods) {
       if (G._seasonMods.tourneyMinIdx !== undefined && i < G._seasonMods.tourneyMinIdx) win = true; // 強制晉級到指定輪次
       if (G._seasonMods.tourneyMaxIdx !== undefined && i === G._seasonMods.tourneyMaxIdx) win = false; // 強制在該輪淘汰
     }
+    // --------------------------------------
+
     const base=rint(58,78);
     const us = base + (win?rint(1,16):-rint(1,14));
     const them = base + (win?-rint(1,10):rint(1,15));
@@ -631,7 +672,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.1.8.2";
+const VERSION="V.1.8.5";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -1238,7 +1279,7 @@ function computeAwards(s){
 function intlEventForYear(y){
   // 依年份循環：瓊斯盃幾乎每年，其餘四年一輪
   const evs=[];
-  evs.push({name:"瓊斯盃",th:66,games:6,medalP:.35,prestige:1});
+
   const c=y%4;
   if(c===0){evs.push({name:"亞洲盃",th:72,games:5,medalP:.22,prestige:2});}
   if(c===1){evs.push({name:"亞運",th:74,games:5,medalP:.25,prestige:2});}
@@ -1294,6 +1335,414 @@ function simulateIntl(ev){
   if (ev.name === "世界盃資格賽") G._qualifiedWorldCup = advanced;
   G.fame+=medal?ev.prestige*3:ev.prestige;
   return rec;
+}
+
+/* =========================================================================
+   威廉瓊斯盃（沉浸式賽制：分組循環 → 交叉四強 → 冠軍/季軍戰）
+   白隊＝大專與初上職業的潛力新星；藍隊＝各聯盟主力。玩家 27 歲前入白隊，之後入藍隊。
+   ========================================================================= */
+const JONES_TEAMS={
+  "日本":{flag:"🇯🇵",str:.64,c:"#D8323F",sub:"日本年輕新星"},
+  "菲律賓SGA":{flag:"🇵🇭",str:.85,c:"#1E5BB0",sub:"超強外援陣容＋奪冠大熱門"},
+  "韓國原州DB新世代":{flag:"🇰🇷",str:.63,c:"#2E9E5B",sub:"KBL 新生代"},
+  "約旦":{flag:"🇯🇴",str:.60,c:"#17171C",sub:"西亞硬漢"},
+  "美國加州大學爾灣分校":{flag:"🇺🇸",str:.66,c:"#F2C230",sub:"NCAA 隊伍代表",usa:true},
+  "馬來西亞":{flag:"🇲🇾",str:.40,c:"#F0892C",sub:"東南亞黑馬"},
+  "澳洲聯隊":{flag:"🇦🇺",str:.72,c:"#0B7A3B",sub:"袋鼠軍團明星選拔"},
+  "卡達":{flag:"🇶🇦",str:.48,c:"#8A1538",sub:"西亞新興勢力"},
+  "阿聯":{flag:"🇦🇪",str:.40,c:"#00843D",sub:"波灣潛力股"},
+  "巴林":{flag:"🇧🇭",str:.44,c:"#CE1126",sub:"西亞硬底子"},
+  "伊朗":{flag:"🇮🇷",str:.66,c:"#239F40",sub:"亞洲傳統強權"},
+  "美國業餘聯隊":{flag:"🇺🇸",str:.62,c:"#2E5AAC",sub:"街球＋大學混編勁旅",usa:true},
+  "加拿大":{flag:"🇨🇦",str:.70,c:"#D80621",sub:"楓葉軍團天賦滿載"},
+  "立陶宛":{flag:"🇱🇹",str:.73,c:"#FDB913",sub:"歐洲籃球名門"},
+  "埃及聯隊":{flag:"🇪🇬",str:.50,c:"#C09300",sub:"非洲冠軍班底"},
+  "中華白":{flag:"⚪",str:.50,c:"#E9E9EC",sub:"大專＋新科職業潛力股"},
+  "中華藍":{flag:"🔵",str:.74,c:"#1E5BB0",sub:"各聯盟主力＋旅外好手"},
+};
+/* 第一次參賽的預設分組（之後每年改為亂數） */
+const JONES_GROUPS={
+  A:["日本","韓國原州DB新世代","菲律賓SGA","中華藍"],
+  B:["約旦","馬來西亞","美國加州大學爾灣分校","中華白"],
+};
+/* 之後每年抽選外隊的池子（兩支美國隊最多只會出現一支） */
+const JONES_FOREIGN_POOL=[
+  "日本","菲律賓SGA","韓國原州DB新世代","約旦","美國加州大學爾灣分校","馬來西亞",
+  "澳洲聯隊","卡達","阿聯","巴林","伊朗","美國業餘聯隊","加拿大","立陶宛","埃及聯隊",
+];
+/* 本屆實際採用的分組：開賽時寫入 G._jones.groups，其餘一律沿用預設 */
+function curJonesGroups(){ return (G._jones && G._jones.groups) ? G._jones.groups : JONES_GROUPS; }
+/* 建立本屆分組：第一次＝預設；之後＝亂數抽 6 外隊（最多 1 支美國隊）＋兩支中華隊分屬不同組 */
+function buildJonesGroups(myTeam, otherTeam){
+  if(!G.jonesHistory || G.jonesHistory.length===0){
+    return { A:JONES_GROUPS.A.slice(), B:JONES_GROUPS.B.slice() };
+  }
+  let pool=JONES_FOREIGN_POOL.slice();
+  for(let i=pool.length-1;i>0;i--){ const j=rint(0,i); const t=pool[i]; pool[i]=pool[j]; pool[j]=t; }
+  const chosen=[]; let usaUsed=false;
+  for(const t of pool){
+    if(chosen.length>=6) break;
+    const isUSA=(JONES_TEAMS[t]||{}).usa;
+    if(isUSA && usaUsed) continue; // 已有一支美國隊就不再放第二支
+    chosen.push(t); if(isUSA) usaUsed=true;
+  }
+  const chineseInA=chance(.5);
+  const gA=[ chineseInA?myTeam:otherTeam ];
+  const gB=[ chineseInA?otherTeam:myTeam ];
+  for(let i=0;i<6;i++){ (i<3?gA:gB).push(chosen[i]); }
+  return { A:gA, B:gB };
+}
+function jonesTeamName(){ return G.age>=27 ? "中華藍" : "中華白"; }
+function jonesGroupOf(team){ return curJonesGroups().A.includes(team) ? "A" : "B"; }
+/* 我方（中華）整體戰力：白隊底子較弱但玩家影響大；藍隊底子強 */
+function jonesOurStrength(){
+  const ov=overall();
+  const base = G._jones.team==="中華藍" ? .64 : .50;
+  const playerFactor = clamp((ov-70)*.0075, -.10, .19);
+  const teammates = G._jones.team==="中華藍" ? rnd(-.02,.05) : rnd(-.05,.03);
+  return clamp(base + playerFactor + teammates, .18, .93);
+}
+/* 玩家單場數據（高變異；瓊斯盃節奏快、球權多） */
+function jonesPlayerLine(boost){
+  const a=G.attr, ov=overall(), diff=1.14, m=posMult();
+  const usage=clamp((ov-55)/42,.36,1.15) * (1+(boost||0)*.4);
+  const p=clamp(((a.shooting*.5+a.three*.32+a.athletic*.18)/diff)*.47*usage*rnd(.72,1.38),0,40);
+  const rb=clamp(((a.rebound*.72+a.athletic*.22)/diff)*.15*m.reb*rnd(.65,1.5),0,19);
+  const as=clamp(((a.pass*.7+a.iq*.3)/diff)*.095*m.ast*rnd(.6,1.6),0,14);
+  const st=clamp(((a.defense*.42+a.iq*.3)/diff)*.05*m.stl*rnd(.4,1.9),0,7);
+  const bk=clamp(((a.athletic*.4+a.rebound*.32)/diff)*.044*m.blk*rnd(.3,2.1),0,7);
+  return {p:Math.round(p),rb:Math.round(rb),a:Math.round(as),s:Math.round(st),b:Math.round(bk)};
+}
+/* 兩隊之間單場勝負與比數（回傳 {win,us,them,line,perf}）；ourLine 只在玩家上場時給 */
+function jonesSimGame(oppName, opts={}){
+  opts=opts||{};
+  const boost=G._jones.boost||0;
+  const ourStr=jonesOurStrength();
+  const oppStr=(JONES_TEAMS[oppName]||{str:.5}).str + rnd(-.06,.06);
+  const line=jonesPlayerLine(boost);
+  const perf=line.p+line.rb*1.1+line.a*1.4+line.s*1.8+line.b*1.6;
+  // 玩家發揮回饋到我方戰力
+  const perfEdge=clamp((perf-24)*.004, -.05, .08);
+  let pWin=clamp(.5 + (ourStr-oppStr)*1.35 + perfEdge + boost*.12 + rnd(-.12,.12), .05, .95);
+  const win=chance(pWin);
+  // 國家比數（勝方分數較高，差距合理）
+  const ourBase=rint(74,92);
+  const spread=rint(2,19);
+  const us = win ? ourBase : ourBase - rint(0,7);
+  const them = win ? Math.max(40, us - spread) : us + spread;
+  return {win, us, them, line, perf, pWin};
+}
+/* 只算勝負（他隊之間、背景模擬用） */
+function jonesSimAI(aName,bName){
+  const aStr=(JONES_TEAMS[aName]||{str:.5}).str + rnd(-.08,.08);
+  const bStr=(JONES_TEAMS[bName]||{str:.5}).str + rnd(-.08,.08);
+  const pA=clamp(.5+(aStr-bStr)*1.4+rnd(-.1,.1),.05,.95);
+  const aWin=chance(pA);
+  const base=rint(70,90), sp=rint(2,18);
+  const as=aWin?base:base-rint(0,6), bs=aWin?Math.max(40,as-sp):as+sp;
+  return {aWin, as, bs};
+}
+/* 建立分組戰績表 */
+function jonesInitStandings(){
+  const st={};
+  Object.keys(JONES_TEAMS).forEach(t=>{ st[t]={w:0,l:0,pf:0,pa:0}; });
+  return st;
+}
+function jonesRecord(st, team, opp, us, them){
+  st[team].pf+=us; st[team].pa+=them; st[opp].pf+=them; st[opp].pa+=us;
+  if(us>them){ st[team].w++; st[opp].l++; } else { st[team].l++; st[opp].w++; }
+}
+/* 產生某組「不含玩家隊」的其餘循環賽（背景模擬） */
+function jonesSimGroupAI(group, st, exclude){
+  const teams=curJonesGroups()[group];
+  for(let i=0;i<teams.length;i++) for(let j=i+1;j<teams.length;j++){
+    const a=teams[i], b=teams[j];
+    if(a===exclude||b===exclude) continue; // 玩家的比賽另外逐場打
+    const r=jonesSimAI(a,b);
+    jonesRecord(st, a, b, r.as, r.bs);
+  }
+}
+/* 排序：勝場 → 得失分差 → 得分 */
+function jonesRank(group, st){
+  return curJonesGroups()[group].slice().sort((x,y)=>{
+    if(st[y].w!==st[x].w) return st[y].w-st[x].w;
+    const dy=st[y].pf-st[y].pa, dx=st[x].pf-st[x].pa;
+    if(dy!==dx) return dy-dx;
+    return st[y].pf-st[x].pf;
+  });
+}
+
+/* ---------- 瓊斯盃專屬場間事件 ---------- */
+const JONES_EVENTS=[
+  {t:"對手的情蒐報告",x:"賽前，對手教練團似乎針對你做了完整情蒐，準備包夾限制你。",
+   o:[{l:"改當串聯者破包夾",i:"🧠",h:"骰高全隊活起來",f:r=>({low:mk("被包夾打亂節奏",{iq:1},{jb:-.03,morale:-2}),mid:mk("分球破夾，隊友接連命中",{pass:1,iq:1},{jb:.04}),high:mk("你把包夾變成助攻秀，全隊火力全開！",{pass:2,iq:1},{jb:.08,fame:4,morale:4})}[tier(r)])},
+      {l:"正面強攻證明自己",i:"🔥",h:"骰高砍分、骰低卡死",f:r=>({low:mk("被鎖死，效率低落",{shooting:1},{jb:-.04,morale:-3}),mid:mk("強行取分，勉強打開",{shooting:2},{jb:.02}),high:mk("越包夾越猛，直接打爆對位！",{shooting:2,three:1},{jb:.07,fame:5})}[tier(r)])}]},
+  {t:"新莊主場爆滿",x:"新莊體育館湧入滿場觀眾，加油聲震耳欲聾，主場氣勢十足。",
+   o:[{l:"回應主場、帶動氣氛",i:"📣",h:"骰高氣勢爆棚",f:r=>({low:mk("太過亢奮、出手選擇亂了",{},{jb:-.02,morale:2}),mid:mk("主場能量灌注，越打越順",{athletic:1},{jb:.05,morale:3}),high:mk("你點燃全場，中華隊士氣沸騰！",{athletic:1,shooting:1},{jb:.09,fame:6,morale:5})}[tier(r)])},
+      {l:"冷靜專注不受影響",i:"🧊",h:"穩定輸出",f:r=>({low:mk("略顯保守",{iq:1},{}),mid:mk("穩紮穩打，維持水準",{iq:1},{jb:.03}),high:mk("大心臟穩定軍心，執行力滿分",{iq:1,defense:1},{jb:.06,morale:3})}[tier(r)])}]},
+  {t:"亞洲盃教練觀察名單",x:"中華隊教練團坐鎮看台，這場表現將影響你在亞洲盃培訓隊的去留。",
+   o:[{l:"拿出看家本領",i:"⭐",h:"骰高入教練法眼",f:r=>({low:mk("表現普通，未獲青睞",{},{jb:-.02,morale:-2}),mid:mk("穩健演出，留下印象",{},{jb:.03,fame:3}),high:mk("驚豔全場，教練當場點名讚賞！",{shooting:1,iq:1},{jb:.07,fame:8,morale:5})}[tier(r)])},
+      {l:"專注做好防守小事",i:"🛡️",h:"衝防守形象",f:r=>({low:mk("防守漏人被電",{defense:1},{jb:-.03}),mid:mk("防守積極，教練點頭",{defense:2},{jb:.04,fame:2}),high:mk("鎖死對方王牌，防守型球員代表！",{defense:2,iq:1},{jb:.07,fame:6})}[tier(r)])}]},
+  {t:"對位強力洋將",i:"🌍",x:"對手陣中有一名體格勁爆的歸化洋將，你被指派去對位或正面較勁。",noRisk:true,
+   o:[{l:"硬碰硬正面對決",i:"💪",h:"骰高一戰成名",f:r=>({low:mk("被對方力量輾壓",{},{jb:-.04,health:-4,morale:-3}),mid:mk("互有攻守，不落下風",{athletic:1},{jb:.03}),high:mk("以小搏大扳倒洋將，全場暴動！",{athletic:1,defense:1},{jb:.08,fame:8,morale:5})}[tier(r)])},
+      {l:"用速度與腦袋智取",i:"🏃",h:"衝球商",f:r=>({low:mk("節奏被打亂",{iq:1},{jb:-.02}),mid:mk("放低重心繞著打",{iq:1,athletic:1},{jb:.04}),high:mk("速度差直接拉開，智取洋將！",{iq:1,three:1},{jb:.07,fame:5})}[tier(r)])}]},
+  {t:"連戰疲勞",x:"瓊斯盃賽程密集，連日征戰下身體開始感到吃緊。",
+   o:[{l:"咬牙硬撐先發全場",i:"😤",h:"骰高扛住、骰低受傷",f:r=>({low:mk("硬撐過頭，拉傷小腿",{},{jb:-.04,health:-10,morale:-3}),mid:mk("靠意志力撐住場面",{},{jb:.01,health:-4}),high:mk("越累越猛，關鍵時刻反而更專注！",{athletic:1},{jb:.05,fame:4})}[tier(r)])},
+      {l:"與教練協調控制時間",i:"🛌",h:"護健康",f:r=>({low:mk("被質疑不夠拚",{},{morale:-2,health:6}),mid:mk("適度輪休，養足體力",{},{health:12,jb:.01}),high:mk("調度得宜，下一場精神抖擻",{iq:1},{health:14,jb:.04,morale:3})}[tier(r)])}]},
+  {t:"隊友傷退、球權加重",x:"隊上一名主力扭傷退場，教練把更多球權交到你手上。",noRisk:true,
+   o:[{l:"扛起球隊進攻",i:"🎯",h:"骰高當家、骰低獨",f:r=>({low:mk("勉強單打，效率不佳",{shooting:1},{jb:-.03,morale:-2}),mid:mk("責任變重，穩定輸出",{shooting:1,pass:1},{jb:.03,fame:3}),high:mk("一肩扛起全隊，打出當家氣勢！",{shooting:2,pass:1,iq:1},{jb:.08,fame:7,morale:5})}[tier(r)])},
+      {l:"分散球權打團隊",i:"🤝",h:"衝團隊",f:r=>({low:mk("配合生疏",{pass:1},{jb:-.01}),mid:mk("團隊籃球彌補戰力",{pass:2,defense:1},{jb:.04}),high:mk("無私串聯，全隊開花！",{pass:2,iq:1},{jb:.07,morale:4})}[tier(r)])}]},
+  {t:"賽前媒體採訪",x:"賽前記者會，媒體把你當成中華隊的看點人物，鎂光燈全打在你身上。",noRisk:true,
+   o:[{l:"霸氣喊話立軍令",i:"🎤",h:"骰高激勵、骰低壓力",f:r=>({low:mk("話說太滿變壓力",{},{jb:-.03,fame:3,morale:-3}),mid:mk("穩健回應，展現領袖氣度",{iq:1},{jb:.02,fame:4}),high:mk("霸氣宣言點燃全隊，士氣大振！",{iq:1},{jb:.06,fame:8,morale:5})}[tier(r)])},
+      {l:"低調謙虛把focus放隊友",i:"🙇",h:"衝形象",f:r=>({low:mk("被解讀沒自信",{},{fame:1}),mid:mk("謙遜有禮，形象加分",{iq:1},{jb:.02,fame:3}),high:mk("成熟談吐圈粉無數，好感爆棚",{iq:1},{jb:.04,fame:7,morale:3})}[tier(r)])}]},
+  {t:"戰術會議加練",x:"教練團臨時召集戰術會議與加練，磨合新的攻防套路。",
+   o:[{l:"全力吸收新戰術",i:"📋",h:"骰高開竅",f:r=>({low:mk("一時消化不良",{iq:1},{jb:-.02,health:-3}),mid:mk("戰術理解提升",{iq:1,pass:1},{jb:.04}),high:mk("戰術大腦上線，場上如魚得水！",{iq:2,pass:1},{jb:.07,morale:4})}[tier(r)])},
+      {l:"保留體力顧狀態",i:"💤",h:"護健康",f:r=>({low:mk("被念不專注",{},{morale:-2}),mid:mk("養精蓄銳",{},{health:8,jb:.01}),high:mk("身心俱佳，臨場手感火燙",{shooting:1},{health:8,jb:.05})}[tier(r)])}]},
+   {t:"肢體衝突邊緣",x:"對手的防守動作越來越大，甚至出現幾次危險的犯規動作，場上火藥味急遽升溫，雙方險些上演全武行。",noRisk:true,
+   o:[{l:"挺身而出，強硬回擊",i:"🔥",h:"骰高提振士氣",f:r=>({low:mk("情緒失控吞下技術犯規，節奏大亂",{iq:-1},{jb:-.04,morale:-4}),mid:mk("展現強硬態度，讓對手有所忌憚",{defense:1},{jb:.04,morale:3}),high:mk("硬漢本色！用兇悍的球風與爆扣徹底擊潰對手心理",{athletic:1,defense:1},{jb:.09,fame:6,morale:8})}[tier(r)])},
+      {l:"安撫隊友，用分數說話",i:"🧠",h:"衝球商與穩定",f:r=>({low:mk("被對手吃定，全隊打得畏首畏尾",{shooting:-1},{jb:-.03,morale:-3}),mid:mk("冷靜處理球，罰球穩穩拿分",{iq:1},{jb:.03}),high:mk("冷血殺手！在滿場歡呼中連續飆進三分，殺人誅心",{shooting:1,three:1,iq:1},{jb:.08,fame:7,morale:5})}[tier(r)])}]},
+
+  {t:"主場優勢的雙面刃",x:"新莊體育館的冷氣似乎出了點狀況，加上滿場觀眾的熱情，場內悶熱無比，體能消耗遠超預期。",noRisk:true,
+   o:[{l:"靠意志力燃燒小宇宙",i:"💦",h:"骰高克服環境",f:r=>({low:mk("嚴重抽筋被抬下場，錯失關鍵時刻",{},{jb:-.05,health:-12,morale:-4}),mid:mk("咬牙撐住，維持基本的跑動與防守",{},{jb:.02,health:-5}),high:mk("汗水澆不熄熱血！在極限狀態下完成絕殺",{athletic:1,shooting:1},{jb:.08,fame:9,morale:6,health:-6})}[tier(r)])},
+      {l:"頻繁輪替，保留體力",i:"⏱️",h:"衝戰術執行",f:r=>({low:mk("板凳銜接不佳，比分被一波流拉開",{iq:1},{jb:-.03}),mid:mk("體能調節得宜，關鍵時刻能發揮",{},{jb:.03,health:5}),high:mk("完美的體力條管理！第四節化身戰神接管比賽",{iq:1,athletic:1},{jb:.07,morale:4,health:3})}[tier(r)])}]},
+
+  {t:"熱情球迷包圍大巴",x:"賽前搭車到球場，卻被大批狂熱的球迷包圍，有人甚至拿著大聲公對你喊話告白，行程嚴重延誤。",noRisk:true,
+   o:[{l:"下車互動，親民寵粉",i:"✍️",h:"衝名氣",f:r=>({low:mk("被人群擠到差點受傷，耗費太多精力",{},{jb:-.02,health:-4,fame:4}),mid:mk("簽名合照來者不拒，球迷超開心",{},{jb:.02,fame:8,morale:3}),high:mk("親民舉動上了新聞，一躍成為國民偶像！",{iq:1},{jb:.04,fame:15,morale:6})}[tier(r)])},
+      {l:"揮手致意，快速進場準備",i:"🚌",h:"護健康與狀態",f:r=>({low:mk("被酸民批評「耍大牌、不知道在跩什麼」",{},{fame:-4,morale:-2}),mid:mk("爭取到寶貴的熱身時間，加速熱身",{},{health:8,jb:.03}),high:mk("養精蓄銳！稍後在賽場上體力滿點，飛天遁地",{athletic:1},{health:12,jb:.07})}[tier(r)])}]}
+    ];
+/* 白 vs 藍 交手時的專屬事件 */
+function jonesSiblingEvent(otherTeam){
+  return {t:`藍白對決 · 面對${otherTeam}`,x:`交叉淘汰賽竟碰上另一支中華隊 ${otherTeam}！熟悉的隊友成了對手，這場「內戰」全台矚目、話題爆棚。`,noRisk:true,
+   o:[{l:"證明自己不輸主力",i:"🔥",h:"骰高一戰封神",f:r=>({low:mk("太想贏反而綁手綁腳",{shooting:1},{jb:-.03,morale:-3}),mid:mk("打出身價，雖敗猶榮的等級",{shooting:1,iq:1},{jb:.04,fame:5}),high:mk("內戰砍分秀，證明你早該是主力！",{shooting:2,three:1,iq:1},{jb:.08,fame:12,morale:6})}[tier(r)])},
+      {l:"把它當一場普通球",i:"🧊",h:"冷靜執行",f:r=>({low:mk("情緒還是受影響",{},{jb:-.01}),mid:mk("平常心，穩定發揮",{iq:1},{jb:.04}),high:mk("大心臟無視話題，執行力滿分！",{iq:1,defense:1},{jb:.07,fame:6,morale:4})}[tier(r)])}]};
+}
+
+/* ---------- 瓊斯盃：徵召判定與啟動 ---------- */
+function pendingJones(){
+  const ov=overall();
+  if(!isPro() && G.stage!=="大學") { if(ov<58) return false; } // 高中生一般不徵召白隊
+  if(G.age<18||G.age>35) return false;
+  const th = G.age>=27 ? 68 : 58; // 藍隊門檻較高
+  return ov>=th;
+}
+function startJonesCup(){
+  const team=jonesTeamName();
+  const other= team==="中華藍" ? "中華白" : "中華藍";
+  // 本屆分組：第一次用預設，之後亂數；兩支中華隊固定分屬不同組
+  const groups=buildJonesGroups(team, other);
+  const group = groups.A.includes(team) ? "A" : "B";
+  // 玩家在該組的對手（其餘三隊），依序出戰
+  const opponents=groups[group].filter(t=>t!==team);
+  // 稍微打亂出場順序
+  for(let i=opponents.length-1;i>0;i--){ const j=rint(0,i); const tmp=opponents[i]; opponents[i]=opponents[j]; opponents[j]=tmp; }
+  G._jones={
+    team, group, groups, opponents, gameIdx:0,
+    st:jonesInitStandings(),
+    results:[],
+    tot:{p:0,rb:0,a:0,s:0,b:0,g:0},
+    step:"intro", event:null, eventResolved:false, boost:0,
+    ko:null, finalPlace:"", medal:false, mvp:false, usedEvents:[],
+    lastGame:null, aiSimmed:false,
+  };
+  G.phase="jones"; render();
+}
+function declineJones(){ toast("婉拒中華隊瓊斯盃徵召，專注於球隊。"); G.fame=clamp(G.fame-2,0,100); G._jones=null; processOffseason(); }
+
+/* 抽一個尚未用過的場間事件 */
+function jonesDrawEvent(special){
+  if(special) return special;
+  const J=G._jones;
+  let pool=JONES_EVENTS.filter(e=>!J.usedEvents.includes(e.t));
+  if(!pool.length){ pool=JONES_EVENTS.slice(); J.usedEvents=[]; }
+  const base=pick(pool);
+  J.usedEvents.push(base.t);
+  return base.noRisk ? {t:base.t,x:base.x,o:base.o} : withRiskOption(base);
+}
+
+/* 進到「下一步」：事件→比賽→（下一場事件 or 分組結算）→四強→冠/季軍→結束 */
+function jonesAdvance(){
+  const J=G._jones;
+  if(J.step==="intro"){
+    // 背景模擬：每組各只跑一次循環賽。玩家所在組排除玩家（那幾場玩家自己逐場打），另一組完整模擬。
+    if(J.group==="A"){
+      jonesSimGroupAI("A", J.st, J.team); // 玩家組：排除玩家
+      jonesSimGroupAI("B", J.st, null);   // 對手組：完整
+    }else{
+      jonesSimGroupAI("B", J.st, J.team);
+      jonesSimGroupAI("A", J.st, null);
+    }
+    J.aiSimmed=true;
+    J.step="event"; J.event=jonesDrawEvent(); J.eventResolved=false; J.boost=0;
+    render(); return;
+  }
+  if(J.step==="event"){ // 事件已解，進比賽
+    const opp=J.opponents[J.gameIdx];
+    const g=jonesSimGame(opp);
+    jonesRecord(J.st, J.team, opp, g.us, g.them);
+    J.results.push({stage:`預賽 第${J.gameIdx+1}戰`, opp, ...g});
+    J.tot.p+=g.line.p; J.tot.rb+=g.line.rb; J.tot.a+=g.line.a; J.tot.s+=g.line.s; J.tot.b+=g.line.b; J.tot.g++;
+    J.lastGame=J.results[J.results.length-1];
+    jonesMinorInjury();
+    J.step="gameReport"; render(); return;
+  }
+  if(J.step==="gameReport"){
+    J.gameIdx++;
+    if(J.gameIdx<J.opponents.length){ // 還有預賽
+      J.boost=0; J.step="event"; J.event=jonesDrawEvent(); J.eventResolved=false; render(); return;
+    }
+    // 【修正】在進入 groupResult 畫面前，先計算好分組排名與 seed
+    const rankA=jonesRank("A",J.st), rankB=jonesRank("B",J.st);
+    J._rankA=rankA; J._rankB=rankB;
+    const myRank=(J.group==="A"?rankA:rankB).indexOf(J.team); // 0-based
+    J.groupSeed=myRank+1;
+
+    J.step="groupResult"; render(); return;
+  }
+  if(J.step==="groupResult"){
+    // 點擊下一步時，直接使用已計算好的 J.groupSeed 判定晉級或落選
+    const myRank = J.groupSeed - 1;
+    if(myRank<=1){ // 前二晉級
+      // 交叉：A1 vs B2、B1 vs A2
+      let opp;
+      if(J.group==="A") opp = myRank===0 ? J._rankB[1] : J._rankB[0];
+      else opp = myRank===0 ? J._rankA[1] : J._rankA[0];
+      J.ko={round:"semi", opp};
+      J.step="koEvent"; J.boost=0;
+      J.event=(opp==="中華白"||opp==="中華藍")?jonesSiblingEvent(opp):jonesDrawEvent();
+      J.eventResolved=false; render(); return;
+    } else { // 未晉級 → 5~8 名分類
+      J.finalPlace=jonesClassifyNonAdvancer();
+      J.step="done"; jonesFinalize(); render(); return;
+    }
+  }
+  if(J.step==="koEvent"){ // 淘汰賽事件已解 → 打淘汰賽
+    const g=jonesSimGame(J.ko.opp);
+    J.results.push({stage:J.ko.round==="semi"?"準決賽":(J.ko.round==="final"?"冠軍戰":"季軍戰"), opp:J.ko.opp, ...g});
+    J.tot.p+=g.line.p; J.tot.rb+=g.line.rb; J.tot.a+=g.line.a; J.tot.s+=g.line.s; J.tot.b+=g.line.b; J.tot.g++;
+    J.lastGame=J.results[J.results.length-1];
+    jonesMinorInjury();
+    J.ko.win=g.win;
+    J.step="koReport"; render(); return;
+  }
+  if(J.step==="koReport"){
+    if(J.ko.round==="semi"){
+      // 另一場準決賽（玩家沒打的那組交叉）AI 模擬，決定冠/季軍戰對手
+      const other=jonesOtherSemiWinner();
+      if(J.ko.win){ // 進冠軍戰
+        J.ko={round:"final", opp:other.loserPathIsFinal?other.winner:other.winner};
+        J.ko.opp=other.winner; J.ko.win=undefined;
+      } else { // 打季軍戰
+        J.ko={round:"bronze", opp:other.loser}; J.ko.win=undefined;
+      }
+      J.boost=0; J.step="koEvent";
+      J.event=(J.ko.opp==="中華白"||J.ko.opp==="中華藍")?jonesSiblingEvent(J.ko.opp):jonesDrawEvent();
+      J.eventResolved=false; render(); return;
+    }
+    // 冠軍戰 / 季軍戰結束 → 定名次
+    if(J.ko.round==="final"){ J.finalPlace=J.ko.win?"🥇 冠軍":"🥈 亞軍"; J.medal=J.ko.win; J.silver=!J.ko.win; }
+    else { J.finalPlace=J.ko.win?"🥉 季軍":"第 4 名"; J.medal=J.ko.win; }
+    J.step="done"; jonesFinalize(); render(); return;
+  }
+  if(J.step==="done"){
+    jonesApplyRewards();
+    G._jones=null;
+    return processOffseason();
+  }
+}
+/* 另一半準決賽勝負（AI），回傳 winner / loser 供冠軍戰、季軍戰配對 */
+function jonesOtherSemiWinner(){
+  const J=G._jones;
+  const rankA=J._rankA, rankB=J._rankB;
+  // 玩家在自己這條交叉線；另一條線是「另一組第1 vs 我組第2」或反之
+  let x,y;
+  if(J.group==="A"){ // 玩家線用了 A?,B?; 另一線是剩下的 A 種子 vs B 種子
+    if(J.groupSeed===1){ x=rankB[0]; y=rankA[1]; } else { x=rankB[1]; y=rankA[0]; }
+  } else {
+    if(J.groupSeed===1){ x=rankA[0]; y=rankB[1]; } else { x=rankA[1]; y=rankB[0]; }
+  }
+  const r=jonesSimAI(x,y);
+  return { winner:r.aWin?x:y, loser:r.aWin?y:x };
+}
+/* 未晉級的 5~8 名分類（兩組第3、第4合併排序） */
+function jonesClassifyNonAdvancer(){
+  const J=G._jones, st=J.st;
+  const a3=J._rankA?J._rankA[2]:jonesRank("A",st)[2], a4=J._rankA?J._rankA[3]:jonesRank("A",st)[3];
+  const b3=J._rankB?J._rankB[2]:jonesRank("B",st)[2], b4=J._rankB?J._rankB[3]:jonesRank("B",st)[3];
+  const diff=t=>st[t].pf-st[t].pa;
+  const thirds=[a3,b3].sort((x,y)=> st[y].w-st[x].w || diff(y)-diff(x));
+  const fourths=[a4,b4].sort((x,y)=> st[y].w-st[x].w || diff(y)-diff(x));
+  const order=[thirds[0],thirds[1],fourths[0],fourths[1]]; // 5,6,7,8
+  const idx=order.indexOf(J.team);
+  return `第 ${5+idx} 名`;
+}
+/* 瓊斯盃輕度疲勞/受傷（表演性質，不會生涯報銷） */
+function jonesMinorInjury(){
+  const p=clamp(.05+Math.max(0,(G.age-30))*.008,.05,.2);
+  if(chance(p)){
+    ATTR_KEYS.forEach(k=>{ if(chance(.5)) G.attr[k]=clamp(Math.round(G.attr[k]-rnd(1,3)),15,99); });
+    G.health=clamp(G.health-rnd(8,18),15,100);
+    G._jones.injuryNote="賽中受了點傷，帶傷奮戰。";
+  } else {
+    G.health=clamp(G.health-rnd(2,7),0,100);
+    G._jones.injuryNote="";
+  }
+}
+/* 賽會場均、名次、MVP、獎牌判定與紀錄 */
+function jonesFinalize(){
+  const J=G._jones, g=Math.max(1,J.tot.g);
+  J.avg={ p:round(J.tot.p/g), rb:round(J.tot.rb/g), a:round(J.tot.a/g), s:round(J.tot.s/g), b:round(J.tot.b/g) };
+  const podium = /冠軍|亞軍|季軍/.test(J.finalPlace);
+  // MVP：登上頒獎台 + 場均夠亮眼 + 一點運氣
+  const perf=J.avg.p+J.avg.rb*1.1+J.avg.a*1.4+J.avg.s*1.8+J.avg.b*1.6;
+  J.mvp = podium && perf>=26 && chance(J.finalPlace.includes("冠")?.55:.3);
+  // 國家排名（本屆 8 隊名次數字）
+  const placeNum=(J.finalPlace.match(/\d+/)||[ J.finalPlace.includes("冠")?"1":J.finalPlace.includes("亞")?"2":J.finalPlace.includes("季")?"3":"4" ])[0];
+  J.placeNum=parseInt(placeNum);
+  // 賽會最佳五人（中間偏上難度）：MVP 必入選；否則以名次為基礎機率、依 perf 微調，並設基本表現門檻。
+  let bf5Base;
+  if(J.placeNum===1)      bf5Base=.52;  // 冠軍
+  else if(J.placeNum<=3)  bf5Base=.38;  // 亞軍 / 季軍
+  else if(J.placeNum===4) bf5Base=.24;  // 第 4 名
+  else if(J.placeNum<=6)  bf5Base=.09;  // 5～6 名：要有亮眼表現才有機會
+  else                    bf5Base=.035; // 7～8 名：幾乎要超猛個人秀
+  const bf5PerfBonus=clamp((perf-35)*.02, -.15, .16); // 賽會綜合表現越高越容易入選
+  const bf5FloorOK = perf>=30;                          // 基本貢獻門檻，避免打得差也僥倖入選
+  J.bestFive = J.mvp || (bf5FloorOK && chance(clamp(bf5Base+bf5PerfBonus, 0, .85)));
+}
+function jonesApplyRewards(){
+  const J=G._jones;
+  const senior=(J.team==="中華藍");
+  const podium=/冠軍|亞軍|季軍/.test(J.finalPlace);
+  // 名氣
+  G.fame=clamp(G.fame + (podium? (senior?9:6) : 3) + (J.mvp?6:0) + (J.bestFive&&!J.mvp?3:0), 0,100);
+  G.morale=clamp(G.morale + (podium?6:2), 0,100);
+  // 白隊：重養成 → 給下季額外訓練點；藍隊登台 → 正式國際獎牌
+  if(senior && podium){
+    G.intlMedals++;
+    logAward("中華隊", J.finalPlace.includes("冠")?"瓊斯盃金牌":J.finalPlace.includes("亞")?"瓊斯盃銀牌":"瓊斯盃銅牌", G.year);
+    grantTitle("twhero");
+  } else if(!senior){
+    // 白隊培養：依表現給 1~3 點訓練點，冠軍/MVP/最佳五人 更多
+    let sp=1; if(podium) sp+=1; if(J.finalPlace.includes("冠")||J.mvp||J.bestFive) sp+=1;
+    G._pendingSP=(G._pendingSP||0)+sp;
+    if(podium) logAward("中華隊", "瓊斯盃白隊之星", G.year);
+  } else if(senior && !podium){
+    // 藍隊但未登台，仍記錄一屆經歷
+  }
+  if(J.mvp) logAward("中華隊", J.team==="中華藍"?"瓊斯盃MVP":"瓊斯盃白隊MVP", G.year);
+  // 最佳五人：MVP 已是更高榮譽（且本就涵蓋最佳五人），故 MVP 當屆不再另記一行，避免重複。
+  if(J.bestFive && !J.mvp) logAward("中華隊", J.team==="中華藍"?"瓊斯盃最佳五人":"瓊斯盃白隊最佳五人", G.year);
+  // 記入國際賽歷史表
+  G.intlHistory.push({
+    year:G.year, event:`瓊斯盃(${J.team})`,
+    ppg:J.avg.p, rpg:J.avg.rb, apg:J.avg.a,
+    medal: podium? J.finalPlace.replace(/^[^\s]+\s?/,"") : "",
+    place:J.finalPlace, advanced: J.placeNum<=4, mvp:J.mvp, bestFive:J.bestFive, age:G.age, injuryNote:""
+  });
+  if(!G.jonesHistory) G.jonesHistory=[];
+  G.jonesHistory.push({year:G.year, team:J.team, place:J.finalPlace, mvp:J.mvp, bestFive:J.bestFive, avg:J.avg});
+  // 多屆獎牌 → 黃金世代
+  if(G.intlMedals>=2) grantTitle("goldGen");
 }
 
 /* =========================================================================
@@ -1617,7 +2066,7 @@ function applyEffects(e){
   if(e.injure) G._memInjury=e.injure; // "season" | "career"
   if(e.title) grantTitle(e.title);
   // 影響戰績/季後賽/賽會的效果（不只加能力值）
- if(G._seasonMods){
+  if(G._seasonMods){
     if(e.win) G._seasonMods.winBoost += e.win;
     if(e.champ) G._seasonMods.champBoost += e.champ;
     if(e.tourney) G._seasonMods.tourneyBoost += e.tourney;
@@ -1693,7 +2142,9 @@ function afterReview(){
   if(s.injury&&s.injury.career){ G.retireReason="生涯重傷，忍痛退役"; return endCareer(); }
   // 高齡硬上限
   if(isPro()&&G.age>=42){ G.retireReason="年事已高，正式高掛球鞋"; return endCareer(); }
-  // 國際賽
+  // 瓊斯盃（每年夏季的沉浸式賽事）
+  if(pendingJones()) q.push("jones");
+  // 其他國際賽（亞洲盃／亞運／世界盃等）
   if(pendingIntl()) q.push("intl");
   // 階段轉換
   if(G.stage==="高中"){
@@ -1748,6 +2199,7 @@ function processOffseason(){
   if(!G.offseason.length){ return; }
   const step=G.offseason.shift();
   switch(step){
+    case "jones": return startJonesCup();
     case "intl": return doIntl();
     case "advanceHS": G.grade++; G.age++; G.year++; applyAging(); return processOffseason();
     case "hsDecision": return hsDecision();
@@ -2252,31 +2704,41 @@ const RETIRE_SCENES={
     {e:"🎽",t:"球衣高懸穹頂",x:(g)=>`在爆滿的主場，燈光聚焦，你的 ${g.jersey} 號球衣緩緩升上球館穹頂。曾並肩作戰的傳奇球星與後輩齊聚致敬，家人與摯友在場邊拭淚——這座城市，永遠記得你的名字。`},
     {e:"🏛️",t:"傳奇的謝幕",x:(g)=>`退休記者會座無虛席，鎂光燈此起彼落。大螢幕播放著你生涯的每一記關鍵球，全場起立鼓掌長達數分鐘。你舉起麥克風，哽咽卻堅定：「謝謝籃球，成就了我的一生。」`},
     {e:"🗽",t:"名留青史",x:(g)=>`聯盟宣布將你的引退日訂為紀念日，主場外豎起了你的雕像。孩子們指著雕像問：「這是誰？」大人們笑著回答：「這是我們的英雄。」`},
+    {e:"👑",t:"傳承火炬",x:(g)=>`在滿場球迷的見證下，你將象徵球隊核心的隊長臂章交給了年輕的新秀。你笑著拍拍他的肩膀：「未來是你的了。」這一刻，一個偉大的時代完美落幕。`},
+    {e:"📖",t:"自傳出版",x:(g)=>`你的退役不僅是體育頭條，更成為社會焦點。你的自傳《Hardwood Life：${g.name}的籃球哲學》一上市便霸佔暢銷榜，無數孩子將你的故事視為人生指引。`},
     {e:"🎬",t:"最後一舞",x:(g)=>`生涯最後一戰，你在終場前被換下場，全場觀眾起立、對手也停下腳步為你鼓掌。你環顧這片奮戰半生的球場，深深一鞠躬——謝幕。`},
   ],
   star:[
     {e:"👏",t:"體面的告別",x:(g)=>`主場為你舉辦了溫馨的歡送賽，隊友輪流上前擁抱。雖然沒有球衣退休那般盛大，但看台上「謝謝你」的巨幅布條，已說明了一切。`},
     {e:"🎤",t:"功成身退",x:(g)=>`你在球隊的季末派對上宣布退休，教練與隊友紛紛致詞。多年征戰，你為球隊留下了難以取代的回憶，也贏得了同行的敬重。`},
+    {e:"🎙️",t:"感性告別",x:(g)=>`退役記者會上，你回顧了自己起伏的生涯，幾度哽咽無法言語。看著台下的家人與一路支持的死忠球迷，你笑中帶淚地說：「這段旅程，我毫無遺憾。」`},
+    {e:"🌟",t:"全明星的致敬",x:(g)=>`聯盟特別在明星賽為你安排了致敬環節，全場球星列隊與你擊掌。雖然沒能達到歷史前十的高度，但你的名字，絕對是這個時代不可或缺的星光。`},
     {e:"📺",t:"轉戰主播台",x:(g)=>`退役後，你受邀擔任賽事球評。鏡頭前妙語如珠、分析精闢，觀眾這才發現：原來你不只會打球，還很會說球。`},
     {e:"👔",t:"西裝筆挺回歸",x:(g)=>`幾年後你以球隊管理層的身分重返球館，西裝取代了球衣。看著場上拚戰的年輕人，你彷彿看見當年的自己。`},
   ],
   role:[
     {e:"🤝",t:"默默離場",x:(g)=>`沒有盛大的儀式，你在更衣室收拾好背包，向陪伴多年的球隊道別。走出球館時，幾位死忠球迷在門口等著，只為和你合照留念。`},
+    {e:"🛡️",t:"藍領的驕傲",x:(g)=>`沒有華麗的數據，也沒有專屬的送別儀式，但當你走向球員通道時，教練與隊友紛紛上前給你最深情的擁抱。因為他們知道，沒有你在髒活累活上的付出，就沒有球隊的今天。`},
+    {e:"📋",t:"無縫接軌",x:(g)=>`脫下球衣的第二天，你換上西裝，直接坐到了教練席的第二排。從球員變成助理教練，你依然用你的籃球智商，繼續守護這支球隊。`},
     {e:"🎓",t:"轉任基層教練",x:(g)=>`掛靴後你回到母校當起助理教練。把畢生所學傳授給下一代，看著孩子們進步，你比自己得分還開心。`},
     {e:"🏢",t:"平凡的轉身",x:(g)=>`你脫下球衣，走進了朝九晚五的生活。同事們偶爾會問：「聽說你以前打職業？」你笑而不答，只在午休時投進一顆漂亮的垃圾桶三分。`},
   ],
   journey:[
     {e:"🧳",t:"漂泊的終點",x:(g)=>`輾轉多隊的生涯畫下句點。你脫下球衣，望著空蕩的球場出神——雖然沒能大紅大紫，但你確實在這片木地板上，拚盡了全力。`},
+    {e:"✈️",t:"最後的機票",x:(g)=>`這十幾年來，你換過無數件球衣，護照上蓋滿了各國聯賽的入境章。今天，你終於不用再打包行李了。你深吸一口氣，笑著對家人說：「我們回家吧。」`},
+    {e:"📝",t:"最後一份短約",x:(g)=>`隨著最後一份十天短約到期，經紀人沒有再打來。你平靜地接受了這個事實，把各隊的球衣整齊疊好。這是一段無比艱辛，卻又無比真實的旅程。`},
     {e:"🚌",t:"最後一趟客場",x:(g)=>`最後一趟客場巴士上，你望著窗外飛逝的城市燈火。這些年住過的旅館、打過的球館多到數不清，但每一站，你都全力以赴過。`},
     {e:"🍺",t:"球友的慶功",x:(g)=>`沒有鎂光燈，只有幾個老球友替你辦了場小酌。大家舉杯：「敬那些拚過的日子！」你笑著乾杯，眼角有點濕。`},
   ],
   obscure:[
     {e:"🍜",t:"廟口的老闆",x:(g)=>`沒有鎂光燈，沒有歡送會，你的退休沒人注意到。多年後，有球迷在廟口的麵攤認出你——原來昔日的球員，如今是這間小吃店的老闆，笑著多送你一顆滷蛋：「以前啊，我也是打球的。」`},
     {e:"🏀",t:"社區球場的傳說",x:(g)=>`職業夢碎，你回到家鄉。如今每逢週末，社區球場上總有個熟練的身影陪孩子們鬥牛。沒人知道他曾經站上職業舞台，但孩子們都喊他一聲「老師」。`},
+    {e:"🏢",t:"週末聯賽戰神",x:(g)=>`你轉行進入企業上班。每到了週末的社會組籃球聯賽，你總是能在場上輕鬆砍下三四十分，享受著業餘球友們崇拜的目光：「那個大叔，以前好像打過職業啊！」`},
     {e:"🚚",t:"另一種人生",x:(g)=>`你收起球鞋，開起了貨車。長長的公路上，收音機正播著球賽，你跟著哼了兩句，握著方向盤的手，還是當年那雙投籃的手。`},
   ],
   undrafted:[
     {e:"📃",t:"落選的那一夜",x:(g)=>`選秀會的名單一路念到最後，始終沒有你的名字。場館燈光暗下，你默默收起球鞋。或許籃球夢到此為止，但人生的下半場，才正要開始——你決定轉換跑道，重新出發。`},
+    {e:"🎥",t:"籃球網紅",x:(g)=>`雖然沒能打上職業，但你憑藉著扎實的籃球底子，轉行成為擁有百萬訂閱的籃球YouTuber。看著影片底下無數球迷的感謝留言，你知道，你依然沒有離開最愛的籃球。`},
     {e:"🥡",t:"轉身之後",x:(g)=>`沒有球隊願意給機會，你收起不甘，脫下球衣。幾年後你在夜市擺起小攤，生意還不錯。偶爾有人問起，你只是笑笑：「以前差一點就打職業了呢。」`},
     {e:"🎒",t:"回到校園",x:(g)=>`籃球這條路走到了盡頭，你重拾書本回到校園。多年後你成了體育老師，把對籃球的熱愛，用另一種方式延續下去。`},
   ],
@@ -2461,6 +2923,7 @@ function render(){
     case "trade": stage.innerHTML=tradeHTML(); break;
     case "retireOption": stage.innerHTML=retireOptionHTML(); break;
     case "intl": stage.innerHTML=intlHTML(); break;
+    case "jones": stage.innerHTML=jonesHTML(); break;
     case "draftDeclare": stage.innerHTML=draftDeclareHTML(); break;
     case "draftResults": stage.innerHTML=draftResultsHTML(); break;
     case "overseasOffer": stage.innerHTML=overseasOfferHTML(); break;
@@ -2893,6 +3356,278 @@ function intlHTML(){
     </div>`;
 }
 
+/* ---------- 瓊斯盃畫面 ---------- */
+function jonesTeamTag(team){
+  const t=JONES_TEAMS[team]||{flag:"🏀",c:"#FF6A2C"};
+  const light=isLightColor(t.c), ink=light?"#17171C":"#fff";
+  return `<span class="jones-team-tag" style="background:${t.c};color:${ink}">${t.flag} ${team}</span>`;
+}
+function jonesStandTable(group){
+  const J=G._jones, st=J.st, rank=jonesRank(group,st);
+  const rows=rank.map((t,i)=>{
+    const me=t===J.team, adv=i<=1;
+    const fl=(JONES_TEAMS[t]||{}).flag||"";
+    return `<tr class="${me?"me":""} ${adv?"adv":""}">
+      <td>${i+1}</td>
+      <td class="l"><span class="flg">${fl}</span>${t}</td>
+      <td>${st[t].w}</td><td>${st[t].l}</td>
+      <td>${st[t].pf-st[t].pa>0?"+":""}${st[t].pf-st[t].pa}</td>
+      <td>${adv?`<span class="qual">晉級</span>`:""}</td>
+    </tr>`;
+  }).join("");
+  return `<div class="label" style="margin-bottom:2px">${group} 組 · 預賽排名</div>
+    <table class="jones-table">
+      <tr><th>#</th><th class="l">隊伍</th><th>勝</th><th>敗</th><th>得失</th><th></th></tr>
+      ${rows}
+    </table>`;
+}
+function jonesScoreboard(res){
+  const meT=G._jones.team, oppT=res.opp;
+  const meC=(JONES_TEAMS[meT]||{}).c, opC=(JONES_TEAMS[oppT]||{}).c;
+  const meFl=(JONES_TEAMS[meT]||{}).flag||"", opFl=(JONES_TEAMS[oppT]||{}).flag||"";
+  return `<div class="jones-scoreboard">
+    <div class="sb-team ${res.win?"win":"lose"}">
+      <div class="fl">${meFl}</div><div class="nm">${meT}</div>
+      <div class="sc">${res.us}</div>
+    </div>
+    <div class="sb-mid"><div class="vs">VS</div><div class="rs ${res.win?"w":"l"}">${res.win?"勝":"敗"}</div></div>
+    <div class="sb-team ${res.win?"lose":"win"}">
+      <div class="fl">${opFl}</div><div class="nm">${oppT}</div>
+      <div class="sc">${res.them}</div>
+    </div>
+  </div>`;
+}
+function jonesKeyPlay(res){
+  const l = res.line, big = [];
+  const diff = Math.abs(res.us - res.them); // 計算真實分差
+  
+  // 個人表現描述 (增加更浮誇與多元的級距)
+  if(l.p >= 30) big.push("宛如砍分機器般無解");
+  else if(l.p >= 24) big.push("得分火力全開");
+  
+  if(l.a >= 10) big.push("傳球出神入化");
+  else if(l.a >= 7) big.push("精準串聯全隊");
+  
+  if(l.rb >= 15) big.push("稱霸禁區籃板");
+  else if(l.rb >= 10) big.push("籃板卡位兇猛");
+  
+  if(l.s >= 4) big.push("防守端頻頻神抄截");
+  else if(l.s >= 3) big.push("抄截如影隨形");
+  
+  if(l.b >= 4) big.push("化身禁區守護神");
+  else if(l.b >= 3) big.push("送出精彩火鍋");
+
+  // 組合個人評語
+  const hi = big.length ? `此役你${big.join("、")}，` : "此役你穩紮穩打、默默做出貢獻，";
+  const teamName = `中華${G._jones.team==="中華藍"?"藍":"白"}`;
+  
+  // 賽果描述 (依據真實分差給予不同情境)
+  let tone = "";
+  if (res.win) {
+    if (diff >= 20) tone = `秋風掃落葉般以 ${diff} 分之差狂勝對手`;
+    else if (diff >= 10) tone = `穩穩掌控局勢，以 ${diff} 分之差順利收下勝利`;
+    else if (diff >= 4) tone = `在激烈拉鋸中頂住壓力，以 ${diff} 分差驚險勝出`;
+    else tone = `在讀秒階段展現強大抗壓性，以 ${diff} 分之差驚險氣走對手`;
+  } else {
+    if (diff >= 20) tone = `全隊攻防失序，以 ${diff} 分之差慘遭對手血洗`;
+    else if (diff >= 10) tone = `一路落居下風，最終以 ${diff} 分之差不敵對手`;
+    else if (diff >= 4) tone = `與對手纏鬥至末節，可惜仍以 ${diff} 分之差遺憾落敗`;
+    else if (diff === 1) tone = `在最後關頭錯失逆轉機會，以 1 分之差飲恨痛失好局`;
+    else tone = `激戰到最後一刻，僅以 ${diff} 分之差惜敗`;
+  }
+  
+  return `${hi}${teamName}最終${tone}。`;
+}
+function jonesHTML(){
+  const J=G._jones; if(!J) return "";
+  const yr=G.year, ov=overall();
+  // 徵召召集
+  if(J.step==="intro"){
+    const senior=J.team==="中華藍";
+    const opps=J.opponents.map(t=>`${(JONES_TEAMS[t]||{}).flag||""} ${t}`).join("、");
+    const gA=curJonesGroups().A.map(t=>`${(JONES_TEAMS[t]||{}).flag||""}${t}`).join("　");
+    const gB=curJonesGroups().B.map(t=>`${(JONES_TEAMS[t]||{}).flag||""}${t}`).join("　");
+    return `<div class="season-hd"><span class="stage">威廉瓊斯盃 · 徵召</span><span class="yr">${yr}</span></div>
+      <div class="panel jones-hero">
+        <div class="jones-badge">🏆 William Jones Cup</div>
+        <div>${jonesTeamTag(J.team)}</div>
+        <p class="muted" style="margin:12px 0 0">${senior
+          ? `你已是各聯盟主力，獲徵召進入 <b style="color:var(--blue)">中華藍</b>——集結旅外好手與聯賽主力的正牌國家隊，目標直取冠軍、為亞洲盃練兵。`
+          : `你是備受期待的潛力新星，入選 <b>中華白</b>——由大專與初上職業的年輕球員組成的培訓梯隊，這是你在國際舞台證明自己的第一步。`}</p>
+      </div>
+      <div class="panel">
+        <div class="label">賽制</div>
+        <p class="small mt8" style="line-height:1.7">8 隊分為 A、B 兩組進行預賽循環（每隊打 3 場）。兩組各取前二晉級四強，交叉對戰（A1–B2、B1–A2），<b>勝者爭冠、敗者拚季軍</b>。每場之間都有專屬狀況等你抉擇。</p>
+        <div class="mt12">${jonesStandGroupsPreview()}</div>
+      </div>
+      <div class="panel">
+        <div class="label">你的預賽對手（${J.group} 組）</div>
+        <p class="small mt8">${opps}</p>
+      </div>`;
+  }
+  // 場間事件（預賽 / 淘汰賽共用）
+  if(J.step==="event"||J.step==="koEvent"){
+    const ev=J.event;
+    const ko=J.step==="koEvent";
+    const label = ko ? (J.ko.round==="semi"?"準決賽 · 賽前":J.ko.round==="final"?"冠軍戰 · 賽前":"季軍戰 · 賽前")
+                     : `預賽 第 ${J.gameIdx+1}/3 戰 · 賽前`;
+    const nextOpp = ko ? J.ko.opp : J.opponents[J.gameIdx];
+    const boostTxt = J.boost? `<p class="small mt8" style="color:var(--gold)">🔥 本場氣勢加成 ${J.boost>0?"+":""}${Math.round(J.boost*100)}%</p>`:"";
+    return `<div class="season-hd"><span class="stage">瓊斯盃 · ${label}</span><span class="yr">${yr}</span></div>
+      <div class="team-line">${jonesTeamTag(J.team)} <span style="color:var(--faint)">下一場：${(JONES_TEAMS[nextOpp]||{}).flag||""} ${nextOpp}</span></div>
+      <div class="panel" id="jevpanel">
+        <div class="label">場間狀況 · 抉擇</div>
+        <div class="event-title">${ev.t}</div>
+        <div class="event-text">${ev.x}</div>
+        <div class="opts">
+          ${ev.o.map((o,i)=>`<button class="opt" data-jopt="${i}">
+            <span class="ico">${o.i}</span>
+            <span class="ot"><div>${o.l}</div><div class="oh">${o.h}</div></span></button>`).join("")}
+        </div>
+        ${boostTxt}
+        <p class="small mt12">選擇後擲出命運骰 🎲，點數越高、對下一場的氣勢加成越大。</p>
+      </div>`;
+  }
+  // 賽事報告（預賽 / 淘汰賽共用）
+  if(J.step==="gameReport"||J.step==="koReport"){
+    const res=J.lastGame, g=Math.max(1,J.tot.g);
+    const avg={p:round(J.tot.p/g),rb:round(J.tot.rb/g),a:round(J.tot.a/g),s:round(J.tot.s/g),b:round(J.tot.b/g)};
+    const myGroupTable = (J.step==="gameReport") ? jonesStandTable(J.group) : "";
+    const mvpBadge = res.line.p>=28? `<div style="text-align:center"><span class="jones-mvp">🔥 單場代表作 ${res.line.p} 分</span></div>`:"";
+    return `<div class="season-hd"><span class="stage">瓊斯盃 · ${res.stage} · 賽事報告</span><span class="yr">${yr}</span></div>
+      ${jonesScoreboard(res)}
+      ${mvpBadge}
+      <div class="panel">
+        <div class="label">你的個人數據</div>
+        <div class="stat5">
+          <div class="s"><div class="v" style="color:var(--orange)">${res.line.p}</div><div class="l">得分</div></div>
+          <div class="s"><div class="v">${res.line.rb}</div><div class="l">籃板</div></div>
+          <div class="s"><div class="v">${res.line.a}</div><div class="l">助攻</div></div>
+          <div class="s"><div class="v">${res.line.s}</div><div class="l">抄截</div></div>
+          <div class="s"><div class="v">${res.line.b}</div><div class="l">阻攻</div></div>
+        </div>
+        <div class="jones-keyplay">${jonesKeyPlay(res)}</div>
+        ${J.injuryNote?`<div class="outcome mt12"><div class="ot">🩹 ${J.injuryNote}</div></div>`:""}
+      </div>
+      <div class="panel">
+        <div class="label">瓊斯盃場均（${J.tot.g} 場）</div>
+        <div class="stat5">
+          <div class="s"><div class="v" style="color:var(--gold)">${avg.p}</div><div class="l">得分</div></div>
+          <div class="s"><div class="v">${avg.rb}</div><div class="l">籃板</div></div>
+          <div class="s"><div class="v">${avg.a}</div><div class="l">助攻</div></div>
+          <div class="s"><div class="v">${avg.s}</div><div class="l">抄截</div></div>
+          <div class="s"><div class="v">${avg.b}</div><div class="l">阻攻</div></div>
+        </div>
+      </div>
+      ${myGroupTable?`<div class="panel">${myGroupTable}</div>`:""}`;
+  }
+  // 預賽結束 → 晉級判定
+  if(J.step==="groupResult"){
+    const advanced=J.groupSeed<=2;
+    return `<div class="season-hd"><span class="stage">瓊斯盃 · 預賽結束</span><span class="yr">${yr}</span></div>
+      <div class="panel center">
+        <div class="jones-badge">預賽戰績出爐</div>
+        <h2 style="font-size:20px;margin:10px 0 4px">${jonesTeamTag(J.team)}</h2>
+        <p class="muted">你所屬的 ${J.group} 組排名 <b style="color:${advanced?"var(--green)":"var(--red)"}">第 ${J.groupSeed} 名</b>${advanced?"，成功晉級四強！":"，未能晉級四強。"}</p>
+      </div>
+      <div class="panel">${jonesStandTable("A")}</div>
+      <div class="panel">${jonesStandTable("B")}</div>
+      ${advanced?`<div class="panel"><div class="label">四強交叉對戰</div><p class="small mt8">A 組第1 vs B 組第2　·　B 組第1 vs A 組第2<br>勝者晉級冠軍戰，敗者進行季軍戰。</p></div>`:""}`;
+  }
+  // 總結
+  if(J.step==="done"){
+    const podium=/冠軍|亞軍|季軍/.test(J.finalPlace);
+    const medalIco=J.finalPlace.includes("冠")?"🥇":J.finalPlace.includes("亞")?"🥈":J.finalPlace.includes("季")?"🥉":"🏀";
+    const senior=J.team==="中華藍";
+    const bracket=J.results.filter(r=>/準決賽|冠軍戰|季軍戰/.test(r.stage)).map(r=>`
+      <div class="bk"><span><span class="rd">${r.stage}</span><br>${(JONES_TEAMS[r.opp]||{}).flag||""} vs ${r.opp}</span>
+        <b style="color:${r.win?"var(--green)":"var(--red)"}">${r.us} : ${r.them} ${r.win?"勝":"敗"}</b></div>`).join("");
+    const rewardTxt = senior
+      ? (podium?`🏅 登上頒獎台，本屆列為<b>正式國際獎牌</b>（生涯獎牌 ${G.intlMedals}）。`:`磨合主力陣容、累積國際經驗。`)
+      : `🌱 白隊培養有成，獲得下季<b>額外訓練點</b>與人氣提升。`;
+    return `<div class="season-hd"><span class="stage">威廉瓊斯盃 · 落幕</span><span class="yr">${yr}</span></div>
+      <div class="panel center">
+        <div style="font-size:44px">${medalIco}</div>
+        <div>${jonesTeamTag(J.team)}</div>
+        <h2 style="font-size:24px;margin:8px 0 2px;color:var(--gold)">${J.finalPlace}</h2>
+        <div class="small" style="color:var(--dim)">本屆 8 隊 · 最終第 ${J.placeNum} 名</div>
+        ${J.mvp?`<div style="margin-top:8px"><span class="jones-mvp">🏆 賽會 MVP</span></div>`:""}
+        ${J.bestFive&&!J.mvp?`<div style="margin-top:8px"><span class="jones-mvp">🏅 賽會最佳五人</span></div>`:""}
+      </div>
+      <div class="panel">
+        <div class="label">賽會場均（${J.tot.g} 場）</div>
+        <div class="stat5">
+          <div class="s"><div class="v" style="color:var(--gold)">${J.avg.p}</div><div class="l">得分</div></div>
+          <div class="s"><div class="v">${J.avg.rb}</div><div class="l">籃板</div></div>
+          <div class="s"><div class="v">${J.avg.a}</div><div class="l">助攻</div></div>
+          <div class="s"><div class="v">${J.avg.s}</div><div class="l">抄截</div></div>
+          <div class="s"><div class="v">${J.avg.b}</div><div class="l">阻攻</div></div>
+        </div>
+      </div>
+      ${bracket?`<div class="panel"><div class="label">淘汰賽戰績</div><div class="jones-bracket">${bracket}</div></div>`:""}
+      <div class="panel"><div class="jones-keyplay">${rewardTxt}</div></div>`;
+  }
+  return "";
+}
+function jonesStandGroupsPreview(){
+  const g=grp=>`<div style="flex:1"><div class="label" style="margin-bottom:4px">${grp} 組</div>${curJonesGroups()[grp].map(t=>`<div class="small" style="padding:2px 0">${(JONES_TEAMS[t]||{}).flag||""} ${t}${(t==="中華白"||t==="中華藍")?' <span style="color:var(--orange)">★</span>':""}</div>`).join("")}</div>`;
+  return `<div style="display:flex;gap:14px">${g("A")}${g("B")}</div>`;
+}
+function jonesActions(){
+  const J=G._jones; if(!J) return [];
+  switch(J.step){
+    case "intro": return [
+      {t:"披上戰袍出戰 ▶",cls:"gold",fn:jonesAdvance},
+      {t:"婉拒徵召（保護身體）",cls:"ghost",fn:declineJones},
+    ];
+    case "event": case "koEvent": return []; // 由骰子流程接管
+    case "gameReport": case "koReport": return [{t:"繼續 ▶",cls:"gold",fn:jonesAdvance}];
+    case "groupResult": return [{t:J.groupSeed<=2?"前進四強 ▶":"查看最終名次 ▶",cls:"gold",fn:jonesAdvance}];
+    case "done": return [{t:"完成瓊斯盃 ▶",cls:"gold",fn:jonesAdvance}];
+  }
+  return [];
+}
+function jonesBind(){
+  const J=G._jones; if(!J) return;
+  const s=$("#stage"); if(!s) return;
+  if(J.step==="event"||J.step==="koEvent"){
+    s.querySelectorAll("[data-jopt]").forEach(b=>b.addEventListener("click",()=>jonesResolveOption(parseInt(b.dataset.jopt))));
+  }
+}
+function jonesResolveOption(i){
+  const J=G._jones, ev=J.event, opt=ev.o[i];
+  const panel=$("#jevpanel");
+  panel.innerHTML=`<div class="label">命運骰</div>
+    <div class="dice-stage"><div class="die rolling" id="jdie">${pipHTML(1)}</div>
+      <div class="roll-caption" id="jrollcap">擲骰中…</div></div>`;
+  const die=$("#jdie"); let ticks=0;
+  const iv=setInterval(()=>{ die.innerHTML=pipHTML(1+Math.floor(rawRnd()*6)); if(++ticks>10){} },70);
+  setTimeout(()=>{
+    clearInterval(iv);
+    const roll=rint(1,6);
+    die.classList.remove("rolling"); die.innerHTML=pipHTML(roll);
+    const outcome=opt.f(roll);
+    if(roll<=2 && outcome.attr){ for(const k in outcome.attr){ if(outcome.attr[k]>0) outcome.attr[k]=chance(.5)?-1:0; } }
+    applyEffects(outcome);
+    if(typeof outcome.jb==="number") J.boost=clamp((J.boost||0)+outcome.jb, -.15, .22);
+    const deltas=[];
+    if(outcome.attr) for(const k in outcome.attr){const d=outcome.attr[k]; if(!d) continue;
+      deltas.push(`<span class="delta ${d>=0?"pos":"neg"}">${ATTR_LABEL[k]} ${d>=0?"+":""}${d}</span>`);}
+    if(outcome.health)deltas.push(`<span class="delta ${outcome.health>=0?"pos":"neg"}">健康 ${outcome.health>=0?"+":""}${outcome.health}</span>`);
+    if(outcome.fame)deltas.push(`<span class="delta ${outcome.fame>=0?"pos":"neg"}">名氣 ${outcome.fame>=0?"+":""}${outcome.fame}</span>`);
+    if(outcome.morale)deltas.push(`<span class="delta ${outcome.morale>=0?"pos":"neg"}">士氣 ${outcome.morale>=0?"+":""}${outcome.morale}</span>`);
+    if(typeof outcome.jb==="number"&&outcome.jb)deltas.push(`<span class="delta ${outcome.jb>=0?"pos":"neg"}">氣勢 ${outcome.jb>=0?"+":""}${Math.round(outcome.jb*100)}%</span>`);
+    const good=tier(roll)==="high", bad=tier(roll)==="low";
+    $("#jrollcap").innerHTML=`擲出 <b class="oswald" style="color:var(--gold);font-size:18px">${roll}</b>`;
+    const oc=document.createElement("div");
+    oc.className="outcome "+(good?"good":bad?"bad":"");
+    oc.innerHTML=`<div class="ot">${outcome.text}</div>${deltas.length?`<div class="deltas">${deltas.join("")}</div>`:""}`;
+    panel.appendChild(oc);
+    refreshHUD();
+    setAction([{t:"進入比賽 ▶",cls:"gold",fn:jonesAdvance}]);
+  },850);
+}
+
 /* ---------- 選秀宣告（自選台灣聯盟，最多 3；海外自動接觸） ---------- */
 function draftDeclareHTML(){
   const ov=overall(), ps=Math.round(prospectScore());
@@ -3017,7 +3752,7 @@ function intlTableHTML(){
   const head=`<tr><th class="l">年份</th><th class="l">賽事</th><th>得分</th><th>籃板</th><th>助攻</th><th class="l">成績</th></tr>`;
   const body=G.intlHistory.map(r=>`<tr><td class="l">${r.year}</td><td class="l" style="color:var(--dim)">${r.event}</td>
     <td style="color:var(--orange);font-weight:600">${r.ppg}</td><td>${r.rpg}</td><td>${r.apg}</td>
-    <td class="l" style="color:var(--gold)">${[r.medal,r.mvp?"MVP":""].filter(Boolean).join(" · ")||"—"}</td></tr>`).join("");
+    <td class="l" style="color:var(--gold)">${[r.medal,r.mvp?"MVP":"",r.bestFive&&!r.mvp?"最佳五人":""].filter(Boolean).join(" · ")||"—"}</td></tr>`).join("");
   return `<table class="stats" style="min-width:420px">${head}${body}</table>`;
 }
 function careerSummaryHTML(){
@@ -3056,25 +3791,36 @@ function hallOfFameHTML(){
     <div class="hof-grid">${cards.join("")}</div>${ceremony}`;
 }
 function hofCeremonyHTML(h){
-  const yr=G.year+3; // 退休三年後受提名
-  const names=[]; if(h.taiwan)names.push("台灣籃球名人堂"); if(h.china)names.push("中國籃球名人堂"); if(h.korea)names.push("韓國籃球名人堂"); if(h.naismith)names.push("奈史密斯名人堂");
-  const which = names.length>1 ? names.slice(0,-1).join("、")+"與"+names[names.length-1]+"多重殿堂" : names[0];
-  const bodies=[];
-  if(h.naismith) bodies.push(`跨海而來的祝賀影片在會場輪番播放，昔日對手與隊友齊聲推崇——一位來自台灣的孩子，最終在世界最高殿堂留下名字。`);
-  if(h.china) bodies.push(`在中國賽場的每一次長征與拚搏都被記得，全場起立向這位遠道而來、卻打出一片天的球員致敬。`);
-  if(h.korea) bodies.push(`韓國球迷沒有忘記你——那些在滿場加油聲中扛住外援、以本土之姿站上舞台的夜晚，如今被永久記在名人堂裡。`);
-  if(h.taiwan) bodies.push(`從 HBL 的青澀少年，到扛起中華隊的中流砥柱，你的名字成了台灣籃球一整個世代的共同記憶。`);
-  const speech = h.naismith
-    ? `站上講台，你望著滿場觀眾，深吸一口氣：「我來自一個籃球不是主流的地方，但正因如此，我更想證明——夢想沒有國界。」`
-    : h.china
-    ? `你握著麥克風，感慨道：「離鄉背井打拚的日子不容易，謝謝所有相信我的人。這份榮耀，我會永遠記得。」`
-    : `你握著麥克風，聲音微顫：「謝謝這片土地，謝謝每一個曾為我加油的人。這座獎，屬於台灣籃球。」`;
+  const yr = G.year + 3; // 退休三年後受提名
+  const names = []; 
+  if(h.taiwan) names.push("台灣籃球名人堂"); 
+  if(h.china) names.push("中國籃球名人堂"); 
+  if(h.korea) names.push("韓國籃球名人堂"); 
+  if(h.naismith) names.push("奈史密斯名人堂");
+  
+  const which = names.length > 1 ? names.slice(0,-1).join("、") + "與" + names[names.length-1] + "多重殿堂" : names[0];
+  
+  const bodies = [];
+  if(h.naismith) bodies.push(`跨海而來的祝賀影片在會場輪番播放，昔日的死敵與摯友齊聲推崇——一位來自台灣的孩子，憑藉著不屈的意志與超凡的球技，最終在世界最高殿堂刻下了不朽的名字。`);
+  if(h.china) bodies.push(`在中國賽場的每一次長征與拚搏都被銘記，大螢幕上重播著你頂住外援壓力、力挽狂瀾的經典畫面，全場起立向這位遠道而來、卻打出一片天的傳奇球員致敬。`);
+  if(h.korea) bodies.push(`韓國球迷沒有忘記你——那些在滿場狂熱的加油聲中扛住壓力、以超神之姿統治賽場的夜晚，如今被永久載入了韓國聯賽的史冊。`);
+  if(h.taiwan) bodies.push(`從 HBL 揮灑汗水的青澀少年，到扛起中華隊大旗的中流砥柱，你的名字早就成了台灣籃球一整個世代的共同信仰。`);
+  
+  let speech = "";
+  if (h.naismith) {
+    speech = `站上講台，你望著滿場星光熠熠的傳奇前輩，深吸一口氣：「我來自一個籃球並非世界頂尖的小島，但我從未停止作夢。謝謝籃球，讓我證明了夢想的重量，沒有國界。」`;
+  } else if (h.china || h.korea) {
+    speech = `你握著麥克風，感慨萬千地說：「離鄉背井打拚的日子充滿荊棘，謝謝所有在我低潮時依然相信我的人。這份跨越海峽與國界的榮耀，我會永遠珍藏。」`;
+  } else {
+    speech = `你握著麥克風，看著台下熟悉的台灣球迷，聲音微顫：「謝謝這片孕育我的土地，謝謝每一個在電視機前、在觀眾席上曾為我吶喊的人。這座獎，屬於台灣籃球。」`;
+  }
+
   return `<div class="hof-ceremony">
-    <div class="hofc-tag">🏛️ 名人堂提名</div>
+    <div class="hofc-tag">🏛️ 名人堂榮耀</div>
     <div class="hofc-title">退休三年後，殿堂來電</div>
     <p class="hofc-text">${G.year} 年宣布退休後，時間悄悄過去。${yr} 年，一通電話打破了平靜——你正式獲得 <b>${which}</b> 的提名。${bodies.join("")}</p>
-    <p class="hofc-text">入選典禮當天，${G.name} 的背號、身影與那些關鍵時刻，被永久鐫刻在名人堂的牆上。${speech}</p>
-    <div class="hofc-seal">— ${yr} 年 · ${G.name} 正式入選 —</div>
+    <p class="hofc-text">入選典禮當天，${G.name} 的背號、身影與那些無數次拯救球隊的關鍵時刻，被永久鐫刻在名人堂的榮譽牆上。${speech}</p>
+    <div class="hofc-seal">— ${yr} 年 · ${G.name} 正式入列傳奇 —</div>
   </div>`;
 }
 function renderRetireScene(){
@@ -3505,6 +4251,7 @@ function defaultPhaseActions(){
     case "overseasOffer": return [];
     case "trade": return [{t:"了解，繼續 ▶",cls:"",fn:processOffseason}];
     case "intl": return G._intlResult?[{t:"繼續 ▶",cls:"gold",fn:intlContinue}]:[];
+    case "jones": return jonesActions();
     default: return [];
   }
 }
@@ -3525,6 +4272,7 @@ function bindPhaseSpecific(){
   const rt=s.querySelector("[data-retire]");if(rt)rt.addEventListener("click",confirmRetire);
   const pi=s.querySelector("#playIntl");if(pi)pi.addEventListener("click",playIntl);
   const di=s.querySelector("#declineIntl");if(di)di.addEventListener("click",declineIntl);
+  if(G.phase==="jones") jonesBind();
   // 選秀：台灣聯盟複選
   s.querySelectorAll("[data-dleague]").forEach(b=>b.addEventListener("click",()=>toggleDraftLeague(b.dataset.dleague)));
   // 選秀結果：加盟
@@ -3579,7 +4327,7 @@ function renderStart(){
       <p class="small center mt12">每個決定都會改變你的生涯軌跡。準備好了嗎？</p>
       <p class="small center" style="padding-bottom:24px;color:var(--faint)">聯絡我：<a href="https://www.threads.com/@twbasketball__life" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:none;font-weight:700">twbasketball__life</a></p>
     </div>`;
-  const homes=["台北","新北","基隆","宜蘭","桃園","新竹","苗栗","台中","彰化","雲林","台南","高雄","屏東","花蓮","台東"];
+  const homes=["台北","新北","基隆","宜蘭","桃園","新竹","苗栗","台中","彰化","雲林","嘉義","台南","高雄","屏東","花蓮","台東"];
   let home=homes[0];
   const hc=$("#homeChips");
   homes.forEach((h,i)=>{const el=document.createElement("button");el.className="chip"+(i===0?" on":"");
