@@ -689,7 +689,7 @@ function lname(lg){ return LEAGUE_DISPLAY[lg]||lg; }
 /* 聯盟層級（用於報價/跳級/排序，數字越大越高） */
 const LEAGUE_RANK={SBL:1,"P+":2,"TPBL":2,"發展聯盟":3,"日職 B.League":4,"CBL":4,"KRBL":4,"NBA":5};
 /* ---------- 聯盟難度（越高越難刷數據） ---------- */
-const DIFF={"高中":.55,"UBA":.72,"NCAA D2":.82,"NCAA D1":.98,"發展聯盟":1.02,"SBL":.88,"P+":1.0,"TPBL":1.0,"日職 B.League":1.16,"CBL":1.2,"KRBL":1.14,"NBA":1.62};
+const DIFF={"高中":.55,"UBA":.72,"NCAA D2":.82,"NCAA D1":1.05,"發展聯盟":1.08,"SBL":.88,"P+":1.0,"TPBL":1.0,"日職 B.League":1.16,"CBL":1.2,"KRBL":1.14,"NBA":1.62};
 /* ---------- 薪資基準（單位：萬新台幣 / 年；續約/巔峰行情，會依能力縮放） ---------- */
 const PAY={"發展聯盟":[120,600],SBL:[150,900],"P+":[300,2200],TPBL:[300,2200],"日職 B.League":[1200,7000],CBL:[1500,9000],KRBL:[1000,6000],NBA:[4000,90000]};
 /* ---------- 新秀合約行情（較低，之後靠續約成長） ---------- */
@@ -701,7 +701,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.1.8.52";
+const VERSION="V.1.8.53";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -734,7 +734,7 @@ function newGame(name,pos,home,jersey,seed){
   G={
     name,pos,home,jersey:jn,
     height, weight, _growthBoost: 0,
-    attr, potential:(function(){let p=rint(70,83);if(chance(.16))p+=rint(3,10);return clamp(p,70,95);})(),
+    attr, potential:(function(){let p=rint(68,80);if(chance(.12))p+=rint(6,15);return clamp(p,68,99);})(),
     age:16, year:2026, stage:"高中", grade:1, league:"高中", team:schoolPick("高中"),
     health:100, money:0, morale:70, fame:5,
     contract:null, proStarted:false, collegeYears:0, rookieDone:false,
@@ -1874,22 +1874,39 @@ function collegeOffers(ov){
   // 計算靜態天賦優勢 (基準身高)
   const baseH = { PG: 176, SG: 184, SF: 191, PF: 197, C: 202 }[G.pos];
   const hDiff = G.height - baseH;
-  const isFreak = hDiff >= 6; // 靜態天賦極度驚人 (D1等級)
-  const isGreat = hDiff >= 3; // 靜態天賦優秀 (D2等級)
+  
+  // 【修改點】加入雙重檢定：不僅看身高，還看基礎能力或體能
+  const isFreak = hDiff >= 6 && (ov >= 64 || G.attr.athletic >= 70); // 靜態怪物且具備基本戰力/體能
+  const isGreat = hDiff >= 4 && (ov >= 58 || G.attr.athletic >= 65); // 靜態優秀且有培養空間
+  const isProject = hDiff >= 7 && ov < 64; // 空有身高但技術極糙的「未完成品」長人
 
-  // 台灣 UBA 名校一定有；美國 NCAA 依能力或天賦決定資格
-  if(isFreak) { 
-    add("NCAA D1","🇺🇸 D1 全額獎學金"); add("NCAA D1","🇺🇸 D1 名校"); add("UBA","🇹🇼 UBA 勁旅"); 
+  // 判定 Offer 發放邏輯 (技術流與天賦流的平衡)
+  if(ov >= 72) { 
+    // 技術極其出色，無視身高硬拿 D1 名校
+    add("NCAA D1","🇺🇸 D1 籃球名校"); add("NCAA D1","🇺🇸 D1 全額獎學金"); add("UBA","🇹🇼 UBA 霸主"); 
   }
-  else if(ov>=70){ 
-    add("NCAA D1","🇺🇸 D1 名校"); add("NCAA D1","🇺🇸 D1"); add("UBA","🇹🇼 UBA 勁旅"); 
+  else if(isFreak) { 
+    // 天賦怪物，D1 願意砸資源栽培
+    add("NCAA D1","🇺🇸 D1 潛力新星"); add("NCAA D1","🇺🇸 D1"); add("UBA","🇹🇼 UBA 勁旅"); 
   }
-  else if(isGreat) { 
-    add("NCAA D2","🇺🇸 D2 全額獎學金"); add("NCAA D1","🇺🇸 D1"); add("UBA","🇹🇼 UBA 勁旅"); 
+  else if(ov >= 66) { 
+    // 技術優秀，D1 後段班或 D2 頂級球隊
+    add("NCAA D1","🇺🇸 D1"); add("NCAA D2","🇺🇸 D2 全額獎學金"); add("UBA","🇹🇼 UBA 勁旅"); 
   }
-  else if(ov>=63){ add("NCAA D1","🇺🇸 D1"); add("NCAA D2","🇺🇸 D2"); add("UBA","🇹🇼 UBA 勁旅"); }
-  else if(ov>=56){ add("NCAA D2","🇺🇸 D2"); add("UBA","🇹🇼 UBA 勁旅"); add("UBA","🇹🇼 UBA"); }
-  else { add("UBA","🇹🇼 UBA 勁旅"); add("UBA","🇹🇼 UBA"); }
+  else if(isGreat || isProject) { 
+    // 天賦優秀，或是純靠身高讓美國教練想「賭一把」的專案球員
+    add("NCAA D2","🇺🇸 D2 獎學金"); add("NCAA D2","🇺🇸 D2"); add("UBA","🇹🇼 UBA 勁旅"); 
+  }
+  else if(ov >= 60){ 
+    add("NCAA D2","🇺🇸 D2"); add("UBA","🇹🇼 UBA 勁旅"); add("UBA","🇹🇼 UBA"); 
+  }
+  else if(ov >= 54){ 
+    add("UBA","🇹🇼 UBA 勁旅"); add("UBA","🇹🇼 UBA"); 
+  }
+  else { 
+    // Fallback: 實力不濟只能從基層打起
+    add("UBA","🇹🇼 UBA"); 
+  }
   
   return offers.slice(0,3);
 }
@@ -1897,32 +1914,31 @@ function collegeOffers(ov){
 // 選秀行情：在美國 NCAA 打球有加成（更容易挑戰更高殿堂 / NBA）
 function draftStock(){
   const ov=overall();
-  const bonus = G.league==="NCAA D1"?6 : G.league==="NCAA D2"?2 : 0;
+  const bonus = G.league==="NCAA D1"?3 : G.league==="NCAA D2"?1 : 0;
   return ov + bonus;
 }
 
 function proTargetLeagues(ov){
-  // 回傳可簽的職業聯盟（由高到低）— 門檻提高，旅外更難
   const t=[];
-  if(ov>=87) t.push("NBA");
-  if(ov>=80) t.push("CBL","日職 B.League");
-  if(ov>=79) t.push("KRBL");
-  if(ov>=78) t.push("發展聯盟");
-  if(ov>=72) t.push("TPBL","P+");
-  if(ov>=58) t.push("SBL");
+  if(ov>=90) t.push("NBA"); // NBA 自由市場門檻：需真實 OVR 90 以上
+  if(ov>=80) t.push("日職 B.League","CBL"); // 【修改】從 82 下修
+  if(ov>=78) t.push("KRBL");
+  if(ov>=74) t.push("發展聯盟");
+  if(ov>=68) t.push("TPBL","P+");
+  if(ov>=54) t.push("SBL");
   return t; 
 }
 /* 各聯盟「競爭水準線」：低於此線一截就有被釋出風險 */
-const LEAGUE_STANDARD={"SBL":56,"P+":68,"TPBL":68,"發展聯盟":74,"日職 B.League":80,"CBL":78,"KRBL":77,"NBA":86};
+const LEAGUE_STANDARD={"SBL":54,"P+":64,"TPBL":64,"發展聯盟":72,"日職 B.League":78,"CBL":77,"KRBL":76,"NBA":84};
 /* 近期產出（給選秀 / 海外報價參考） */
 function lastSeason(){ const h=G.seasonHistory; return h.length? h[h.length-1] : null; }
 function recentProd(){ const s=lastSeason(); return s? (s.prodScore||0) : 0; }
 /* 戰力行情：能力 + 美國加成 + 亮眼數據加成 + 身高紅利 */
 function prospectScore(){
   const prod=recentProd();
-  const prodBonus=clamp((prod-16)*.62,0,14);
+  // 【修改】降低純靠大學刷數據帶來的虛假行情，最多 +10
+  const prodBonus=clamp((prod-20)*.35, 0, 5); 
   
-  // 身高對行情的影響 (NBA 等頂級聯盟極度看重靜態天賦)
   let heightBonus = 0;
   if(G.height >= 208) heightBonus = 4; 
   else if(G.height >= 200) heightBonus = 2;
@@ -1945,6 +1961,8 @@ function proOffers(ovArg){
   const ov=overall(), mv=marketValue();
   const eff=Math.round(mv + clamp((recentProd()-24)*.32,0,5));
   let targets=proTargetLeagues(eff).filter(lg=>mv >= (LEAGUE_STANDARD[lg]||0)-6);
+  // NBA 特例：自由市場不能只靠 perfFloor 灌高身價跳進來，必須有真實 OVR 撐腰
+  targets=targets.filter(lg=>lg!=="NBA" || ov>=88);
   
   if(isPro()){
     const curRank=LEAGUE_RANK[G.league]||0;
@@ -2244,12 +2262,17 @@ function overseasJumpAvailable(){
   const ps=prospectScore();
   // 發展聯盟是 NBA 的直接跳板：表現好就有機會被「call up」上 NBA，門檻較低、機率隨近期產出提升
   if(G.league==="發展聯盟"){
-    const prod=recentProd(), ov=overall();
-    if(ov>=80 || prod>=24){
-      const callChance=clamp(.12 + Math.max(0,prod-22)*.04 + Math.max(0,ov-80)*.03, .12, .8);
-      if(chance(callChance)){ G._overseasTargets=["NBA"]; G._callUp=true; return true; }
+  const prod=recentProd(), ov=overall();
+  // 必須要有實質戰力 (OVR >= 85) 且數據具有統治力 (prod >= 28)
+  if(ov >= 84 && prod >= 26){
+    const callChance = clamp(0.1 + (ov - 84) * 0.05 + (prod - 26) * 0.04, 0.1, 0.65);
+    if(chance(callChance)){
+      G._overseasTargets=["NBA"];
+      G._callUp=true;
+      return true;
     }
   }
+}
   const targets=proTargetLeagues(Math.round(overall()*.5+ps*.5)).filter(l=>(rank[l]||0)>cur);
   if(!targets.length)return false;
   G._overseasTargets=targets; G._callUp=false; return chance(.5);
@@ -2340,13 +2363,29 @@ function confirmDraft(){
       salary:draftSalary("KRBL",kpick,ov),tag:`${lname("KRBL")} 第 ${kpick} 順位`}); }
   }
   // 海外接觸（依戰力行情，門檻更高）— 發展聯盟為美國發展性聯盟，順位偏中後段
-  const devPick=()=>Math.round(clamp(42-(ps-88)*1.1+rnd(-6,6),4,80));
-  if(ps>=94){ // NBA 選秀（門檻略降，仍需頂尖）
-    const npick=Math.round(clamp(60-(ps-94)*3+rnd(-6,6),1,75));
-    if(npick<=58){ offers.push({type:"draft",league:"NBA",team:randTeam("NBA"),pick:npick,years:rint(2,4),
-      salary:draftSalary("NBA",npick,ov),tag:`${lname("NBA")} 第 ${npick} 順位`}); }
-    else { const dp=devPick(); offers.push({type:"draft",league:"發展聯盟",team:randTeam("發展聯盟"),pick:dp,years:1,
-      salary:draftSalary("發展聯盟",dp,ov),tag:`🇺🇸 落選→發展聯盟 第 ${dp} 順位`}); }
+  const devPick=()=>Math.round(clamp(42-(ps-84)*1.5+rnd(-6,6),4,80));
+  if(ps >= 100){ 
+    // 首輪 / 樂透區門檻：加成砍半後，實際約需 OVR 88+ 的硬實力
+    const npick = Math.round(clamp(30 - (ps-100)*2.5 + rnd(-4,4), 1, 30));
+    offers.push({
+      type:"draft", league:"NBA", team:randTeam("NBA"), pick:npick, years:rint(2,4),
+      salary:draftSalary("NBA",npick,ov), tag:`${lname("NBA")} 第 ${npick} 順位`
+    });
+  } else if(ps >= 94 && G.league.startsWith("NCAA")){ 
+    // 次輪邊緣與雙向合約門檻：真的在 NBA 邊緣、且仍要賭運氣
+    if(chance(0.25)){
+      const npick = rint(31, 58);
+      offers.push({
+        type:"draft", league:"NBA", team:randTeam("NBA"), pick:npick, years:2,
+        salary:ROOKIE_PAY["NBA"][0], tag:`${lname("NBA")} 次輪第 ${npick} 順位（雙向保障）`
+      });
+    } else {
+      const dp = devPick();
+      offers.push({
+        type:"draft", league:"發展聯盟", team:randTeam("發展聯盟"), pick:dp, years:1,
+        salary:draftSalary("發展聯盟",dp,ov), tag:`🇺🇸 挑戰 NBA 落選 → 轉戰發展聯盟`
+      });
+    }
   }
   if(ps>=88){ offers.push({type:"draft",league:"日職 B.League",team:randTeam("日職 B.League"),pick:0,years:rint(2,3),
     salary:makeContract("日職 B.League","",1,ov).salary,tag:"🇯🇵 海外報價"}); }
@@ -3327,15 +3366,23 @@ function hsDecisionHTML(){
   const baseH = { PG: 176, SG: 184, SF: 191, PF: 197, C: 202 }[G.pos];
   const hDiff = G.height - baseH;
   
+  // 與 Offer 發放同步的檢定邏輯
+  const isFreak = hDiff >= 6 && (ov >= 64 || G.attr.athletic >= 70);
+  const isGreat = hDiff >= 4 && (ov >= 58 || G.attr.athletic >= 65);
+  const isProject = hDiff >= 7 && ov < 64;
+
   let title = "高中畢業 · 抉擇";
   let desc = `依你的綜合表現（OVR ${ov}），收到以下升學 Offer。大學能磨練實力、增加曝光；也可直接拚職業。`;
   
-  if (hDiff >= 6) {
+  if (isFreak) {
     title = "高中畢業 · 來自大洋彼岸的邀約";
-    desc = `【海外球探報告】你 <b style="color:var(--gold)">${G.height}cm / ${G.weight}kg</b> 的驚人靜態天賦引起了全美球探的瘋狂！美國 NCAA D1 學校捧著全額獎學金跨海來找你，承諾將你當作核心栽培。你可以選擇赴美追夢、留在台灣讀大學，或直接投入職業選秀。`;
-  } else if (hDiff >= 3) {
+    desc = `【海外球探報告】你 <b style="color:var(--gold)">${G.height}cm / ${G.weight}kg</b> 的驚人靜態天賦，加上水準之上的運動能力，引起了全美球探的瘋狂！美國 NCAA D1 學校捧著全額獎學金跨海來找你。`;
+  } else if (isGreat) {
     title = "高中畢業 · 靜態天賦的優勢";
-    desc = `【海外球探報告】美國球探注意到了你優異的靜態天賦（${G.height}cm），NCAA D2 學校願意提供全額獎學金讓你赴美挑戰。你可以選擇赴美、留在台灣，或直接投入職業。`;
+    desc = `【海外球探報告】美國球探注意到了你的靜態天賦（${G.height}cm）與潛力，NCAA D2 學校願意提供獎學金讓你赴美挑戰。`;
+  } else if (isProject) {
+    title = "高中畢業 · 璞玉的賭注";
+    desc = `【海外球探報告】雖然你的技術還很生澀（OVR ${ov}），但 <b style="color:var(--gold)">${G.height}cm</b> 的身高實在太香了！美國的大學願意提供 Offer，賭你未來開發出來的發展性。`;
   }
 
   return `<div class="season-hd"><span class="stage">${title}</span></div>
