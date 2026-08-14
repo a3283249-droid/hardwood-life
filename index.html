@@ -1185,6 +1185,49 @@ EVENTS["college"].push(
    o:[{l:"專注校隊拚成績",i:"🏆",h:"衝榮譽",f:r=>({low:mk("被系上抱怨",{iq:1},{morale:-2}),mid:mk("校隊戰績亮眼",{shooting:1,defense:1},{fame:4,tourney:.05}),high:mk("校隊戰績一路狂飆",{shooting:2,defense:1,iq:1},{fame:8,tourney:.15})}[tier(r)])},
       {l:"兼顧人情兩邊跑",i:"🏃",h:"賭體力",f:r=>({low:mk("蠟燭兩頭燒累垮",{},{health:-8,morale:-2}),mid:mk("人緣爆棚",{},{morale:5,fame:2}),high:mk("兩邊都發光，人氣暴漲",{athletic:1},{fame:6,morale:4})}[tier(r)])}]}
 );
+/* ---------- 追加事件（第七批：各階級專屬 + 角色球員主題） ---------- */
+EVENTS["高中"].push(
+  {t:"阿嬤的宵夜",noRisk:true,x:"練球到深夜回家，阿嬤還在客廳等你，桌上留了一碗熱騰騰的麻油雞。「囡仔，打球顧要緊，嘛愛顧身體。」",cond:lg=>lg==="高中",
+   o:[{l:"陪阿嬤聊到睡著",i:"🍲",h:"護身心",f:r=>({low:mk("聊太晚，隔天有點累",{},{morale:4,health:-2}),mid:mk("家的溫暖讓你充飽電",{},{morale:8,health:6}),high:mk("被家人的愛推著往前，鬥志滿滿",{iq:1},{morale:12,health:8})}[tier(r)])},
+      {l:"扒兩口就回房加練",i:"🌙",h:"衝實力",f:r=>({low:mk("宵夜配加練，腸胃抗議",{shooting:1},{health:-4}),mid:mk("夜深人靜手感特別好",{shooting:2,three:1}),high:mk("在頂樓練到天亮，投籃脫胎換骨",{shooting:3,three:2},{health:-3,morale:2})}[tier(r)])}]},
+  {t:"落選賽的逆襲",x:"HBL 資格賽你們被看衰，全場沒人相信你們能贏，連自家啦啦隊都稀稀落落。",cond:lg=>lg==="高中",
+   o:[{l:"扛下全隊進攻",i:"🔥",h:"衝數據",f:r=>({low:mk("硬打鐵了一片",{shooting:1},{morale:-3}),mid:mk("關鍵時刻挺身而出",{shooting:3,athletic:1},{fame:4,tourney:.06}),high:mk("砍下生涯新高，帶隊爆冷晉級！",{shooting:3,three:2,athletic:1},{fame:10,morale:6,tourney:.14})}[tier(r)])},
+      {l:"用防守帶動全隊",i:"🛡️",h:"衝防守",f:r=>({low:mk("防守拚勁有了，進攻卡卡",{defense:1}),mid:mk("一波抄截點燃士氣",{defense:2,athletic:1},{morale:3,tourney:.05}),high:mk("鐵血防守釘死對手王牌，逆轉晉級！",{defense:3,athletic:1,iq:1},{fame:7,morale:5,tourney:.12})}[tier(r)])}]}
+);
+EVENTS["college"].push(
+  {t:"暫停時的怒吼",x:"落後兩位數，教練把你叫到面前，唾沫橫飛地開罵：「阿哩系咧衝啥啦？阿一點作用都沒啦？啊？足驚逆啦？」全隊的目光都集中在你身上。",cond:lg=>lg==="UBA",
+   o:[{l:"「依太高啊……」",i:"😓",h:"找藉口",f:r=>({low:mk("誰叫你不吃高一點",{},{morale:-6,fame:-1}),mid:mk("教練白你一眼，但你默默調整了防守位置",{defense:1,iq:1}),high:mk("嘴上服軟、心裡不服，下半場用腦子守下對方王牌",{defense:2,iq:1},{morale:2})}[tier(r)])},
+      {l:"「麥擱唸啊，拚予你看！」",i:"😤",h:"高風險．嗆回去",f:r=>({low:mk("太衝動吃了技術犯規，被換下場",{},{morale:-5,fame:-2}),mid:mk("帶著一股氣拚防守，扳回顏面",{defense:2,athletic:1},{morale:3}),high:mk("一波抄截接快攻爆扣，讓教練閉嘴，全場沸騰！",{defense:2,athletic:1,iq:1},{fame:6,morale:6})}[tier(r)])}]},
+  {t:"UBA 人氣票選",noRisk:true,x:"你意外入圍 UBA 人氣球員票選，學校社群開始幫你拉票，連隔壁系的同學都來加你好友。",cond:lg=>lg==="UBA",
+   o:[{l:"認真經營校園人氣",i:"📣",h:"衝名氣",f:r=>({low:mk("拉票拉得有點尷尬",{},{morale:-2,fame:2}),mid:mk("校園人氣水漲船高",{},{fame:8,morale:3}),high:mk("成為校隊看板人物，主場一位難求",{athletic:1},{fame:15,morale:5})}[tier(r)])},
+      {l:"低調用實力說話",i:"🎯",h:"衝實力",f:r=>({low:mk("熱度很快退去",{iq:1}),mid:mk("場上表現才是真人氣",{shooting:1,defense:1},{fame:3}),high:mk("用一場大三元回應所有期待",{pass:2,iq:1,defense:1},{fame:8})}[tier(r)])}]},
+  {t:"語言的高牆",x:"初到美國，戰術會議全是英文與俚語，你常常聽不懂教練在喊什麼跑位，訓練頻頻出錯。",cond:lg=>lg.startsWith("NCAA"),
+   o:[{l:"惡補英文與戰術板",i:"📖",h:"衝球商",f:r=>({low:mk("學得很吃力，壓力山大",{iq:1},{morale:-3}),mid:mk("聽懂戰術後，場上不再迷路",{iq:3,pass:1}),high:mk("反客為主，成為場上發號施令的人",{iq:4,pass:2},{fame:3,morale:4})}[tier(r)])},
+      {l:"用球場語言溝通",i:"🤝",h:"衝默契",f:r=>({low:mk("雞同鴨講，隊友有點無奈",{},{morale:-2}),mid:mk("一次擋拆配合打破隔閡",{pass:2,defense:1},{morale:3}),high:mk("肢體語言比英文更通，融入更衣室核心",{pass:2,iq:1,defense:1},{fame:2,morale:5})}[tier(r)])}]}
+);
+EVENTS["pro"].push(
+  {t:"主場的狂熱應援",noRisk:true,x:"台灣職籃行銷做得風生水起，今晚主場座無虛席，應援團的鼓聲震耳欲聾，球迷高喊你的名字。",cond:lg=>lg==="P+"||lg==="TPBL",
+   o:[{l:"回應球迷、火力全開",i:"🎆",h:"衝數據與名氣",f:r=>({low:mk("太想表現反而失常",{},{morale:-3}),mid:mk("在主場氣氛帶動下打出好表現",{shooting:2},{fame:6,morale:3}),high:mk("主場之神！全場為你瘋狂",{shooting:2,three:1,athletic:1},{fame:12,morale:6})}[tier(r)])},
+      {l:"專注比賽、穩定輸出",i:"🎯",h:"求穩",f:r=>({low:mk("表現平平，球迷有點失望",{iq:1}),mid:mk("穩健的一場，贏球最實在",{defense:1,iq:1},{fame:3}),high:mk("關鍵時刻一擊致命，主場沸騰",{shooting:1,defense:1,iq:1},{fame:7,morale:4})}[tier(r)])}]},
+  {t:"傳統勁旅的重建",x:"你所在的 SBL 老牌球隊正青黃不接，管理層希望你這位資深球員多帶帶年輕人。",cond:lg=>lg==="SBL",
+   o:[{l:"扛起精神領袖的責任",i:"🧭",h:"衝球商/組織",f:r=>({low:mk("帶人心力交瘁，自己狀態下滑",{},{morale:-3,health:-3}),mid:mk("學弟們逐漸成材，你也更成熟",{iq:2,pass:1},{morale:3}),high:mk("重建成功，你是更衣室的定海神針",{iq:3,pass:2,defense:1},{fame:5,morale:5})}[tier(r)])},
+      {l:"用表現證明自己還能打",i:"💪",h:"衝數據",f:r=>({low:mk("硬撐反而受傷",{},{health:-6}),mid:mk("寶刀未老，數據依舊亮眼",{shooting:2,athletic:1}),high:mk("老將的逆襲，帶隊殺進季後賽",{shooting:2,defense:1,iq:1},{fame:6,morale:4})}[tier(r)])}]},
+  {t:"日職的細膩戰術",x:"日本 B.League 的戰術紀律極高，教練要求每一次跑位都分毫不差，你有點跟不上節奏。",cond:lg=>lg==="日職 B.League",
+   o:[{l:"苦練戰術執行力",i:"📐",h:"衝球商",f:r=>({low:mk("背戰術背到頭痛",{iq:1},{morale:-2}),mid:mk("跑位越來越精準，教練認可",{iq:3,pass:1}),high:mk("成為體系運轉的核心齒輪",{iq:4,pass:2,defense:1},{fame:4})}[tier(r)])},
+      {l:"發揮個人單打優勢",i:"⚡",h:"衝得分",f:r=>({low:mk("破壞戰術，被教練冷凍",{shooting:1},{morale:-4}),mid:mk("關鍵單打證明個人價值",{shooting:3,athletic:1},{fame:3}),high:mk("在紀律與個人火力間找到平衡，大殺四方",{shooting:3,three:1,iq:1},{fame:8,morale:4})}[tier(r)])}]},
+  {t:"韓式魔鬼體能",x:"KBL 球隊以地獄般的體能訓練聞名，晨跑、折返、重量一樣不少，全隊操到懷疑人生。",cond:lg=>lg==="KRBL",
+   o:[{l:"咬牙跟上菜單",i:"🔥",h:"衝體能",f:r=>({low:mk("操過頭，肌肉拉傷",{athletic:1},{health:-8}),mid:mk("體能水準大幅提升",{athletic:3,defense:1}),high:mk("脫胎換骨的續航力，第四節還能飛",{athletic:4,defense:1,rebound:1},{morale:3})}[tier(r)])},
+      {l:"聰明調配、保護身體",i:"🧊",h:"護健康",f:r=>({low:mk("被教練認為不夠拚",{},{morale:-3}),mid:mk("避開傷病，穩定出賽",{iq:1},{health:8}),high:mk("科學化訓練，效率與健康雙贏",{athletic:1,iq:1},{health:12,morale:2})}[tier(r)])}]},
+  {t:"外援名額之爭",x:"CBL 中國聯賽本土與外援名額卡得很緊，身為亞洲外援的你，每一場都要證明自己值得那個位置。",cond:lg=>lg==="CBL",
+   o:[{l:"用數據硬實力站穩",i:"📊",h:"衝數據",f:r=>({low:mk("狀態起伏，位置不穩",{shooting:1},{morale:-3}),mid:mk("穩定產出，坐穩外援位置",{shooting:2,athletic:1},{fame:4}),high:mk("外援 MVP 級表現，球隊離不開你",{shooting:3,three:1,defense:1},{fame:10,morale:5})}[tier(r)])},
+      {l:"打全能藍領融入體系",i:"🧱",h:"衝防守/球商",f:r=>({low:mk("犧牲數據，存在感低",{defense:1},{morale:-2}),mid:mk("苦工屬性讓教練離不開你",{defense:2,rebound:1,iq:1},{fame:2}),high:mk("攻防一把抓，成為體系不可或缺的一環",{defense:2,rebound:1,pass:1,iq:1},{fame:6,morale:4})}[tier(r)])}]},
+  {t:"板凳末端的堅守",x:"你在 NBA 是輪替末端，數據不起眼。今天分差膠著，教練卻在關鍵時刻突然喊你上場——去守對方的當家王牌。",cond:lg=>lg==="NBA",
+   o:[{l:"用盡全力鎖死他",i:"🔒",h:"高風險．衝防守",f:r=>({low:mk("被連過兩球，教練皺眉",{defense:1},{morale:-2}),mid:mk("成功干擾，讓對方王牌手感冰冷",{defense:2,iq:1},{fame:3}),high:mk("抄斷＋追魂鍋，登上十佳球！全聯盟看見你的價值",{defense:2,athletic:1,iq:1},{fame:10,morale:5})}[tier(r)])},
+      {l:"穩穩協防不犯規",i:"🧠",h:"衝球商",f:r=>({low:mk("保守到不敢動，作用有限",{iq:1}),mid:mk("團隊防守輪轉到位，守住這一波",{defense:1,iq:2},{morale:2}),high:mk("教科書級協防，教練賽後點名讚許",{defense:1,iq:3},{fame:4,morale:3})}[tier(r)])}]},
+  {t:"農場的深夜投籃",noRisk:true,x:"發展聯盟球館午夜清場後，你偷偷留下來，對著空無一人的看台，一次次練習底角三分——那是 NBA 球隊最看重的即戰武器。",cond:lg=>lg==="發展聯盟",
+   o:[{l:"加練底角三分",i:"🎯",h:"衝三分",f:r=>({low:mk("手感沒來，只是累",{three:1},{health:-3}),mid:mk("底角越投越穩",{three:3}),high:mk("找到最舒服的出手節奏，底角變成殺器",{three:4,shooting:1},{morale:2})}[tier(r)])},
+      {l:"加練防守腳步",i:"👣",h:"衝防守",f:r=>({low:mk("橫移練得枯燥乏味",{defense:1}),mid:mk("防守腳步明顯進步",{defense:3,athletic:1}),high:mk("腳步脫胎換骨，能換防一到三號位",{defense:3,athletic:2,iq:1},{morale:2})}[tier(r)])}]}
+);
 function posMult(){ // 依位置調整籃板/助攻/阻攻
   const p=G.pos;
   // 基礎助攻乘數（依位置）
@@ -2254,6 +2297,44 @@ function afterReview(){
   q.push("nextSeason");
   G.offseason=q; processOffseason();
 }
+/* 角色球員球探報告：找出球員最頂尖、NBA 願意買單的「即戰專長」 */
+function scoutRoleReport(){
+  const a=G.attr;
+  // 各專長的「NBA 即戰門檻」：達標才會被列入球探報告
+  const specs=[
+    {k:"defense", bar:83, tag:"鎖式防守"},
+    {k:"three",   bar:84, tag:"外線投射"},
+    {k:"rebound", bar:85, tag:"籃板卡位"},
+    {k:"athletic",bar:85, tag:"運動能力"},
+    {k:"iq",      bar:84, tag:"防守判讀"},
+    {k:"pass",    bar:85, tag:"組織串聯"},
+  ];
+  const hit=specs.filter(s=>a[s.k]>=s.bar).sort((x,y)=>(a[y.k]-y.bar)-(a[x.k]-x.bar));
+  if(!hit.length) return null;
+  const top=hit.slice(0,2);
+  return {
+    keys: top.map(s=>s.k),
+    labels: top.map(s=>ATTR_LABEL[s.k]),
+    tags: top.map(s=>s.tag),
+    margin: Math.max(...top.map(s=>a[s.k]-s.bar)), // 最突出專長超過門檻多少
+  };
+}
+/* 角色球員 call-up 球探報告字卡（多組輪替，依真實專長填空） */
+function scoutReportText(rep){
+  const L=rep.labels;
+  const a=L[0], b=L[1]||null;
+  const two = b ? `${a}與${b}` : a;
+  const pool=[
+    `球探報告攤在桌上，你的名字被紅筆圈了起來。「這孩子的 <b style="color:var(--gold)">${two}</b>，正好是我們更衣室裡缺的那一塊。」總管把報告推向老闆，「我們不需要他去搶分——我們需要他做那些贏球的髒活。」`,
+    `視訊會議另一端，NBA 球隊的助理教練指著螢幕：「數據不華麗，但你看他的 <b style="color:var(--gold)">${a}</b>——這種特質是換不來的。」球隊決定給你一份雙向合約，「當個能拚、能守、能投的拼圖，聯盟永遠缺這種人。」`,
+    `「我們追蹤你整季了。」電話那頭的聲音很篤定，「你的 <b style="color:var(--gold)">${two}</b> 是即戰力等級。板凳末端需要一個上場就能改變比賽強度的人，那個人可以是你。」`,
+    `球隊送來的評估報告寫著：進攻自主性有限，但 <b style="color:var(--gold)">${a}</b> 屬於 NBA 級別，能無縫嵌入輪替。「他不會是明星，」報告最後一行寫道，「但他會是教練最信任的那種球員。」`,
+    `更衣室的白板上，教練圈出你的 <b style="color:var(--gold)">${two}</b>：「季後賽的第四節，我要的不是刷分機器，是能守住對方王牌、能在底角穩穩命中的人。把他簽下來。」`,
+    `「台灣來的？沒聽過。」球探原本搖著頭，翻到下一頁卻停住了，「等等……這 <b style="color:var(--gold)">${a}</b> 的數據是真的嗎？」他拿起電話，「幫我查一下這孩子的合約狀態。」`,
+    `NBA 球隊看中的從來不只是得分。你的 <b style="color:var(--gold)">${two}</b> 讓球隊願意賭一把——一紙雙向合約、一個證明「藍領也能站上世界最高殿堂」的機會，就擺在你面前。`,
+  ];
+  return pick(pool);
+}
 /* 海外報價：合約中、非最高聯盟、戰力/數據達標時，有機會收到往上一級的邀約 */
 function overseasJumpAvailable(){
   if(!isPro())return false;
@@ -2262,20 +2343,29 @@ function overseasJumpAvailable(){
   const ps=prospectScore();
   // 發展聯盟是 NBA 的直接跳板：表現好就有機會被「call up」上 NBA，門檻較低、機率隨近期產出提升
   if(G.league==="發展聯盟"){
-  const prod=recentProd(), ov=overall();
-  // 必須要有實質戰力 (OVR >= 85) 且數據具有統治力 (prod >= 28)
-  if(ov >= 84 && prod >= 26){
-    const callChance = clamp(0.1 + (ov - 84) * 0.05 + (prod - 26) * 0.04, 0.1, 0.65);
-    if(chance(callChance)){
-      G._overseasTargets=["NBA"];
-      G._callUp=true;
-      return true;
+    const prod=recentProd(), ov=overall();
+    // 路線一：統治級數據 → 明星型 call-up（能得分、能扛球隊）
+    if(ov >= 84 && prod >= 26){
+      const callChance = clamp(0.1 + (ov - 84) * 0.05 + (prod - 26) * 0.04, 0.1, 0.65);
+      if(chance(callChance)){
+        G._overseasTargets=["NBA"]; G._callUp=true; G._callUpRole=false; G._scoutReport=null;
+        return true;
+      }
+    }
+    // 路線二：角色球員 call-up（數據不漂亮，但某項 NBA 需要的專長頂尖）
+    const rep=scoutRoleReport();
+    if(rep && ov >= 78){
+      // 專長越突出、整體越穩，被相中機率越高（但整體仍低於明星路線）
+      const roleChance = clamp(0.05 + rep.margin*0.028 + (ov-78)*0.018, 0.05, 0.42);
+      if(chance(roleChance)){
+        G._overseasTargets=["NBA"]; G._callUp=true; G._callUpRole=true; G._scoutReport=rep;
+        return true;
+      }
     }
   }
-}
   const targets=proTargetLeagues(Math.round(overall()*.5+ps*.5)).filter(l=>(rank[l]||0)>cur);
   if(!targets.length)return false;
-  G._overseasTargets=targets; G._callUp=false; return chance(.5);
+  G._overseasTargets=targets; G._callUp=false; G._callUpRole=false; G._scoutReport=null; return chance(.5);
 }
 function processOffseason(){
   if(!G.offseason.length){ return; }
@@ -2491,9 +2581,13 @@ function doOverseasOffer(){
 }
 function acceptOverseas(){
   const o=G._overseas;
+  const fromDev = (G.league === "發展聯盟");
   G.league=o.league; G.team=o.team;
   G.contract={league:o.league,team:o.team,years:o.years,yearsLeft:o.years,salary:o.salary};
   if(G.league==="NBA"){ G.madeNBA=true; grantTitle("taiwanFirst"); }
+  if(fromDev || G.seasonHistory.some(h => h.league === "發展聯盟")) {
+      grantTitle("dreamComeTrue");
+    }
   if(teamCityMatchesHome(G.team,G.home)) grantTitle("homecoming");
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(G.team);
   toast(`挑戰海外！加盟 ${o.team}（${lname(o.league)}）`);
@@ -2646,6 +2740,7 @@ function allLeagueEvals(){
 /* ---------- 稱號系統 ---------- */
 const TITLE_DEFS={
   taiwanFirst:{name:"台灣第一人",good:true,desc:"史上頂尖！成功打進 NBA",effect:"潛力上限 +4",buff:{pot:4}},
+  dreamComeTrue:{name:"夢想成真",good:true,desc:"從發展聯盟成功打上最高殿堂",effect:"總評 +1",buff:{shooting:1, three:1, rebound:1, pass:1, defense:1, athletic:1, iq:1}},
   ironman:{name:"鐵人",good:true,desc:"全季健康出賽",effect:"體能 +1",buff:{athletic:1}},
   homecoming:{name:"回娘家",good:true,desc:"加盟家鄉球隊",effect:"名氣 +4、士氣 +6",buff:{fame:4,morale:6}},
   hsKing:{name:"最強高中生",good:true,desc:"HBL 封王",effect:"得分 +1、球商 +1",buff:{shooting:1,iq:1}},
@@ -2872,6 +2967,12 @@ const RETIRE_SCENES={
     {e:"🚌",t:"最後一趟客場",x:(g)=>`最後一趟客場巴士上，你望著窗外飛逝的城市燈火。這些年住過的旅館、打過的球館多到數不清，但每一站，你都全力以赴過。`},
     {e:"🍺",t:"球友的慶功",x:(g)=>`沒有鎂光燈，只有幾個老球友替你辦了場小酌。大家舉杯：「敬那些拚過的日子！」你笑著乾杯，眼角有點濕。`},
   ],
+  devgrind:[
+    {e:"🚌",t:"沒有響起的那通電話",x:(g)=>`發展聯盟的最後一趟長途巴士，你靠著車窗，手機螢幕亮了又暗。這些年你守過無數對方王牌、投進無數個底角三分，只為等一通「升上 NBA」的電話。它始終沒有響起。你笑了笑，把手機收進口袋——至少，你離那扇門，只差一步。`},
+    {e:"🛗",t:"離夢想最近的男人",x:(g)=>`你在發展聯盟打了整整 ${g.seasonHistory.filter(s=>s.league==="發展聯盟").length} 個賽季，農場、汽車旅館、微薄的日薪，全嘗過了。有人說你是「離 NBA 最近卻始終沒能上去的男人」。但當年那些跟你同梯、早早放棄的人，如今都只能在酒吧看著球賽，回憶當年——而你，拚到了最後一刻。`},
+    {e:"🧱",t:"藍領的勳章",x:(g)=>`沒有華麗數據，沒有雙向合約，你的發展聯盟生涯就是一場關於「堅持」的長跑。退休那天，一位老球探特地找上你：「這麼多年，你的防守和拚勁，我全看在眼裡。你該為自己驕傲。」這句話，比任何一份合約都珍貴。`},
+    {e:"🌉",t:"最後一哩的守望者",x:(g)=>`發展聯盟被稱作「通往 NBA 的最後一哩路」。你在這條路上走了很久很久，看著一個個隊友被叫上去、又一個個被送下來。你沒能踏過那道門檻，但你把這條最殘酷的路，走得比誰都久、比誰都硬。`},
+  ],
   obscure:[
     {e:"🍜",t:"廟口的老闆",x:(g)=>`沒有鎂光燈，沒有歡送會，你的退休沒人注意到。多年後，有球迷在廟口的麵攤認出你——原來昔日的球員，如今是這間小吃店的老闆，笑著多送你一顆滷蛋：「以前啊，我也是打球的。」`},
     {e:"🏀",t:"社區球場的傳說",x:(g)=>`職業夢碎，你回到家鄉。如今每逢週末，社區球場上總有個熟練的身影陪孩子們鬥牛。沒人知道他曾經站上職業舞台，但孩子們都喊他一聲「老師」。`},
@@ -2924,6 +3025,10 @@ function endCareer(){
   G._hof=G._hallOfFame.taiwan||G._hallOfFame.naismith||G._hallOfFame.china;
   let tier=retirementTier();
   if(G._undrafted) tier="undrafted"; // 落選轉跑道專屬
+  // 發展聯盟長期打拼、始終沒能真正在 NBA 站穩 → 專屬「農場老兵」退休劇情
+  const devSeasons=G.seasonHistory.filter(s=>s.league==="發展聯盟").length;
+  G._devGrindSeasons=devSeasons;
+  if(!G.madeNBA && devSeasons>=4 && tier!=="undrafted") tier="devgrind";
   G._retireScene=pick(RETIRE_SCENES[tier]||RETIRE_SCENES.obscure);
   G._retireTier=tier;
   G._fanForum=fanForum();
@@ -2980,6 +3085,25 @@ function fanForum(){
   if(G._undrafted){ add("暖心鄉民","落選很殘酷，但轉換跑道也是一種勇氣，祝福他人生下半場。",rint(90,450));
     add("選秀鄉民","那年選秀完全沒被叫到名字，唉，籃球夢真的燒錢又燒命。",rint(30,220)); }
   if((G.titles||[]).some(x=>x.id==="undraftedHero")) add("逆襲粉","落選還能打上職業，這種不放棄的故事我最愛。",rint(160,700));
+  // 發展聯盟長期打拼的老兵：網友熱議
+  if(G._retireTier==="devgrind" || (!G.madeNBA && (G._devGrindSeasons||0)>=4)){
+    const ds=G._devGrindSeasons||G.seasonHistory.filter(s=>s.league==="發展聯盟").length;
+    add(pick(["凌晨看球仔","越洋應援團","發展聯盟考古學家"]),pick([
+      `在發展聯盟熬了 ${ds} 季欸…每天長途巴士、住汽車旅館領日薪，就為了等一通 call-up，太心疼了。`,
+      "這種球員才是真正的鬥士，離 NBA 就差臨門一腳，可惜終究沒能站上去。",
+      "農場老兵，看他集錦每一球都在拚命防守，這種態度台灣球員很少見。"]),rint(300,1400));
+    add(pick(["理性派","板凳分析師","數據控"]),pick([
+      "說真的，台灣人能在發展聯盟打這麼多年已經是天花板等級了，尊敬。",
+      "數據不亮眼是因為他打的是苦工位置，懂球的都知道他有多重要。",
+      "差一步就 NBA，這一步對台灣球員來說可能是一輩子的距離啊。"]),rint(150,700));
+    add(pick(["暖心鄉民","逆襲粉"]),pick([
+      "沒進 NBA 又怎樣？他把最殘酷的那條路走到了最後，這就是英雄。",
+      "有生之年看到台灣人能在美國職業體系拚這麼久，我已經很滿足了。",
+      "退休快樂，農場老兵，你的堅持我們都看在眼裡。🙏"]),rint(200,900));
+    add("酸民乙",pick([
+      "講白的就是差那麼一點天賦啦，不然早就上去了。",
+      "在發展聯盟打再久也是發展聯盟，數據攤開來還是難看啊。"]),rint(20,180));
+  }
   if((G.titles||[]).some(x=>x.id==="evilDrunk")) add("憤怒球迷",pick([
     "酒駕真的垃圾，滾出籃壇剛好而已！",
     "活該被開除，公眾人物還做這種最壞示範！",
@@ -4053,14 +4177,26 @@ function draftOfferCardHTML(o,i){
 function overseasOfferHTML(){
   const o=G._overseas;
   const callUp=G._callUp && o.league==="NBA";
+  const roleUp=callUp && G._callUpRole && G._scoutReport;
+  const reportBox = roleUp ? `<div class="panel" style="text-align:left;margin:12px 0;border:1px solid var(--gold)">
+      <div class="label" style="color:var(--gold)">📋 ${o.team} 球探報告</div>
+      <div class="event-text" style="line-height:1.85;margin-top:6px">${scoutReportText(G._scoutReport)}</div>
+    </div>` : "";
+  const headline = roleUp
+    ? `你在發展聯盟不是得分王，但 <b style="color:var(--gold)">${G._scoutReport.labels.join("、")}</b> 的專長被 <b style="color:var(--ink)">${o.team}</b> 看上了——他們決定 <b style="color:var(--gold)">給你一份雙向合約</b>！`
+    : (callUp?`你在發展聯盟的優異表現，讓 <b style="color:var(--ink)">${o.team}</b> 決定將你 <b style="color:var(--gold)">升上 ${lname("NBA")}</b>！`:`你的表現吸引了 <b style="color:var(--ink)">${lname(o.league)}</b> 球隊！`);
+  const closing = roleUp
+    ? "你的數據或許永遠不會漂亮，但只要守得住、投得進，你就能在世界最高殿堂站穩腳跟。"
+    : (callUp?"這是圓夢的機會，把握住！":"接受將挑戰更高強度的聯盟，但也可能得重新證明自己。");
   return `<div class="season-hd"><span class="stage">${callUp?lname("NBA")+" CALL-UP":"海外報價"}</span><span class="yr">${G.year}</span></div>
     <div class="panel center">
-      <div style="font-size:40px">${callUp?"🎉":"✈️"}</div>
-      <div class="label" style="color:var(--orange)">${callUp?"發展聯盟的努力被看見了！":"更高殿堂的召喚"}</div>
+      <div style="font-size:40px">${roleUp?"🛡️":callUp?"🎉":"✈️"}</div>
+      <div class="label" style="color:var(--orange)">${roleUp?"角色球員的價值被看見了！":callUp?"發展聯盟的努力被看見了！":"更高殿堂的召喚"}</div>
       <h2 style="font-size:20px;margin:8px 0">${lname(o.league)} · ${o.team}</h2>
-      <p class="muted">${callUp?`你在發展聯盟的優異表現，讓 <b style="color:var(--ink)">${o.team}</b> 決定將你 <b style="color:var(--gold)">升上 ${lname("NBA")}</b>！`:`你的表現吸引了 <b style="color:var(--ink)">${lname(o.league)}</b> 球隊！`}他們開出 <b>${o.years}</b> 年、年薪 <b style="color:var(--gold)">${fmtMoney(o.salary)}</b> 的合約。<br>${callUp?"這是圓夢的機會，把握住！":"接受將挑戰更高強度的聯盟，但也可能得重新證明自己。"}</p>
+      ${reportBox}
+      <p class="muted">${headline}他們開出 <b>${o.years}</b> 年、年薪 <b style="color:var(--gold)">${fmtMoney(o.salary)}</b> 的合約。<br>${closing}</p>
       <div class="opts mt16">
-        <button class="btn gold" id="acceptOverseas">${callUp?"接受升上"+lname("NBA")+" 🏀":"接受挑戰 ✈️"}</button>
+        <button class="btn gold" id="acceptOverseas">${roleUp?"簽下雙向合約 🛡️":callUp?"接受升上"+lname("NBA")+" 🏀":"接受挑戰 ✈️"}</button>
         <button class="btn ghost" id="declineOverseas">${callUp?"婉拒，留在發展聯盟":"婉拒，續留原隊"}</button>
       </div>
     </div>`;
