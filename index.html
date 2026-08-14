@@ -176,6 +176,14 @@ input[type=text]:focus{outline:none;border-color:var(--orange)}
 /* ---------- Offers ---------- */
 .offer{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:8px}
 .offer.reco{border-color:var(--gold)}
+/* NBA 專屬報價外框：金色光框＋流光，讓玩家一眼認出最高殿堂 */
+.offer.nba{border:2px solid var(--gold);background:linear-gradient(150deg,#1b1608 0%,var(--surface2) 42%,rgba(242,184,75,.14) 100%);box-shadow:0 0 0 1px rgba(242,184,75,.35),0 10px 30px -10px rgba(242,184,75,.55);position:relative;overflow:hidden}
+.offer.nba::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:linear-gradient(115deg,transparent 32%,rgba(255,233,168,.22) 48%,transparent 64%);background-size:250% 100%;animation:nbaShine 3.4s linear infinite}
+.offer.nba > *{position:relative;z-index:1}
+@keyframes nbaShine{0%{background-position:160% 0}100%{background-position:-160% 0}}
+.offer.nba .offer-lg{color:var(--gold)}
+.offer.nba .offer-team{text-shadow:0 0 12px rgba(242,184,75,.45)}
+.nba-crown{display:inline-block;margin-left:7px;font-family:"Oswald";font-size:9.5px;font-weight:700;letter-spacing:.06em;color:#241a05;background:linear-gradient(180deg,#FFE9A8,var(--gold));padding:2px 7px;border-radius:6px;box-shadow:0 2px 8px -2px rgba(242,184,75,.7);vertical-align:middle}
 .offer-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .offer-team{font-weight:900;font-size:16px}
 .offer-lg{font-family:"Oswald";font-size:11px;letter-spacing:.1em;color:var(--orange);text-transform:uppercase}
@@ -574,6 +582,8 @@ function archetype(attr=G.attr,pos=G.pos){
   if((pos==="SF"||pos==="SG") && a.defense>=70 && a.three>=70) return "3D型";
   // 雙能衛：得分＋組織雙高
   if((pos==="PG"||pos==="SG") && a.pass>=72 && a.shooting>=72) return "雙能衛";
+  // 組織型長人：長人(C/PF)把組織練高，成為策應型中軸
+  if((pos==="C"||pos==="PF") && a.pass>=78) return "組織型長人";
   // 射手：三分明顯突出
   if(t1==="three" || (a.three>=vals[0]-2 && a.three>=72)) return "射手型";
   const map={shooting:"得分型",three:"射手型",rebound:"籃板型",pass:"組織型",defense:"防守型",athletic:"運動型",iq:"智控型"};
@@ -691,7 +701,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.1.8.5";
+const VERSION="V.1.8.52";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -733,13 +743,13 @@ function newGame(name,pos,home,jersey,seed){
     intlMedals:0, madeNBA:false, retired:false, retireReason:"",
     amateurAwards:[], draftInfo:null,
     awardLog:[], milestones:[], leaguePts:{}, careerCum:{ast:0,stl:0,blk:0},
-    titles:[], majorInjuries:0, usRankBest:null, seed:useSeed,
+    titles:[], majorInjuries:0, usRankBest:null, seed:useSeed, _declineStage:0,
     // 每季暫存
     seasonEvents:[], eventIdx:0, offseason:[], lastReview:null, lastAttr:{...attr},
     phase:"training",
   };
   if(eggTitle) grantTitle(eggTitle);
-  startSeason();
+  G.phase="intro"; render(); // 先看開場劇情，再進季前特訓
 }
 
 /* ---------- 能力值計算 ---------- */
@@ -1177,9 +1187,19 @@ EVENTS["college"].push(
 );
 function posMult(){ // 依位置調整籃板/助攻/阻攻
   const p=G.pos;
+  // 基礎助攻乘數（依位置）
+  let ast = p==="PG"?1.5:p==="SG"?1.0:p==="SF"?.85:p==="PF"?.6:.5;
+  // 組織型長人：長人(C/PF)把「組織」練高時，助攻效率從 75 起逐步提升
+  //（模擬策應型中軸；75→無加成、99→接近後衛級策應）
+  if(p==="C"||p==="PF"){
+    const pass=(G.attr&&G.attr.pass)||0;
+    const t=clamp((pass-75)/24,0,1);      // 75→0，99→1（平滑漸進，非硬門檻）
+    const maxBoost = p==="C"?0.6:0.45;    // C:0.5→1.1；PF:0.6→1.05
+    ast += maxBoost*t;
+  }
   return {
     reb: p==="C"?1.5:p==="PF"?1.3:p==="SF"?1:p==="SG"?.7:.55,
-    ast: p==="PG"?1.5:p==="SG"?1.0:p==="SF"?.85:p==="PF"?.6:.5,
+    ast,
     blk: p==="C"?1.6:p==="PF"?1.2:p==="SF"?.75:.4,
     stl: p==="PG"?1.2:p==="SG"?1.1:1,
   };
@@ -1815,6 +1835,15 @@ function applyAging(){
   if(base>0 && (G.morale<32 || G.health<45)){
     const k=pick(ATTR_KEYS); G.attr[k]=clamp(G.attr[k]-1,15,99);
   }
+  // 生涯下滑階段偵測：僅職業、且處於下滑年份(base<0)，跨入新階段時記錄一張劇情卡（供季前顯示）
+  if(isPro() && base<0){
+    const stage = age>=37?4 : age>=35?3 : age>=33?2 : 1;
+    if(stage > (G._declineStage||0)){
+      const ovAfter=overall();
+      G._declineCard={stage, drop:Math.max(0, ov-ovAfter), age};
+      G._declineStage=stage;
+    }
+  }
 }
 
 /* =========================================================================
@@ -1976,8 +2005,13 @@ function proOffers(ovArg){
     }
   });
   
-  // 打亂陣列增加隨機感，然後取前 5 個
-  return uniq.sort(()=>Math.random()-0.5).slice(0,5);
+  // 排序：母隊續約永遠排第一，其餘依年薪由高到低
+  uniq.sort((a,b)=>{
+    if(a.resign && !b.resign) return -1;
+    if(!a.resign && b.resign) return 1;
+    return (b.salary||0)-(a.salary||0);
+  });
+  return uniq.slice(0,5);
 }
 /* ---------- 選秀計算 ---------- */
 function draftPick(league, ps){
@@ -1999,6 +2033,11 @@ function draftSalary(league,pick,ov){
    ========================================================================= */
 /* ---------- 賽季啟動：先進入「能力加點」，再進入事件 ---------- */
 function startSeason(){
+  // 生涯中後期：跨入新的下滑階段時，先播放劇情卡，再進季前特訓
+  if(G._declineCard){ G.phase="decline"; render(); return; }
+  beginAllocate();
+}
+function beginAllocate(){
   let sp=computeSP();
   const bonus=G._pendingSP||0; G._pendingSP=0;
   sp+=bonus; G._spBonus=bonus;
@@ -2007,6 +2046,7 @@ function startSeason(){
   G.lastAttr={...G.attr};
   G.phase="allocate"; render();
 }
+function afterDeclineCard(){ G._declineCard=null; startSeason(); }
 function computeSP(){
   const age=G.age;
   let base = age<=17?6 : age<=19?6 : age<=22?5 : age<=25?4 : age<=28?3 : age<=31?3 : 2;
@@ -2190,7 +2230,7 @@ function afterReview(){
     } else {
       // 合約還在（多年約）：不會被要求退休，也不會吃掉剩餘年限
       if(overseasJumpAvailable()) q.push("overseasOffer");
-      else if(chance(.18)) q.push("trade");
+      else if(chance(.22)) q.push("tradeRumor");
     }
   }
   q.push("nextSeason");
@@ -2224,6 +2264,7 @@ function processOffseason(){
     case "hsDecision": return hsDecision();
     case "collegeDecision": return collegeDecision();
     case "freeAgency": return freeAgency();
+    case "tradeRumor": return doTradeRumor();
     case "trade": return doTrade();
     case "overseasOffer": return doOverseasOffer();
     case "retireOption": return retireOption();
@@ -2249,7 +2290,7 @@ function chooseCollege(offer){
   G.stage="大學"; G.league=offer.league; G.team=offer.team; G.collegeYears=1;
   G.age++;G.year++;applyAging();
   toast(`加入 ${offer.team}（${lname(offer.league)}）`);
-  startSeason();
+  showCommitCard("college", offer);
 }
 function goProFromHS(){ enterDraft(); }
 
@@ -2335,7 +2376,7 @@ function signDraft(offer){
   const pl = offer.pick? (offer.league==="NBA"?`${lname("NBA")} 第 ${offer.pick} 順位`:pickLabel(offer.pick)) : "海外簽約";
   G.age++;G.year++;applyAging();
   toast(`${lname(offer.league)} ${pl}｜${offer.team}｜年薪 ${fmtMoney(offer.salary)}`);
-  startSeason();
+  showCommitCard("draft", offer);
 }
 function signOffer(offer){
   const ov=overall();
@@ -2376,9 +2417,27 @@ function freeAgency(){
 
 /* ---------- 交易 ---------- */
 function doTrade(){
-  const newTeam=randTeam(G.league,G.team);
-  G._trade={from:G.team,to:newTeam};
+  const newTeam=(G._tradeRumor&&G._tradeRumor.to)||randTeam(G.league,G.team);
+  const tone=leagueTone(G.league);
+  const flavorPools={
+    nba:[
+      `在 NBA，交易只是一通電話、一則推文的事。球員，終究是這門生意裡流通的資產——這一次，輪到你被打包。收拾好行李，讓做出這筆交易的人後悔。`,
+      `冷酷的商業邏輯運轉著，你成了平衡薪資與戰力的一枚籌碼。最高殿堂從不留情——但也正因如此，證明自己的舞台，從未如此巨大。`,
+    ],
+    overseas:[
+      `人在異鄉，卻連落腳的球隊都由不得自己。一紙交易，你又要收拾行李奔赴陌生的城市。孤獨嗎？或許。但你早把「證明自己」四個字，刻進了骨子裡。`,
+      `語言才剛熟悉、隊友才剛混熟，一通電話又把你送往別隊。海外打球的現實，你比誰都清楚——把不甘，都化進下一場的表現裡。`,
+    ],
+    twpro:[
+      `球隊的一紙交易，把你送往另一座熟悉又陌生的城市。台灣的職業圈不大，繞來繞去總會再相遇——你只在意，能不能在新東家繼續打球。`,
+      `你被交易了。少了幾分 NBA 那種無情，卻多了幾分人情世故的無奈。收拾好心情，換上新球衣，繼續為熱愛的籃球奔跑。`,
+    ],
+  };
+  const pool = flavorPools[tone] || flavorPools.twpro;
+  G._trade={from:G.team,to:newTeam,flavor:pick(pool)};
   G.team=newTeam;
+  G._tradeRumor=null;
+  G.morale=clamp(G.morale-3,0,100); // 被打包交易的失落感
   G.phase="trade"; render();
 }
 
@@ -2702,8 +2761,17 @@ function hofScore(){
 function computeHallOfFame(){
   const ev={}; allLeagueEvals().forEach(e=>ev[e.league]=e.score);
   const tw=(ev["SBL"]||0)+(ev["P+"]||0)+(ev["TPBL"]||0);
-  const twAwards=(G.awardLog||[]).filter(a=>["SBL","P+","TPBL","中華隊"].includes(a.league)).length;
-  const taiwanScore=Math.round(tw + G.intlMedals*45 + twAwards*10 + (G.madeNBA?160:0));
+  const twClubAwards=(G.awardLog||[]).filter(a=>["SBL","P+","TPBL"].includes(a.league)).length;
+  // 中華隊貢獻：依獎牌/榮譽加權（正式賽 > 瓊斯盃邀請賽），大幅提高國家隊份量——
+  // 讓「就算不在台灣打球，也能靠代表國家隊拿下名人堂」成為可行路線
+  let natlScore=0;
+  (G.awardLog||[]).filter(a=>a.league==="中華隊").forEach(a=>{
+    const w=a.award;
+    natlScore += w==="金牌"?175 : w==="銀牌"?125 : w==="銅牌"?90 : w==="賽會MVP"?75 :
+      w==="瓊斯盃金牌"?60 : w==="瓊斯盃銀牌"?42 : w==="瓊斯盃銅牌"?30 :
+      (w.indexOf("瓊斯盃MVP")>=0?38 : 12);
+  });
+  const taiwanScore=Math.round(tw + natlScore + twClubAwards*10 + (G.madeNBA?160:0));
   const nba=ev["NBA"]||0;
   const nbaSeasons=G.seasonHistory.filter(s=>s.league==="NBA").length;
   const naismithScore=Math.round(nba + (G.awardLog||[]).filter(a=>a.league==="NBA").reduce((s,a)=>
@@ -2949,6 +3017,10 @@ function render(){
   app.innerHTML = hudHTML() + `<div class="wrap" id="stage"></div>` + actionbarHTML();
   const stage=$("#stage");
   switch(G.phase){
+    case "intro": stage.innerHTML=introHTML(); break;
+    case "decline": stage.innerHTML=declineHTML(); break;
+    case "commit": stage.innerHTML=commitHTML(); break;
+    case "tradeRumor": stage.innerHTML=tradeRumorHTML(); break;
     case "allocate": stage.innerHTML=allocateHTML(); break;
     case "training": stage.innerHTML=trainingHTML(); bindTraining(); break;
     case "review": stage.innerHTML=reviewHTML(); break;
@@ -3135,6 +3207,8 @@ function resolveOption(i){
       for(const k in outcome.attr){ if(outcome.attr[k]>0){ outcome.attr[k]= chance(.5)?-1:0; } }
     }
     applyEffects(outcome);
+    // 轉學劇情：實際換了學校 → 於結果文本帶入新學校名，提高沉浸感
+    if(outcome.transfer && G._transferredTo){ outcome.text += " " + transferFlavor(G._transferredTo); }
     const deltas=[];
     if(outcome.attr) for(const k in outcome.attr){const d=outcome.attr[k]; if(!d) continue;
       deltas.push(`<span class="delta ${d>=0?"pos":"neg"}">${ATTR_LABEL[k]} ${d>=0?"+":""}${d}</span>`);}
@@ -3273,17 +3347,17 @@ function hsDecisionHTML(){
     ${proHTML}`;
 }
 function offerCardHTML(o,i,kind){
+  const isNBA = o.league==="NBA";
   const reco=o.tag&&(o.tag.includes("名校")||o.tag.includes("殿堂")||o.tag.includes("續約")||o.tag.includes("頂薪")||o.tag.includes("爭冠"));
   const money=o.type==="pro"?`<div>年薪 <b>${fmtMoney(o.salary)}</b></div>`:"";
   const yrs=o.type==="pro"?`<div>合約 <b>${o.years}</b> 年</div>`:`<div>層級 <b>${lname(o.league)}</b></div>`;
-  
-  // 取得球隊專屬配色
   const tc = teamColors(o.team);
-  const btnTextCol = isLightColor(tc.p) ? "#17171C" : "#FFFFFF"; // 動態判斷文字深淺
-  const cardStyle = `border-left: 5px solid ${tc.p}; background: linear-gradient(145deg, var(--surface2) 65%, ${tc.p}15 100%);`;
-
-  return `<div class="offer ${reco?"reco":""}" style="${cardStyle}">
-    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}</div><div class="offer-team" style="color: ${tc.p}; text-shadow: 0 0 10px ${tc.p}30;">${o.team}</div></div>
+  const btnTextCol = isLightColor(tc.p) ? "#17171C" : "#FFFFFF";
+  // NBA：交給 .offer.nba 專屬金框；其餘沿用球隊配色左邊條
+  const cardStyle = isNBA ? "" : `border-left: 5px solid ${tc.p}; background: linear-gradient(145deg, var(--surface2) 65%, ${tc.p}15 100%);`;
+  const crown = isNBA ? `<span class="nba-crown">🏀 最高殿堂在招手</span>` : "";
+  return `<div class="offer ${reco?"reco":""} ${isNBA?"nba":""}" style="${cardStyle}">
+    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}${crown}</div><div class="offer-team" style="color: ${tc.p}; text-shadow: 0 0 10px ${tc.p}30;">${o.team}</div></div>
       ${o.tag?`<span class="offer-tag">${o.tag}</span>`:""}</div>
     <div class="offer-body">${yrs}${money}</div>
     <button class="btn small" data-offer="${i}" style="background: ${tc.p}; color: ${btnTextCol}; box-shadow: 0 4px 12px -6px ${tc.p}; border: 1px solid ${tc.s}40;">${o.type==="pro"?"簽下合約":"接受 Offer"}</button>
@@ -3316,12 +3390,211 @@ function freeAgencyHTML(){
 }
 
 /* ---------- 交易 ---------- */
+const DECLINE_STAGES={
+  1:{tag:"生涯中後期",emoji:"🍂",title:"歲月的第一道痕跡",
+     body:(g,d)=>`不知不覺，你的生涯已經來到中後期。晨起的痠痛多了幾分，熱身的時間也拉長了。${d} 體能、防守與籃板這些吃身體的能力最先感受到變化——但你累積的經驗與球商，正是老將最鋒利的武器。`},
+  2:{tag:"下滑加劇",emoji:"🌗",title:"追不上的那半步",
+     body:(g,d)=>`身體不再完全聽從指揮，下滑進入了第二個階段。${d} 年輕人衝得更快、跳得更高，你開始得靠腦袋、靠位置感、靠那些他們還沒學會的東西，才能繼續留在場上主宰比賽。`},
+  3:{tag:"明顯老化",emoji:"🌪️",title:"與時間的拔河",
+     body:(g,d)=>`這一次，老化寫進了每一次起跳。${d} 爆發力大不如前，你在深夜問自己：還能打幾年？但哨聲一響，你依然選擇站上球場——證明自己還配得上這個位置。`},
+  4:{tag:"暮年 · 斷崖",emoji:"🕯️",title:"最後的燭光",
+     body:(g,d)=>`暮年。身體已經逼近極限。${d} 這也許是你職業生涯的最後幾個賽季了。沒有人能永遠年輕，但有些人選擇燃燒到最後一刻——為了那份最純粹的熱愛，再拚一次。`},
+};
+function declineHTML(){
+  const c=G._declineCard||{stage:1,drop:0,age:G.age};
+  const meta=DECLINE_STAGES[c.stage]||DECLINE_STAGES[1];
+  const dropPhrase = c.drop>0 ? `本季整體能力下滑了 <b style="color:var(--red)">${c.drop}</b> 點。` : `整體能力開始悄悄鬆動。`;
+  return `<div class="season-hd"><span class="stage" style="color:var(--wood)">${meta.tag} · ${G.age} 歲</span><span class="yr">${G.year}</span></div>
+    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
+    <div class="panel">
+      <div style="font-size:44px;text-align:center">${meta.emoji}</div>
+      <div class="event-title" style="text-align:center">${meta.title}</div>
+      <div class="event-text" style="line-height:1.9">${meta.body(G, dropPhrase)}</div>
+    </div>
+    <p class="small center" style="opacity:.7;padding-bottom:6px">接下來仍可分配訓練點——用經驗與智慧，延續你的傳奇。</p>`;
+}
+function leagueTone(lg){
+  if(lg==="NBA") return "nba";
+  if(lg==="日職 B.League"||lg==="CBL"||lg==="KRBL") return "overseas";
+  if(lg==="發展聯盟") return "dev";
+  if(lg==="NCAA D1") return "ncaa1";
+  if(lg==="NCAA D2") return "ncaa2";
+  if(lg==="UBA") return "uba";
+  return "twpro";
+}
+function transferFlavor(nt){
+  const O=`<b style="color:var(--orange)">${nt}</b>`, tone=leagueTone(G.league);
+  let pool;
+  if(G.stage==="高中"){
+    pool=[
+      `你收拾行囊轉入 ${O}，在陌生的球館裡，一切重新開始。`,
+      `告別老隊友的那個午後，你揹起球袋轉學到 ${O}，帶著幾分不捨、也帶著更大的期待。`,
+      `轉學到 ${O} 的第一天，沒人認識你。你在心裡告訴自己：用球場上的表現，讓他們記住這個名字。`,
+    ];
+  } else if(tone==="ncaa1"||tone==="ncaa2"){
+    pool=[
+      `你進入了轉學程序（transfer portal），落腳 ${O}，在新的體系裡尋找更適合自己的舞台。`,
+      `一紙轉學決定，你把行李搬進了 ${O} 的宿舍。異國的新環境，是挑戰，也是重新證明自己的機會。`,
+    ];
+  } else {
+    pool=[
+      `你轉入 ${O}，在新的隊伍裡重新爭取先發的位置。`,
+      `帶著證明自己的決心，你轉學加入 ${O}，把過去歸零，重新開始。`,
+    ];
+  }
+  return pick(pool);
+}
+function showCommitCard(kind, offer){
+  const lg=lname(offer.league), t=offer.team, isDraft=(kind==="draft"), isNBA=(offer.league==="NBA");
+  const tone=leagueTone(offer.league);
+  const pk = offer.pick? `・${offer.league==="NBA"?"第 "+offer.pick+" 順位":pickLabel(offer.pick)}` : "";
+  const O=`<b style="color:var(--orange)">${t}</b>`;
+  let pool;
+  if(isDraft){
+    const draftPools={
+      nba:[
+        `選秀會的燈光下，你的名字被 NBA 球隊唱到的那一刻，整個世界安靜了半秒。你決定把這身天賦帶到 ${O}（${lg}${pk}）——這裡是籃球的最高殿堂，多少人窮盡一生也踏不進來。台灣囝仔，站上了世界的中心。`,
+        `大螢幕打出你的名字與 ${O} 的隊徽（${lg}${pk}）。你握緊拳頭，深知這不是終點而是起點——在 NBA，天賦只是入場券，能不能留下來，得靠往後每一個夜晚去拚。`,
+        `當 ${O}（${lg}${pk}）唸出你的名字，看台上的家人紅了眼眶。從家鄉的破舊球場到世界最高殿堂，這條路你走了好久好久——而現在，才正要開始。`,
+      ],
+      overseas:[
+        `你決定遠渡重洋，把才華帶到 ${O}（${lg}${pk}）。語言不通、文化陌生，還得扛起「洋將」的高期待——但你眼神篤定：既然來了，就要在異國的球場上，打出讓他們記住的名字。`,
+        `離鄉背井的決定並不容易，但你選擇了 ${O}（${lg}${pk}）。在更高強度、更講究戰術的舞台，你準備用一次次硬仗，證明台灣球員也能在海外站穩腳跟。`,
+        `一句「我想去更強的地方」，你把生涯帶往 ${O}（${lg}${pk}）。異鄉的孤獨與壓力等著你，但唯有走出舒適圈，才知道自己能站多高。`,
+      ],
+      dev:[
+        `你把天賦帶到了 ${O}（${lg}${pk}）——發展聯盟。這裡是通往 NBA 的最後一哩路：農場、長途巴士、微薄的薪水……但只要打得夠好，一通 call-up 電話，就能改變一切。你賭上所有，只為那扇門。`,
+        `${O}（${lg}${pk}）向你招手。你清楚發展聯盟意味著什麼：離夢想最近、卻也最煎熬的地方。你收拾行囊，準備用數據把自己打上更大的舞台。`,
+      ],
+      twpro:[
+        `你決定把青春與才華交給 ${O}（${lg}${pk}），在家鄉父老的注視下展開職業生涯。這裡或許不是世界最高殿堂，但每一個為你歡呼的聲音，都是你最熟悉、最想守護的球迷。`,
+        `選秀會上被 ${O}（${lg}${pk}）選中，你穿上球衣，心裡踏實。台灣的職業舞台就是你逐夢的起點——用表現扛起球隊，讓本土球迷以你為傲。`,
+        `${O}（${lg}${pk}）成了你職業生涯的第一站。沒有跨海的鎂光燈，卻有滿場說著熟悉語言的吶喊。你深吸一口氣：就從這裡，打出一片天。`,
+      ],
+    };
+    pool = draftPools[tone] || draftPools.twpro;
+  } else {
+    const collegePools={
+      ncaa1:[
+        `經過反覆掙扎，你按下了決定鍵——${O}（${lg}）。跨越太平洋，你將在美國大學籃球的最高殿堂與全世界的天才同場競技。這是一條孤獨卻壯闊的路，你準備好用球技，讓他們記住這個來自台灣的名字。`,
+        `${O}（${lg}）的獎學金邀請擺在眼前，你毅然接下。NCAA 一級的鎂光燈、狂熱的主場、通往 NBA 的跳板——你知道機會與壓力同樣巨大，但你選擇迎向它。`,
+      ],
+      ncaa2:[
+        `你選擇遠渡重洋，從 ${O}（${lg}）開始。二級聯盟或許不是鎂光燈的中心，但你相信：只要打得夠亮眼，舞台的大小，從來擋不住真正想往上爬的人。`,
+        `帶著一點忐忑與滿腔熱血，你加入了 ${O}（${lg}）。在異國的次級聯盟裡，你要一步一腳印證明自己，把每一場比賽都當成往上跳級的墊腳石。`,
+      ],
+      uba:[
+        `經過無數個夜晚的深思熟慮，你在桌上那疊邀請函裡圈起了 ${O}。你決定披上 ${lg} 的戰袍，在大專最高殿堂打磨球技，讓高中時許下的夢想，朝職業的方向再靠近一步。`,
+        `家人、教練與學長的建議在腦中反覆迴盪，最後你聽從了自己的心：${O}。背起球袋踏上 ${lg} 的征途，你準備在這片嶄新的球場上，寫下屬於自己的篇章。`,
+        `你婉拒了其他學校的邀約，選擇 ${O}（${lg}）。看中的不只是球隊戰績，更是這裡能讓你成為更完整球員的舞台——大學這幾年，你要打出通往職業的入場券。`,
+      ],
+    };
+    pool = collegePools[tone] || collegePools.uba;
+  }
+  const body = pick(pool);
+  G._commitCard={
+    body,
+    emoji: isDraft ? (isNBA?"🏀":tone==="overseas"?"✈️":tone==="dev"?"🇺🇸":"🎽") : ((tone==="ncaa1"||tone==="ncaa2")?"🇺🇸":"🎓"),
+    tag: isDraft ? "職業選秀 · 加盟宣言" : "升學抉擇 · 加入名校",
+    title: isDraft ? "將天賦帶往新的舞台" : "深思熟慮後的決定"
+  };
+  G.phase="commit"; render();
+}
+function afterCommitCard(){ G._commitCard=null; startSeason(); }
+function commitHTML(){
+  const c=G._commitCard; if(!c) return "";
+  return `<div class="season-hd"><span class="stage">${c.tag}</span><span class="yr">${G.year}</span></div>
+    <div class="panel">
+      <div style="font-size:44px;text-align:center">${c.emoji}</div>
+      <div class="event-title" style="text-align:center">${c.title}</div>
+      <div class="event-text" style="line-height:1.9">${c.body}</div>
+    </div>
+    <p class="small center" style="opacity:.7;padding-bottom:6px">接下來，展開你的季前特訓。</p>`;
+}
+function introHTML(){
+  const posName=POSITIONS[G.pos].name;
+  if(!G._introText){
+    const H=`<b style="color:var(--orange)">${G.home}</b>`, T=`<b style="color:var(--orange)">${G.team}</b>`, P=`<b>${posName}</b>`, N=`<b>${G.name}</b>`;
+    const pool=[
+      `來自 ${H} 的你，揹起球袋，踏進了籃球名校 ${T} 的體育館。木地板的氣味、球鞋摩擦的尖銳聲響、還有牆上那一整排冠軍錦旗——這裡，是無數球員夢想開始的地方。<br><br>身為一名 ${P}，你在心裡許下承諾：先拿下 <b style="color:var(--gold)">HBL 冠軍</b>，再一步步打進職業殿堂，讓「${N}」這個名字，有一天能被寫進台灣籃球的歷史。<br><br>故事，就從這座球館的第一次上籃開始。`,
+      `放榜那天，${H} 的家門口擠滿了道賀的鄰居——你考進了籃球名校 ${T}。行李箱裡除了衣物，還塞著一顆磨得發亮的籃球。站在陌生的宿舍窗前，你望著遠方的球場，握緊了拳頭。<br><br>身為 ${P}，你的目標很清楚：${T} 的冠軍錦旗上，總有一天要繡上「${N}」的名字，然後——打進職業。<br><br>青春的第一顆球，即將起跳。`,
+      `你不是天生的天之驕子。從 ${H} 一路苦練到能穿上 ${T} 的球衣，靠的是別人休息時你還在加練的那些夜晚。報到這天，學長們打量著這個新來的 ${P}，而你只是默默把球衣號碼記在心上。<br><br>「先拿 HBL 冠軍，再打進職業。」——這句話你沒說出口，但每一次上籃都在證明它。${N} 的故事，從最底層開始寫起。`,
+    ];
+    G._introText=pick(pool);
+  }
+  return `<div class="season-hd"><span class="stage">序章 · 夢的起點</span><span class="yr">${G.year}</span></div>
+    <div class="panel">
+      <div style="font-size:42px;text-align:center">🏀</div>
+      <div class="event-title" style="text-align:center">16 歲，高中一年級</div>
+      <div class="event-text" style="line-height:1.9">${G._introText}</div>
+    </div>
+    <p class="small center" style="opacity:.7;padding-bottom:6px">接下來，你將分配訓練點、面對本季的事件與命運骰。</p>`;
+}
+function tradeRumorHTML(){
+  return `<div class="season-hd"><span class="stage">休賽期 · 交易流言</span><span class="yr">${G.year}</span></div>
+    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
+    <div class="panel" id="evpanel">
+      <div class="label">流言 · 抉擇</div>
+      <div class="event-title">網路上瘋傳你的交易消息</div>
+      <div class="event-text">深夜，論壇和社群突然炸出一則貼文：「聽說 ${G.name} 快被 ${G.team} 交易走了？」轉發數一路飆升，記者開始打電話來求證。你的心跳漏了一拍——該怎麼回應這則流言？</div>
+      <div class="opts">
+        <button class="opt" data-rumor="1"><span class="ico">📞</span><span class="ot"><div>直接去詢問球團高層</div><div class="oh">骰高：高層力挺、壓下流言；骰低：踩到痛處、加速成真</div></span></button>
+        <button class="opt" data-rumor="2"><span class="ico">😌</span><span class="ot"><div>「我本人都沒聽說過這消息」</div><div class="oh">冷處理，骰點同樣左右流言走向（波動較小）</div></span></button>
+      </div>
+      <p class="small mt12">擲出命運骰 🎲：<b>點數越高，被交易的機率越低</b>；點數越低，流言越可能成真。</p>
+    </div>`;
+}
+function doTradeRumor(){
+  G._tradeRumor={to:randTeam(G.league,G.team)};
+  G.phase="tradeRumor"; render();
+}
+function resolveTradeRumor(choice){
+  const panel=$("#evpanel"); if(!panel) return;
+  panel.innerHTML=`<div class="label">命運骰</div>
+    <div class="dice-stage">
+      <div class="die rolling" id="die">${pipHTML(1)}</div>
+      <div class="roll-caption" id="rollcap">流言擴散中…</div>
+    </div>`;
+  const die=$("#die"); let ticks=0;
+  const iv=setInterval(()=>{ die.innerHTML=pipHTML(1+Math.floor(rawRnd()*6)); if(++ticks>10){} },70);
+  setTimeout(()=>{
+    clearInterval(iv);
+    const roll=rint(1,6), t=tier(roll);
+    die.classList.remove("rolling"); die.innerHTML=pipHTML(roll);
+    // 骰高 → 降低被交易機率；骰低 → 提高（詢問高層波動較大）
+    const swing = choice===1 ? 0.13 : 0.08;
+    const tradeProb = clamp(0.5 - (roll-3.5)*swing, 0.05, 0.95);
+    const deltas=[];
+    if(choice===1){
+      if(t==="high"){ G.morale=clamp(G.morale+4,0,100); deltas.push(`<span class="delta pos">士氣 +4</span>`); }
+      else if(t==="low"){ G.morale=clamp(G.morale-4,0,100); deltas.push(`<span class="delta neg">士氣 -4</span>`); }
+    }
+    const willTrade = chance(tradeProb);
+    const head = choice===1
+      ? (t==="high"?"你直接找上球團高層對質，對方拍胸脯保證：「你是我們的建隊核心，別理那些網路流言。」"
+        : t==="low"?"你氣沖沖地質問管理層，換來的卻是一陣尷尬的沉默與閃爍的眼神。"
+        : "你私下向教練打聽，只得到模稜兩可的答覆。")
+      : (t==="high"?"你選擇冷處理，照常出現在訓練館，彷彿什麼都沒發生。"
+        : t==="low"?"你嘴硬說不知情，但更衣室裡那股微妙的氣氛，騙不了任何人。"
+        : "你嘴上說沒聽過，心裡卻七上八下。");
+    const tail = willTrade ? "然而幾天後，交易還是敲定了——" : "最終，這只是一場虛驚，你留了下來。";
+    $("#rollcap").innerHTML=`擲出 <b class="oswald" style="color:var(--gold);font-size:18px">${roll}</b>`;
+    const oc=document.createElement("div");
+    oc.className="outcome "+(willTrade?"bad":"good");
+    oc.innerHTML=`<div class="ot">${head} ${tail}</div>${deltas.length?`<div class="deltas">${deltas.join("")}</div>`:""}`;
+    panel.appendChild(oc);
+    refreshHUD();
+    if(willTrade){ setAction([{t:"面對交易 ▶",cls:"gold",fn:doTrade}]); }
+    else { G._tradeRumor=null; setAction([{t:"繼續 ▶",cls:"gold",fn:processOffseason}]); }
+  },850);
+}
 function tradeHTML(){
   return `<div class="season-hd"><span class="stage">交易消息</span><span class="yr">${G.year}</span></div>
     <div class="panel center">
       <div style="font-size:40px">🔁</div>
       <h2 style="font-size:20px;margin:8px 0">你被交易了！</h2>
       <p class="muted">${G._trade.from} → <b style="color:var(--orange)">${G._trade.to}</b><br>合約隨你一起轉隊，繼續證明自己。</p>
+      <p class="muted" style="margin-top:12px;font-style:italic;color:var(--faint);line-height:1.7">${G._trade.flavor||"球員，終究只是聯盟裡流通的商品——這一次，你被打包送往了新的城市。"}</p>
     </div>`;
 }
 
@@ -3710,17 +3983,16 @@ function draftResultsHTML(){
     ${offersHTML}`;
 }
 function draftOfferCardHTML(o,i){
+  const isNBA = o.league==="NBA";
   const pickTxt = o.league==="NBA"?(o.pick?`${lname("NBA")} 第 ${o.pick} 順位`:"落選"):
     o.pick? pickLabel(o.pick) : "海外簽約";
   const reco = o.pick===1 || o.league==="NBA" || o.league==="日職 B.League";
-  
-  // 取得球隊專屬配色
   const tc = teamColors(o.team);
   const btnTextCol = isLightColor(tc.p) ? "#17171C" : "#FFFFFF";
-  const cardStyle = `border-left: 5px solid ${tc.p}; background: linear-gradient(145deg, var(--surface2) 65%, ${tc.p}15 100%);`;
-
-  return `<div class="offer ${reco?"reco":""}" style="${cardStyle}">
-    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}</div><div class="offer-team" style="color: ${tc.p}; text-shadow: 0 0 10px ${tc.p}30;">${o.team}</div></div>
+  const cardStyle = isNBA ? "" : `border-left: 5px solid ${tc.p}; background: linear-gradient(145deg, var(--surface2) 65%, ${tc.p}15 100%);`;
+  const crown = isNBA ? `<span class="nba-crown">🏀 最高殿堂在招手</span>` : "";
+  return `<div class="offer ${reco?"reco":""} ${isNBA?"nba":""}" style="${cardStyle}">
+    <div class="offer-hd"><div><div class="offer-lg">${lname(o.league)}${crown}</div><div class="offer-team" style="color: ${tc.p}; text-shadow: 0 0 10px ${tc.p}30;">${o.team}</div></div>
       <span class="offer-tag">${o.tag||pickTxt}</span></div>
     <div class="offer-body">
       <div>順位 <b>${pickTxt}</b></div>
@@ -3818,7 +4090,7 @@ function hallOfFameHTML(){
       ${note?`<div class="hof-note">${note}</div>`:""}
     </div>`;
   const ceremony = (h.taiwan||h.naismith||h.china) ? hofCeremonyHTML(h) : "";
-  const cards=[card("台灣籃球名人堂",h.taiwan,h.taiwanScore,HOF_TH.taiwan,"依台灣聯盟資歷與中華隊貢獻")];
+  const cards=[card("台灣籃球名人堂",h.taiwan,h.taiwanScore,HOF_TH.taiwan,"台灣聯盟資歷＋中華隊獎牌貢獻（可純靠國家隊入選）")];
   if(h.cblSeasons>0 || h.china) cards.push(card("中國籃球名人堂",h.china,h.chinaScore,HOF_TH.china,lname("CBL")+" 資歷與榮譽"));
   if(h.krblSeasons>0 || h.korea) cards.push(card("韓國籃球名人堂",h.korea,h.koreaScore,HOF_TH.korea,lname("KRBL")+" 資歷與榮譽"));
   cards.push(card("奈史密斯名人堂",h.naismith,h.naismithScore,HOF_TH.naismith,lname("NBA")+" 殿堂，入選難度極高"));
@@ -4280,6 +4552,9 @@ function bindActionbar(){
 function defaultPhaseActions(){
   if(!G)return [];
   switch(G.phase){
+    case "intro": return [{t:"踏上球場，開始高中生涯 ▶",cls:"gold",fn:startSeason}];
+    case "decline": return [{t:"接受現實，繼續前進 ▶",cls:"gold",fn:afterDeclineCard}];
+    case "commit": return [{t:"開始新篇章 ▶",cls:"gold",fn:afterCommitCard}];
     case "allocate": return [{t:"完成分配，開始賽季 ▶",cls:"gold",fn:commitAllocation}];
     case "review": return [{t:"繼續 ▶",cls:"gold",fn:afterReview}];
     case "draftDeclare": return [{t:"確認參加選秀 ▶",cls:"gold",fn:confirmDraft}];
@@ -4293,6 +4568,8 @@ function defaultPhaseActions(){
 function bindPhaseSpecific(){
   const s=$("#stage");if(!s)return;
   if(G.phase==="allocate") bindAllocate();
+  // 交易謠言：兩個選項
+  if(G.phase==="tradeRumor") s.querySelectorAll("[data-rumor]").forEach(b=>b.addEventListener("click",()=>resolveTradeRumor(parseInt(b.dataset.rumor))));
   // 高中決策
   s.querySelectorAll("[data-offer]").forEach(b=>b.addEventListener("click",()=>{
     const i=parseInt(b.dataset.offer);
