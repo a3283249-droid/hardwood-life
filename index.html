@@ -701,7 +701,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.1.8.53";
+const VERSION="V.1.8.54";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -744,6 +744,7 @@ function newGame(name,pos,home,jersey,seed){
     amateurAwards:[], draftInfo:null,
     awardLog:[], milestones:[], leaguePts:{}, careerCum:{ast:0,stl:0,blk:0},
     titles:[], majorInjuries:0, usRankBest:null, seed:useSeed, _declineStage:0,
+    _surgeryDone:false, _electiveDone:false, _injuryRetire:false, _surgeryResult:null,
     // 每季暫存
     seasonEvents:[], eventIdx:0, offseason:[], lastReview:null, lastAttr:{...attr},
     phase:"training",
@@ -773,6 +774,50 @@ function fmtMoney(wan){ // wan = 萬
    ========================================================================= */
 function tier(r){return r<=2?"low":r<=4?"mid":"high";}
 function mk(text,attr,extra={}){return Object.assign({text,attr:attr||{}},extra);}
+
+/* =========================================================================
+   受傷部位資料庫（籃球最常見的受傷部位）
+   每個部位可能有 minor(輕傷) / major(重傷) / career(毀滅性生涯大傷) 劇情字卡
+   只有標了 career 文本的部位，才可能發生「生涯報銷級」大傷
+   ========================================================================= */
+const INJURY_PARTS=[
+  {key:"ankle", name:"腳踝", emoji:"🦶",
+    minor:"急停變向時腳踝一歪，傳來熟悉的刺痛——又是老問題。冰敷、包紮，休兵幾場。",
+    major:"落地時重重踩到對手的腳，腳踝當場腫得像饅頭。韌帶嚴重扭傷，得缺席一大段賽季。"},
+  {key:"knee", name:"膝蓋", emoji:"🦵",
+    minor:"膝蓋在跳投落地後隱隱發痛，隊醫說是髕骨肌腱發炎，得減量休養一陣子。",
+    major:"一次卡位後膝蓋傳出異響，檢查是半月板撕裂。你被推進手術室，賽季提前報銷。",
+    career:"切入上籃落地的瞬間，膝蓋往內一凹——「啪」的一聲響徹全場。你倒地抱著腿，全場鴉雀無聲。核磁共振結果出爐：前十字韌帶（ACL）完全斷裂。"},
+  {key:"achilles", name:"阿基里斯腱", emoji:"🦿",
+    major:"起跳的一瞬間小腿後方像被人踹了一腳，你回頭卻沒人。阿基里斯腱部分撕裂，長期休養跑不掉。",
+    career:"你正準備起跳封蓋，突然感覺腳踝後方「啪」地一聲斷裂，整個人癱倒在地。阿基里斯腱完全斷裂——這是所有籃球員最恐懼的惡夢。"},
+  {key:"hamstring", name:"大腿後肌", emoji:"🦵",
+    minor:"一次快攻衝刺時大腿後側猛然一緊，你摀著腿慢下腳步。輕微拉傷，休息幾場就好。",
+    major:"全力衝刺搶快攻時，大腿後肌嚴重撕裂，你痛得單腳跳著離場。這一養，就是好幾週。"},
+  {key:"finger", name:"手指", emoji:"🖐️",
+    minor:"搶籃板時手指被球狠狠戳到，腫脹瘀青。雖然是小傷，但握球投籃都彆扭好一陣子。",
+    major:"一次抄截手指被對手勾到，指骨骨折。打上護具、纏滿膠帶，出手觸感全亂了套。"},
+  {key:"back", name:"下背", emoji:"🔥",
+    minor:"長期征戰下背開始隱隱作痛，熱身變得格外漫長。隊醫叮囑你要好好保養核心。",
+    major:"一次爭搶落地扭到腰，椎間盤突出讓你痛到無法彎腰。這種傷最磨人，一拖就是大半季。",
+    career:"多年累積的下背傷勢終於全面爆發，椎間盤嚴重退化壓迫神經。醫生嚴肅地告訴你：你的身體，已經無法再承受職業賽事的衝撞。"},
+  {key:"shoulder", name:"肩膀", emoji:"💪",
+    minor:"一次防守對抗肩膀被撞到，痠痛好幾天。上舉投籃時總覺得卡卡的。",
+    major:"倒地時肩膀著地，當場脫臼。復位那一下痛得你冷汗直流，接下來得長期復健穩定關節。"},
+  {key:"head", name:"頭部", emoji:"🧠",
+    minor:"搶籃板時頭部撞在一起，一陣天旋地轉。腦震盪評估後，你被要求進入觀察程序休息。",
+    major:"一次激烈碰撞後你當場失去意識被抬下場，確診為中度腦震盪。安全第一，賽季就此打住。"},
+];
+/* 依嚴重程度抽一個受傷部位。career 只從有 career 文本的部位抽 */
+function pickInjury(sev){
+  const pool = sev==="career"
+    ? INJURY_PARTS.filter(p=>p.career)
+    : INJURY_PARTS.filter(p=>p[sev]);
+  const def = pool[Math.floor(_rng()*pool.length)] || INJURY_PARTS[0];
+  const sevLabel = sev==="career"?"毀滅性大傷":sev==="major"?"重傷":"輕傷";
+  return {partKey:def.key, part:def.name, emoji:def.emoji, severity:sev,
+          sevLabel, text:def[sev]||def.major||def.minor};
+}
 
 const EVENTS={
   "高中":[
@@ -2208,6 +2253,7 @@ function applyEffects(e){
 
 function playSeason(){
   G._newTitle=null;
+  G._surgeryDone=false; G._electiveDone=false; G._surgeryResult=null; // 每季重置：手術抉擇與治療手術
   const s=simulateSeason();
   const awards=computeAwards(s);
   s.awards=awards;
@@ -2230,27 +2276,191 @@ function seasonInjuryCheck(){
  if(G._memInjury){
     const forced=G._memInjury; G._memInjury=null;
     if(forced === "drunk_driving") {
-      return {major: true, career: true, text: "【生涯告終】你因為酒駕被逮，球團祭出重罰開除，永不錄用！你的籃球生涯就此身敗名裂。"};
+      return {major: true, career: true, forcedEnd:true, part:"", emoji:"🚔", sevLabel:"生涯告終",
+              text: "【生涯告終】你因為酒駕被逮，球團祭出重罰開除，永不錄用！你的籃球生涯就此身敗名裂。"};
     }
     ATTR_KEYS.forEach(k=>{const fast=(k==="athletic"||k==="defense")?1.6:1;
       G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,5)*fast),15,99);});
     G.health=clamp(G.health-rnd(25,45),5,100);
     const career=forced==="career"&&isPro();
-    return {major:true,career,text:career?"這一摔傷得太重，恐得高掛球鞋…":"賽季報銷的重傷，能力明顯下滑。"};
+    const inj=pickInjury(career?"career":"major");
+    return Object.assign(inj,{major:true,career});
   }
-  let pMajor=.02 + Math.max(0,(age-30))*.012 + (G.health<60?.05:0);
-  pMajor=clamp(pMajor,.02,.28);
+  // ---- 連續受傷機率：健康值越低、年齡越大，受傷率越高 ----
+  const hLow = (100 - clamp(G.health,0,100)) / 100;   // 0（滿血）→ 1（瀕危）
+  const ageF = Math.max(0, age-30);
+  const pMajor = clamp(.02 + hLow*.20 + ageF*.014, .02, .40);   // 重傷
+  const pMinor = clamp(.14 + hLow*.30 + ageF*.010, .14, .55);   // 輕傷
+
   if(chance(pMajor)){
+    // 是否為毀滅性生涯大傷（僅職業；健康越低、年紀越大越可能）
+    const careerRisk = clamp(.08 + ageF*.05 + hLow*.18, .05, .78);
+    const career = isPro() && chance(careerRisk);
+    const inj = pickInjury(career?"career":"major");
+    const heavy = career?1.5:1;
     ATTR_KEYS.forEach(k=>{const fast=(k==="athletic"||k==="defense")?1.6:1;
-      G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,6)*fast),15,99);});
-    G.health=clamp(G.health-rnd(20,45),5,100);
-    const career=isPro()&&chance(clamp(.1+(age-30)*.05,.05,.7));
-    return {major:true, career, text:career?"【重大傷病警告】醫生判定你的傷勢嚴重，無法再負荷高強度的職業賽事！本賽季結束後你將被迫退休...":"【嚴重受傷】賽季報銷的重傷！你將缺席剩餘賽事，能力也受到影響而明顯下滑。"};
+      G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,6)*fast*heavy),15,99);});
+    G.health=clamp(G.health-rnd(career?30:20, career?55:45),5,100);
+    return Object.assign(inj,{major:true, career});
   }
-  if(chance(.25)){ G.health=clamp(G.health-rnd(6,16),20,100);
-    return {major:false,text:"小傷不斷，影響了部分出賽。"}; }
+  if(chance(pMinor)){
+    const inj = pickInjury("minor");
+    G.health=clamp(G.health-rnd(6,16),15,100);
+    return Object.assign(inj,{major:false, career:false});
+  }
+  // 沒受傷 → 自然恢復健康
   G.health=clamp(G.health+rnd(4,10),0,100);
   return null;
+}
+
+/* =========================================================================
+   手術抉擇：毀滅性生涯大傷時，玩家可賭一把動刀
+   骰高 → 一季神奇好轉、可上場；骰中 → 兩季後回歸、全能力 -2；骰低 → 掛靴
+   ========================================================================= */
+function surgeryHTML(){
+  const inj=G.lastReview&&G.lastReview.injury;
+  const part=inj?`${inj.emoji||"🩹"} ${inj.part||""}${inj.sevLabel?"（"+inj.sevLabel+"）":""}`:"重大傷病";
+  const story=inj?inj.text:"你遭遇了嚴重的傷病。";
+  const intro=`<div class="season-hd"><span class="stage" style="color:var(--red)">傷病 · 生死抉擇</span><span class="yr">${G.year}｜${G.age}歲</span></div>
+    <div class="panel" style="border-color:var(--red)">
+      <div class="event-title" style="color:var(--red)">${part}</div>
+      <div class="event-text">${story}</div>
+      <div class="event-text" style="color:var(--dim)">主刀醫生攤開你的核磁共振影像，神情凝重：「這是一場豪賭。手術可能讓你重返賽場，也可能……你要賭嗎？」</div>
+    </div>`;
+  // 已經骰完 → 只顯示結果，不再出現選擇按鈕（避免切頁後重骰）
+  if(G._surgeryDone && G._surgeryResult){
+    const r=G._surgeryResult;
+    return intro+`<div class="panel">
+      <div class="label">手術結果</div>
+      <div class="dice-stage">
+        <div class="die" id="die">${pipHTML(r.roll)}</div>
+        <div class="roll-caption">擲出 <b class="oswald" style="color:var(--gold);font-size:18px">${r.roll}</b></div>
+      </div>
+      <div class="outcome ${r.cls}" style="margin-top:12px">
+        <div class="ot">${r.text}</div>${r.deltas&&r.deltas.length?`<div class="deltas">${r.deltas.join("")}</div>`:""}
+      </div>
+    </div>`;
+  }
+  // 尚未決定 → 顯示選項
+  return intro+`<div class="panel">
+      <div class="label">你的選擇</div>
+      <div class="opts mt8" id="surgpanel">
+        <button class="opt" id="doSurgery"><span class="ico">🏥</span><span class="ot">接受手術，賭一把重返賽場<span class="oh">骰高：一季神奇好轉／骰中：兩季後回歸，全能力 -2／骰低：被迫退役</span></span></button>
+        <button class="opt" id="skipSurgery"><span class="ico">🕊️</span><span class="ot">放棄手術，體面退役<span class="oh">保住健康的身體，帶著遺憾告別籃球</span></span></button>
+      </div>
+    </div>`;
+}
+// 手術結果後的底部按鈕（切頁回來後也能正確重建）
+function surgeryContinueAction(){
+  const r=G._surgeryResult; if(!r) return [];
+  if(r.fail) return [{t:"接受命運，高掛球鞋 ▶",cls:"gold",fn:()=>endCareer()}];
+  return [{t:"重返球場，繼續奮戰 ▶",cls:"gold",fn:()=>{ G.lastAttr={...G.attr}; afterReview(); }}];
+}
+function startSurgery(){
+  if(G._surgeryDone) return; // 已骰過就不再處理
+  const panel=$("#surgpanel");
+  if(!panel)return;
+  panel.innerHTML=`<div class="dice-stage">
+      <div class="die rolling" id="die">${pipHTML(1)}</div>
+      <div class="roll-caption" id="rollcap">手術進行中，命運未卜…</div>
+    </div>`;
+  setAction([]);
+  const die=$("#die"); let ticks=0;
+  const iv=setInterval(()=>{ if(die)die.innerHTML=pipHTML(1+Math.floor(rawRnd()*6)); if(++ticks>10){} },70);
+  setTimeout(()=>{
+    clearInterval(iv);
+    if(G._surgeryDone) return; // 防止重複結算
+    const roll=rint(1,6);
+    const t=tier(roll);
+    let text, cls, fail=false, deltas=[];
+    if(t==="high"){
+      cls="good";
+      G.health=clamp(rnd(82,95),5,100);
+      G.lastReview.injury.career=false;   // 康復，取消退役
+      text="奇蹟發生了！手術極為成功，你只花了一個賽季就完全康復。復健過程中你甚至找回了年輕時的爆發力——醫療團隊都稱這是教科書級的復出。你，回來了。";
+      deltas.push(`<span class="delta pos">健康 恢復至 ${Math.round(G.health)}</span>`);
+    }else if(t==="mid"){
+      cls="";
+      G.health=clamp(rnd(62,74),5,100);
+      ATTR_KEYS.forEach(k=>{ G.attr[k]=clamp(G.attr[k]-2,15,99); });
+      G.lastReview.injury.career=false;   // 回歸，但變弱
+      text="手術成功了，但漫長的復健讓你整整缺席了兩個賽季。當你重新站上球場，才發現身體已不聽使喚——那份靈巧與爆發，回不去了（全能力 -2）。但至少，你還能打球。";
+      deltas.push(`<span class="delta neg">全能力 -2</span>`);
+      deltas.push(`<span class="delta pos">健康 恢復至 ${Math.round(G.health)}</span>`);
+
+      // === 新增：完美模擬跳過兩賽季的邏輯 ===
+      let rehabTeam = G.team;
+      for (let i = 1; i <= 2; i++) {
+        G.year++;
+        G.age++;
+        applyAging(); // 復健期間也會自然老化與改變能力
+
+        // 判斷這一年是否還有合約在身
+        // (因為原流程 afterReview 還沒扣受傷當季的合約，所以用 > i 來判斷是否包含復健的年份)
+        if (isPro() && G.contract) {
+          if (G.contract.yearsLeft > i) {
+            G.money += G.contract.salary; // 照領薪資
+            rehabTeam = G.team;
+          } else {
+            rehabTeam = "自由球員";
+          }
+        } else if (isPro()) {
+          rehabTeam = "自由球員";
+        }
+
+        // 推入 0 數據的空白賽季到歷史紀錄
+        G.seasonHistory.push({
+          year: G.year, age: G.age, stage: G.stage, league: G.league, team: rehabTeam,
+          gp: 0, ppg: 0, rpg: 0, apg: 0, spg: 0, bpg: 0, fg: 0, tp: 0,
+          w: 0, l: 0, winPct: 0, seasonScore: 0, ov: overall(),
+          awards: ["🏥 大傷復健全季報銷"], playoff: false, champion: false, fmvp: false,
+          arche: archetype()
+        });
+      }
+
+      // 預先扣除這兩年的合約年限
+      // 關鍵：最少留 1 年給原有的 afterReview 去扣，藉此完美銜接觸發自由市場
+      if (isPro() && G.contract) {
+        G.contract.yearsLeft -= 2;
+        if (G.contract.yearsLeft < 1) {
+          G.contract.yearsLeft = 1; 
+        }
+      }
+    }else{
+      cls="bad"; fail=true;
+      G._injuryRetire=true;
+      G.retireReason="重傷開刀仍回天乏術，忍痛退役";
+      text="手術檯上的燈熄滅後，醫生摘下口罩，沉默良久才開口：「我們盡力了……但就算手術完成，你的身體也無法再承受職業籃球的強度。是時候，跟籃球說再見了。」";
+    }
+    // 存下結果，讓切頁回來也只會看到結果
+    G._surgeryResult={roll, cls, text, deltas, fail};
+    G._surgeryDone=true;
+    if(G.phase==="surgery") render(); // 若仍在手術頁 → 重繪出結果與正確底部按鈕
+    else refreshHUD();                // 若已切到別頁（如數據總表）→ 只更新 HUD，狀態已保存
+  },1500);
+}
+function skipSurgery(){
+  if(G._surgeryDone) return;
+  G._surgeryResult={roll:0, cls:"bad", text:"你婉拒了醫生的手術建議。與其在手術檯上賭上一切，你選擇帶著一副還算完整的身體，體面地告別這片深愛的球場。", deltas:[], fail:true};
+  G._surgeryDone=true; G._injuryRetire=true;
+  G.retireReason="重傷後選擇不動刀，帶著遺憾退役";
+  if(G.phase==="surgery") render(); else refreshHUD();
+}
+
+/* ---------- 治療手術：健康過低時，於賽季回顧付費恢復健康 ---------- */
+function electiveSurgery(){
+  if(G._electiveDone)return;
+  const pro=isPro();
+  // 費用：職業球員自付（依需恢復量計價，單位：萬），業餘由家人資助免費
+  const need=100-G.health;
+  const cost=pro?clamp(Math.round(40+need*4),40,900):0;
+  if(pro && G.money<cost){ toast("資金不足，付不起手術與復健費用…"); return; }
+  if(pro) G.money-=cost;
+  const heal=rint(28,44);
+  G.health=clamp(G.health+heal,0,100);
+  G._electiveDone=true;
+  render();
+  toast(pro?`接受手術治療，花費 ${fmtMoney(cost)}，健康回升。`:"家人湊錢讓你接受治療，健康回升。");
 }
 
 /* ---------- 賽季回顧後 → 進入休賽期流程 ---------- */
@@ -2258,8 +2468,12 @@ function afterReview(){
   // 建立休賽期待辦
   const q=[];
   const s=G.lastReview;
-  // 重傷退休
-  if(s.injury&&s.injury.career){ G.retireReason="生涯重傷，忍痛退役"; return endCareer(); }
+  // 毀滅性生涯大傷 → 先進入「手術抉擇」畫面（酒駕等強制結束除外）
+  if(s.injury&&s.injury.career&&!s.injury.forcedEnd&&!G._surgeryDone){
+    G.phase="surgery"; render(); return;
+  }
+  // 手術失敗／放棄手術／酒駕等 → 生涯結束
+  if(s.injury&&s.injury.career){ if(!G.retireReason) G.retireReason="生涯重傷，忍痛退役"; return endCareer(); }
   // 高齡硬上限
   if(isPro()&&G.age>=42){ G.retireReason="年事已高，正式高掛球鞋"; return endCareer(); }
   // 瓊斯盃（每年夏季的沉浸式賽事）
@@ -2979,6 +3193,12 @@ const RETIRE_SCENES={
     {e:"🏢",t:"週末聯賽戰神",x:(g)=>`你轉行進入企業上班。每到了週末的社會組籃球聯賽，你總是能在場上輕鬆砍下三四十分，享受著業餘球友們崇拜的目光：「那個大叔，以前好像打過職業啊！」`},
     {e:"🚚",t:"另一種人生",x:(g)=>`你收起球鞋，開起了貨車。長長的公路上，收音機正播著球賽，你跟著哼了兩句，握著方向盤的手，還是當年那雙投籃的手。`},
   ],
+  injuryEnd:[
+    {e:"🩼",t:"英雄的謝幕，來得太早",x:(g)=>`沒有人想以這種方式退場。傷病奪走了你最後的巔峰，你拄著拐杖走進記者會，聲音沙啞卻平靜：「身體撐不住了，但這條路我沒有遺憾。」看台外，球迷自發舉起你的球衣，久久不願散去。`},
+    {e:"🦵",t:"與籃球告別",x:(g)=>`復健室的燈光下，你最後一次試著全力起跳，膝蓋卻不再聽話。醫生的話言猶在耳。你把那雙陪你征戰多年的球鞋，輕輕掛上牆——謝謝你，籃球。`},
+    {e:"🕊️",t:"帶著遺憾，也帶著驕傲",x:(g)=>`重傷結束了你的職業生涯，來得比誰都突然。但翻開你的生涯紀錄，那些拚到最後一秒的畫面騙不了人。你或許沒能打到自己想要的終點，卻在每一場戰役裡，燃燒到了極限。`},
+    {e:"🏥",t:"手術檯上的句點",x:(g)=>`那場豪賭般的手術，終究沒能換回你的球員生涯。醒來後，你望著天花板笑了笑——至少你賭過，至少你沒有留下「如果當初」。人生的球，還要繼續打下去。`},
+  ],
   undrafted:[
     {e:"📃",t:"落選的那一夜",x:(g)=>`選秀會的名單一路念到最後，始終沒有你的名字。場館燈光暗下，你默默收起球鞋。或許籃球夢到此為止，但人生的下半場，才正要開始——你決定轉換跑道，重新出發。`},
     {e:"🎥",t:"籃球網紅",x:(g)=>`雖然沒能打上職業，但你憑藉著扎實的籃球底子，轉行成為擁有百萬訂閱的籃球YouTuber。看著影片底下無數球迷的感謝留言，你知道，你依然沒有離開最愛的籃球。`},
@@ -3029,6 +3249,7 @@ function endCareer(){
   const devSeasons=G.seasonHistory.filter(s=>s.league==="發展聯盟").length;
   G._devGrindSeasons=devSeasons;
   if(!G.madeNBA && devSeasons>=4 && tier!=="undrafted") tier="devgrind";
+  if(G._injuryRetire) tier="injuryEnd"; // 傷退劇情優先
   G._retireScene=pick(RETIRE_SCENES[tier]||RETIRE_SCENES.obscure);
   G._retireTier=tier;
   G._fanForum=fanForum();
@@ -3187,6 +3408,7 @@ function render(){
     case "allocate": stage.innerHTML=allocateHTML(); break;
     case "training": stage.innerHTML=trainingHTML(); bindTraining(); break;
     case "review": stage.innerHTML=reviewHTML(); break;
+    case "surgery": stage.innerHTML=surgeryHTML(); break;
     case "hsDecision": stage.innerHTML=hsDecisionHTML(); break;
     case "collegeDecision": stage.innerHTML=collegeDecisionHTML(); break;
     case "freeAgency": stage.innerHTML=freeAgencyHTML(); break;
@@ -3418,7 +3640,24 @@ function reviewHTML(){
       const champ=(a==="冠軍"||a==="FMVP");
       const ico=a==="MVP"?"🏆":a==="冠軍"?"🏆":a==="FMVP"?"🎖️":a==="DPOY"?"🛡️":a==="ROTY"?"🌟":a==="明星賽"?"⭐":a==="最佳陣容"?"🏅":"👑";
       return `<span class="badge ${champ?"champ":""}">${ico} ${a}</span>`;}).join("")}</div>`:"";
-  const injuryHTML=s.injury?`<div class="outcome bad mt12"><div class="ot">🩹 ${s.injury.text}</div></div>`:"";
+  let injuryHTML="";
+  if(s.injury){
+    const inj=s.injury;
+    const cls=inj.career?"bad":inj.major?"bad":"";
+    const head=(inj.emoji||"🩹")+" "+(inj.part?inj.part+"："+(inj.sevLabel||""):(inj.sevLabel||"傷勢"));
+    injuryHTML=`<div class="outcome ${cls} mt12">
+      <div class="ot" style="font-weight:700">${head}</div>
+      <div class="ot" style="color:var(--dim);margin-top:4px;font-size:13.5px;line-height:1.55">${inj.text}</div>
+    </div>`;
+  }
+  // 健康過低 → 提供治療手術入口（每季一次；生涯大傷會另走手術抉擇，這裡不重複）
+  const canElective = G.health<60 && !G._electiveDone && !(s.injury&&s.injury.career);
+  const elCost = isPro()?clamp(Math.round(40+(100-G.health)*4),40,900):0;
+  const electiveHTML = canElective ? `<div class="panel">
+      <div class="label">健康狀況拉警報</div>
+      <p class="event-text" style="margin:8px 0">你的健康值只剩 <b style="color:var(--red)">${Math.round(G.health)}</b>，受傷風險大幅升高。要不要趁休賽期接受手術與復健，把身體養回來？</p>
+      <button class="btn" id="electiveSurgery">🏥 接受治療手術${isPro()?`（花費約 ${fmtMoney(elCost)}）`:"（家人資助）"}</button>
+    </div>` : "";
   const usRankHTML=(s.stage==="大學"&&s.usRank)?`<div class="usrank-line">🇺🇸 全美排名 <b>#${s.usRank}</b>${s.usRank<=25?"（全美 Top 25！）":""}</div>`:"";
   const newMilestones=(G.milestones||[]).filter(m=>m.year===s.year);
   const msHTML=newMilestones.length?`<div class="ms-row">${newMilestones.map(m=>`<span class="badge gold-badge">🎯 ${m.text}</span>`).join("")}</div>`:"";
@@ -3448,6 +3687,7 @@ function reviewHTML(){
       ${titleHTML}
       ${injuryHTML}
     </div>
+    ${electiveHTML}
     ${s.tourney?tourneyHTML(s.tourney):""}
     <div class="panel">
       <div class="label">網友熱議</div>
@@ -4229,12 +4469,20 @@ function renderStats(){
 function seasonTableHTML(kind){
   const rows=G.seasonHistory.filter(s=> kind==="pro"?s.stage==="pro":s.stage!=="pro");
   if(!rows.length) return `<p class="muted center" style="padding:24px">尚無${kind==="pro"?"職業":"學生"}賽季資料。</p>`;
-  const head=`<tr><th class="l">賽季</th><th class="l">隊伍</th><th>出賽</th><th>得分</th><th>籃板</th><th>助攻</th><th>抄截</th><th>阻攻</th><th>FG%</th><th>3P%</th><th class="l">榮譽</th></tr>`;
-  const body=rows.map(s=>`<tr class="${s.champion?"champ":""}">
-    <td class="l">${s.year}</td><td class="l" style="color:var(--dim)">${s.stage==="pro"?s.league:s.team}</td>
-    <td>${s.gp}</td><td style="color:var(--orange);font-weight:600">${s.ppg}</td><td>${s.rpg}</td><td>${s.apg}</td>
+  const head=`<tr><th class="l">賽季</th><th class="l">隊伍</th><th>出賽</th><th>得分</th><th>籃板</th><th>助攻</th><th>抄截</th><th>阻攻</th><th>FG%</th><th>3P%</th><th class="l">榮譽 / 傷勢</th></tr>`;
+  const body=rows.map(s=>{
+    const inj=s.injury&&s.injury.major;
+    const awards=s.awards.join(" · ");
+    const awardsHtml=awards?`<span style="color:var(--gold)">${awards}</span>`:"";
+    const injTag=inj?`<span style="color:var(--red);font-weight:700">🩹 ${injLabel(s.injury)}</span>`:"";
+    const last=[awardsHtml,injTag].filter(Boolean).join(" · ")||"—";
+    const rc=inj?"color:var(--red);font-weight:700":"";
+    return `<tr class="${s.champion?"champ":""}">
+    <td class="l" style="${rc}">${s.year}</td><td class="l" style="color:${inj?"var(--red)":"var(--dim)"}">${s.stage==="pro"?s.league:s.team}</td>
+    <td style="${rc}">${s.gp}</td><td style="color:var(--orange);font-weight:600">${s.ppg}</td><td>${s.rpg}</td><td>${s.apg}</td>
     <td>${s.spg}</td><td>${s.bpg}</td><td>${s.fg}</td><td>${s.tp}</td>
-    <td class="l" style="color:var(--gold);font-size:10.5px">${s.awards.join(" · ")||"—"}</td></tr>`).join("");
+    <td class="l" style="font-size:10.5px">${last}</td></tr>`;
+  }).join("");
   return `<table class="stats">${head}${body}</table>`;
 }
 function intlTableHTML(){
@@ -4540,6 +4788,12 @@ function intlAggregate(){
 }
 
 /* ---------- 生涯總表（可下載大圖，仿賽季結算排版） ---------- */
+function injLabel(inj){
+  if(!inj) return "";
+  const part=inj.part||"";
+  const sev=inj.sevLabel||(inj.career?"毀滅性大傷":inj.major?"重傷":"傷勢");
+  return part?`${part} · ${sev}`:sev;
+}
 function drawCareerSummary(cv){
   if(!cv)return;
   const pro=G.seasonHistory.filter(s=>s.stage==="pro");
@@ -4549,7 +4803,7 @@ function drawCareerSummary(cv){
   const aggs=leagueAggregates();
   const intl=intlAggregate();
   const t=careerTotals();
-  const W=1040, L=48;
+  const W=1240, L=48;
   // 先量測榮譽/里程碑需要幾行（用臨時 context）
   const tmp=cv.getContext("2d");
   const honorTexts=grouped.map(gA=>`${lname(gA.league)} ${gA.award}${gA.n>1?` *${gA.n}`:""} (${compressYears(gA.years)})`);
@@ -4653,16 +4907,18 @@ function drawCareerSummary(cv){
   // 學生年表
   sec("生涯年表（學生時期）");
   x.font=NF(700,16);x.fillStyle=FAINT2;x.textAlign="left";
-  x.fillText("年",L,y);x.fillText("齡",120,y);x.fillText("球隊",180,y);x.fillText("成績",430,y); y+=8;line(y);y+=24;
+  x.fillText("年",L,y);x.fillText("齡",120,y);x.fillText("球隊",180,y);x.fillText("成績",430,y);x.fillText("傷勢",720,y); y+=8;line(y);y+=24;
   ama.forEach(s=>{ const inj=s.injury&&s.injury.major;
     x.fillStyle=inj?RED:INK;x.font=MF(500,18);x.textAlign="left";x.fillText(s.year,L,y);x.fillText(s.age,120,y);
     x.font=NF(500,18);x.fillText(s.team,180,y);
-    const res=inj?"重傷 · 賽季報銷":(s.tourney?s.tourney.result.replace(/^🏆\s*/,""):"—");
-    x.fillStyle=inj?RED:DIM2;x.fillText(res,430,y); y+=30; });
+    const res=s.tourney?s.tourney.result.replace(/^🏆\s*/,""):"—";
+    x.fillStyle=inj?RED:DIM2;x.fillText(res,430,y);
+    x.fillStyle=inj?RED:FAINT2;x.font=NF(600,17);x.fillText(inj?("🩹 "+injLabel(s.injury)):"—",720,y);
+    y+=30; });
   if(!ama.length){x.fillStyle=DIM2;x.font=NF(500,18);x.fillText("—",L,y);y+=30;}
   // 職業年表
   sec("生涯年表（職業成績）");
-  const pcol=[["年",L,"l"],["齡",120,"l"],["球隊",180,"l"],["G",430,"r"],["得分",500,"r"],["籃板",575,"r"],["助攻",650,"r"],["抄截",725,"r"],["阻攻",800,"r"],["FG%",880,"r"],["3P%",960,"r"]];
+  const pcol=[["年",L,"l"],["齡",120,"l"],["球隊",180,"l"],["G",430,"r"],["得分",500,"r"],["籃板",575,"r"],["助攻",650,"r"],["抄截",725,"r"],["阻攻",800,"r"],["FG%",880,"r"],["3P%",960,"r"],["傷勢",985,"l"]];
   x.font=NF(700,15);x.fillStyle=FAINT2;
   pcol.forEach(([lab,cx,al])=>{x.textAlign=al==="r"?"right":"left";x.fillText(lab,cx,y);}); y+=8;line(y);y+=24;
   pro.forEach((s,ri)=>{ const inj=s.injury&&s.injury.major; const col=inj?RED:INK;
@@ -4670,9 +4926,11 @@ function drawCareerSummary(cv){
     x.fillStyle=col;x.font=MF(500,18);x.textAlign="left";x.fillText(s.year,L,y);x.fillText(s.age,120,y);
     x.font=NF(500,17);x.fillText(s.team,180,y);
     x.font=MF(500,18);
-    const nums=inj?["0","0.0","0.0","0.0","0.0","0.0","-","-"]:[s.gp,s.ppg,s.rpg,s.apg,s.spg,s.bpg,s.fg,s.tp];
+    const nums=[s.gp,s.ppg,s.rpg,s.apg,s.spg,s.bpg,s.fg,s.tp];
     const xs=[430,500,575,650,725,800,880,960];
-    nums.forEach((v,i)=>{x.fillStyle=(i===1&&!inj)?GOLD:col;x.textAlign="right";x.fillText(v,xs[i],y);}); y+=30; });
+    nums.forEach((v,i)=>{x.fillStyle=(i===1&&!inj)?GOLD:col;x.textAlign="right";x.fillText(v,xs[i],y);});
+    if(inj){ x.fillStyle=RED;x.font=NF(600,16);x.textAlign="left";x.fillText("🩹 "+injLabel(s.injury),985,y); }
+    y+=30; });
   if(!pro.length){x.fillStyle=DIM2;x.font=NF(500,18);x.textAlign="left";x.fillText("—",L,y);y+=30;}
   // 生涯總薪資
   y+=16; const gsal=x.createLinearGradient(L,0,L+400,0);gsal.addColorStop(0,ORANGE);gsal.addColorStop(1,GOLD);
@@ -4740,6 +4998,7 @@ function defaultPhaseActions(){
     case "commit": return [{t:"開始新篇章 ▶",cls:"gold",fn:afterCommitCard}];
     case "allocate": return [{t:"完成分配，開始賽季 ▶",cls:"gold",fn:commitAllocation}];
     case "review": return [{t:"繼續 ▶",cls:"gold",fn:afterReview}];
+    case "surgery": return G._surgeryDone?surgeryContinueAction():[];
     case "draftDeclare": return [{t:"確認參加選秀 ▶",cls:"gold",fn:confirmDraft}];
     case "overseasOffer": return [];
     case "trade": return [{t:"了解，繼續 ▶",cls:"",fn:processOffseason}];
@@ -4751,6 +5010,13 @@ function defaultPhaseActions(){
 function bindPhaseSpecific(){
   const s=$("#stage");if(!s)return;
   if(G.phase==="allocate") bindAllocate();
+  // 手術抉擇
+  if(G.phase==="surgery"){
+    const go=s.querySelector("#doSurgery"); if(go) go.addEventListener("click",startSurgery);
+    const sk=s.querySelector("#skipSurgery"); if(sk) sk.addEventListener("click",skipSurgery);
+  }
+  // 賽季回顧的治療手術按鈕
+  const es=s.querySelector("#electiveSurgery"); if(es) es.addEventListener("click",electiveSurgery);
   // 交易謠言：兩個選項
   if(G.phase==="tradeRumor") s.querySelectorAll("[data-rumor]").forEach(b=>b.addEventListener("click",()=>resolveTradeRumor(parseInt(b.dataset.rumor))));
   // 高中決策
