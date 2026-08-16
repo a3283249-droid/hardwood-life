@@ -536,6 +536,210 @@ body[data-region="kr"] .bd-base{background:
 body[data-region="kr"] .bd-motif{opacity:.5;background:
   repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 50px)}
 body[data-region="kr"] .bd-scene{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='260' viewBox='0 0 1200 260' preserveAspectRatio='xMidYMax slice'%3E%3Cg opacity='.16'%3E%3Cpath d='M600 60a70 70 0 0 1 0 140a35 35 0 0 1 0-70a35 35 0 0 0 0-70z' fill='%23E24B4A'/%3E%3Cpath d='M600 60a70 70 0 0 0 0 140a35 35 0 0 0 0-70a35 35 0 0 1 0-70z' fill='%234DA3FF'/%3E%3C/g%3E%3Cpath d='M0 260V220l180-70 160 60 150-50 170 70 150-60 160 60V260z' fill='%236B7F9E' fill-opacity='.12'/%3E%3C/svg%3E")}
+
+/* ============ V.1.12.2 地區背景強化：場館光束、國家色氛圍、地域辨識 ============ */
+body[data-region="tw"]{--region-glow:rgba(63,191,127,.18);--region-accent:rgba(255,128,54,.22)}
+body[data-region="jp"]{--region-glow:rgba(226,75,74,.20);--region-accent:rgba(255,255,255,.10)}
+body[data-region="us"]{--region-glow:rgba(77,163,255,.20);--region-accent:rgba(216,50,63,.18)}
+body[data-region="cn"]{--region-glow:rgba(242,194,48,.18);--region-accent:rgba(216,50,63,.20)}
+body[data-region="kr"]{--region-glow:rgba(77,163,255,.18);--region-accent:rgba(226,75,74,.16)}
+#backdrop::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.9;
+  background:radial-gradient(520px 340px at 50% -6%,var(--region-accent,rgba(255,255,255,.08)),transparent 68%),
+             linear-gradient(105deg,transparent 18%,var(--region-glow,rgba(255,255,255,.05)) 49%,transparent 72%);
+  mix-blend-mode:screen}
+/* 台灣：山稜＋球館暖光，讓 HBL / UBA 更像主場賽事 */
+body[data-region="tw"] #backdrop::after{background:
+  radial-gradient(420px 230px at 18% 7%,rgba(255,122,56,.16),transparent 70%),
+  radial-gradient(520px 300px at 82% 5%,rgba(63,191,127,.17),transparent 72%),
+  linear-gradient(112deg,transparent 20%,rgba(255,232,188,.055) 50%,transparent 74%)}
+/* 日本：紅日聚光＋冷白場館光 */
+body[data-region="jp"] #backdrop::after{background:
+  radial-gradient(circle 150px at 78% 13%,rgba(226,75,74,.18),transparent 72%),
+  linear-gradient(102deg,transparent 12%,rgba(255,255,255,.07) 48%,transparent 76%)}
+/* 美國：紅藍雙側球館光，強化 NCAA / NBA 大舞台感 */
+body[data-region="us"] #backdrop::after{background:
+  radial-gradient(430px 260px at 12% 3%,rgba(216,50,63,.18),transparent 70%),
+  radial-gradient(460px 280px at 90% 4%,rgba(77,163,255,.20),transparent 72%),
+  linear-gradient(100deg,transparent 22%,rgba(255,255,255,.055) 50%,transparent 74%)}
+/* 中國：紅金舞台光 */
+body[data-region="cn"] #backdrop::after{background:
+  radial-gradient(520px 300px at 50% 0%,rgba(216,50,63,.22),transparent 72%),
+  radial-gradient(340px 240px at 84% 20%,rgba(242,194,48,.16),transparent 70%)}
+/* 韓國：太極雙色冷暖光 */
+body[data-region="kr"] #backdrop::after{background:
+  radial-gradient(430px 260px at 18% 3%,rgba(77,163,255,.18),transparent 70%),
+  radial-gradient(430px 260px at 82% 3%,rgba(226,75,74,.16),transparent 70%)}
+body[data-region] .panel{box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 10px 30px -28px var(--region-glow,transparent)}
+body[data-region] .season-hd .stage{text-shadow:0 0 16px var(--region-glow,transparent)}
+
+
+/* ========================================================================
+   V.1.12.3 · Mobile-first league identity system
+   國家決定文化底色，聯盟決定玩家在手機上真正看得到的 UI DNA。
+   ======================================================================== */
+body{
+  --league-primary:#FF6A2C;
+  --league-secondary:#F2B84B;
+  --league-glow:rgba(255,106,44,.22);
+  --league-border:rgba(255,106,44,.42);
+  --league-panel:rgba(24,39,64,.94);
+  --league-panel2:rgba(14,25,43,.96);
+  --league-track:#0c1526;
+  --league-ink:#fff;
+  --league-muted:#9DB0CC;
+  --league-pattern:linear-gradient(135deg,transparent 0 46%,rgba(255,255,255,.025) 47% 49%,transparent 50% 100%);
+}
+
+/* 每個聯盟有獨立 palette + 紋理，不只是換一條色線 */
+body[data-league-theme="hbl"]{
+  --league-primary:#FF6A2C;--league-secondary:#3FBF7F;--league-glow:rgba(255,106,44,.28);--league-border:rgba(255,106,44,.48);
+  --league-panel:rgba(29,35,45,.96);--league-panel2:rgba(18,27,35,.98);--league-track:#111a20;--league-ink:#FFF3E8;
+  --league-pattern:repeating-linear-gradient(90deg,rgba(200,135,63,.05) 0 1px,transparent 1px 22px),linear-gradient(135deg,transparent 0 48%,rgba(63,191,127,.025) 49% 51%,transparent 52% 100%);
+}
+body[data-league-theme="uba"]{
+  --league-primary:#4DA3FF;--league-secondary:#F2B84B;--league-glow:rgba(77,163,255,.25);--league-border:rgba(77,163,255,.46);
+  --league-panel:rgba(20,36,59,.97);--league-panel2:rgba(12,25,43,.98);--league-track:#0b1728;--league-ink:#F3F8FF;
+  --league-pattern:linear-gradient(120deg,transparent 0 64%,rgba(242,184,75,.055) 65% 67%,transparent 68% 100%),repeating-linear-gradient(0deg,rgba(77,163,255,.035) 0 1px,transparent 1px 18px);
+}
+body[data-league-theme="sbl"]{
+  --league-primary:#9FC4DF;--league-secondary:#5D7E9D;--league-glow:rgba(159,196,223,.20);--league-border:rgba(159,196,223,.40);
+  --league-panel:rgba(24,35,47,.97);--league-panel2:rgba(14,23,33,.98);--league-track:#111a24;--league-ink:#F1F6FA;
+  --league-pattern:repeating-linear-gradient(135deg,rgba(210,226,238,.035) 0 1px,transparent 1px 12px);
+}
+body[data-league-theme="pplus"]{
+  --league-primary:#B66CFF;--league-secondary:#FF7B39;--league-glow:rgba(182,108,255,.28);--league-border:rgba(182,108,255,.48);
+  --league-panel:rgba(34,25,52,.97);--league-panel2:rgba(23,17,38,.98);--league-track:#181126;--league-ink:#FBF3FF;
+  --league-pattern:radial-gradient(circle at 82% 22%,rgba(255,123,57,.08) 0 2px,transparent 3px) 0 0/22px 22px,linear-gradient(125deg,transparent 0 70%,rgba(182,108,255,.055) 71% 73%,transparent 74%);
+}
+body[data-league-theme="tpbl"]{
+  --league-primary:#40D6D2;--league-secondary:#4DA3FF;--league-glow:rgba(64,214,210,.25);--league-border:rgba(64,214,210,.46);
+  --league-panel:rgba(13,37,47,.97);--league-panel2:rgba(9,25,34,.99);--league-track:#081b25;--league-ink:#EAFFFF;
+  --league-pattern:linear-gradient(110deg,transparent 0 58%,rgba(64,214,210,.06) 59% 61%,transparent 62%),repeating-linear-gradient(90deg,rgba(77,163,255,.03) 0 1px,transparent 1px 30px);
+}
+body[data-league-theme="us-prep"]{
+  --league-primary:#E24B4A;--league-secondary:#4DA3FF;--league-glow:rgba(77,163,255,.26);--league-border:rgba(226,75,74,.48);
+  --league-panel:rgba(17,31,53,.98);--league-panel2:rgba(11,24,43,.99);--league-track:#091729;--league-ink:#F7FAFF;
+  --league-pattern:linear-gradient(90deg,rgba(226,75,74,.045) 0 4px,transparent 4px 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 16px);
+}
+body[data-league-theme="ncaa-d1"]{
+  --league-primary:#D8323F;--league-secondary:#4DA3FF;--league-glow:rgba(216,50,63,.28);--league-border:rgba(216,50,63,.50);
+  --league-panel:rgba(19,31,53,.98);--league-panel2:rgba(10,22,39,.99);--league-track:#081526;--league-ink:#FFFFFF;
+  --league-pattern:linear-gradient(135deg,transparent 0 74%,rgba(77,163,255,.065) 75% 77%,transparent 78%),repeating-linear-gradient(90deg,rgba(216,50,63,.025) 0 1px,transparent 1px 24px);
+}
+body[data-league-theme="ncaa-d2"]{
+  --league-primary:#8CB7DC;--league-secondary:#C7D1DE;--league-glow:rgba(140,183,220,.20);--league-border:rgba(140,183,220,.42);
+  --league-panel:rgba(24,36,51,.98);--league-panel2:rgba(13,24,37,.99);--league-track:#0b1826;--league-ink:#F4F8FB;
+  --league-pattern:repeating-linear-gradient(135deg,rgba(199,209,222,.035) 0 1px,transparent 1px 14px);
+}
+body[data-league-theme="gleague"]{
+  --league-primary:#20C9FF;--league-secondary:#826CFF;--league-glow:rgba(32,201,255,.28);--league-border:rgba(32,201,255,.48);
+  --league-panel:rgba(10,35,51,.98);--league-panel2:rgba(8,24,39,.99);--league-track:#071927;--league-ink:#EFFFFF;
+  --league-pattern:linear-gradient(90deg,transparent 0 46%,rgba(32,201,255,.06) 47% 48%,transparent 49% 100%),linear-gradient(0deg,transparent 0 82%,rgba(130,108,255,.05) 83% 85%,transparent 86%);
+}
+body[data-league-theme="nba"]{
+  --league-primary:#F2B84B;--league-secondary:#4DA3FF;--league-glow:rgba(242,184,75,.30);--league-border:rgba(242,184,75,.52);
+  --league-panel:rgba(24,27,38,.99);--league-panel2:rgba(13,17,29,.99);--league-track:#0c101b;--league-ink:#FFF8E7;
+  --league-pattern:radial-gradient(circle at 88% 20%,rgba(242,184,75,.10) 0 2px,transparent 3px) 0 0/28px 28px,linear-gradient(125deg,transparent 0 72%,rgba(77,163,255,.055) 73% 75%,transparent 76%);
+}
+body[data-league-theme="b-league"]{
+  --league-primary:#E24B4A;--league-secondary:#F4F4F4;--league-glow:rgba(226,75,74,.24);--league-border:rgba(226,75,74,.46);
+  --league-panel:rgba(31,29,36,.98);--league-panel2:rgba(20,19,26,.99);--league-track:#15141b;--league-ink:#FFF9F9;
+  --league-pattern:radial-gradient(circle at 18px 18px,transparent 9px,rgba(255,255,255,.035) 10px 11px,transparent 12px) 0 0/36px 22px;
+}
+body[data-league-theme="cbl"]{
+  --league-primary:#E03A43;--league-secondary:#F2C230;--league-glow:rgba(224,58,67,.28);--league-border:rgba(242,194,48,.45);
+  --league-panel:rgba(48,19,22,.98);--league-panel2:rgba(31,13,15,.99);--league-track:#241012;--league-ink:#FFF5E4;
+  --league-pattern:radial-gradient(circle at 22px 22px,rgba(242,194,48,.055) 0 2px,transparent 3px) 0 0/44px 44px,linear-gradient(135deg,transparent 0 72%,rgba(242,194,48,.04) 73% 75%,transparent 76%);
+}
+body[data-league-theme="krbl"]{
+  --league-primary:#4DA3FF;--league-secondary:#E24B4A;--league-glow:rgba(77,163,255,.24);--league-border:rgba(77,163,255,.44);
+  --league-panel:rgba(18,29,49,.98);--league-panel2:rgba(10,20,36,.99);--league-track:#091528;--league-ink:#F5F9FF;
+  --league-pattern:linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 34px),radial-gradient(circle at 84% 18%,rgba(226,75,74,.06),transparent 24%);
+}
+body[data-league-theme="taiwan-national"]{
+  --league-primary:#4DA3FF;--league-secondary:#F2545B;--league-glow:rgba(77,163,255,.28);--league-border:rgba(77,163,255,.48);
+  --league-panel:rgba(17,31,53,.98);--league-panel2:rgba(10,22,39,.99);--league-track:#081526;--league-ink:#FFFFFF;
+  --league-pattern:linear-gradient(135deg,transparent 0 70%,rgba(242,84,91,.055) 71% 73%,transparent 74%),repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 26px);
+}
+
+/* Sticky HUD：手機上最重要的地區辨識層 */
+body[data-league-theme] .hud{
+  border-top-color:var(--league-primary);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),transparent 35%),
+    linear-gradient(115deg,var(--league-panel2),rgba(11,18,32,.95) 68%);
+  box-shadow:0 8px 28px -24px var(--league-glow),inset 0 -1px 0 rgba(255,255,255,.03);
+}
+.league-strip{position:relative;isolation:isolate;display:flex;align-items:center;gap:7px;min-height:26px;padding:4px 14px;
+  overflow:hidden;border-bottom:1px solid var(--league-border);background:linear-gradient(90deg,var(--league-glow),rgba(255,255,255,.018) 48%,transparent)}
+.league-strip::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.62;background:var(--league-pattern);pointer-events:none}
+.ls-mark{font-size:13px;line-height:1;filter:saturate(1.12)}
+.ls-code{font-family:"Oswald",sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--league-primary);white-space:nowrap}
+.ls-name{font-size:10.5px;font-weight:800;color:var(--league-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ls-tier{margin-left:auto;font-family:"Oswald",sans-serif;font-size:9px;letter-spacing:.1em;color:var(--league-muted);white-space:nowrap}
+
+/* 球員資訊和能力條也跟著聯盟換氣氛 */
+body[data-league-theme] .hud-top{background:linear-gradient(90deg,transparent 0 62%,var(--league-glow) 145%)}
+body[data-league-theme] .hud-ov .v{color:var(--league-primary);text-shadow:0 0 16px var(--league-glow)}
+body[data-league-theme] .hud-stats{border-top-color:var(--league-border)}
+body[data-league-theme] .hud-stats .hs{border-right-color:rgba(255,255,255,.08)}
+body[data-league-theme] .bar{background:var(--league-track);box-shadow:inset 0 0 0 1px rgba(255,255,255,.018)}
+body[data-league-theme] .bar > i{background:linear-gradient(90deg,var(--league-secondary),var(--league-primary));box-shadow:0 0 11px -5px var(--league-primary)}
+body[data-league-theme] .alloc-bar i{background:linear-gradient(90deg,var(--league-secondary),var(--league-primary))}
+
+/* 賽季標頭做成聯盟記分板，而不是裸文字 */
+body[data-league-theme] .season-hd{position:relative;isolation:isolate;overflow:hidden;padding:9px 11px 9px 12px;margin:2px 0 8px;
+  border:1px solid var(--league-border);border-left:4px solid var(--league-primary);border-radius:11px;
+  background:linear-gradient(110deg,var(--league-panel),var(--league-panel2) 72%);box-shadow:0 9px 22px -22px var(--league-glow)}
+body[data-league-theme] .season-hd::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.8;background:var(--league-pattern);pointer-events:none}
+body[data-league-theme] .season-hd .stage{color:var(--league-primary);text-shadow:0 0 14px var(--league-glow);letter-spacing:.075em}
+body[data-league-theme] .season-hd .yr{color:var(--league-muted)}
+body[data-league-theme] .team-line{padding:0 3px 4px;color:var(--league-muted)}
+body[data-league-theme] .team-dot{background:var(--league-primary);box-shadow:0 0 9px -2px var(--league-primary)}
+
+/* 事件、Offer、結果：在手機畫面中心也能看出目前聯盟 */
+body[data-league-theme] .panel{position:relative;isolation:isolate;overflow:hidden;border-color:var(--league-border);
+  background:linear-gradient(150deg,var(--league-panel),var(--league-panel2) 78%);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 14px 30px -28px var(--league-glow)}
+body[data-league-theme] .panel::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.70;background:var(--league-pattern);pointer-events:none}
+body[data-league-theme] #evpanel{border-top:2px solid var(--league-primary)}
+body[data-league-theme] .event-title{color:var(--league-ink);text-shadow:0 0 14px var(--league-glow)}
+body[data-league-theme] .label{color:var(--league-muted)}
+body[data-league-theme] .opt{position:relative;overflow:hidden;border-color:var(--league-border);border-left:3px solid var(--league-primary);
+  background:linear-gradient(110deg,var(--league-panel),var(--league-panel2) 76%)}
+body[data-league-theme] .opt::after{content:"";position:absolute;inset:0;opacity:.38;background:var(--league-pattern);pointer-events:none}
+body[data-league-theme] .opt > *{position:relative;z-index:1}
+body[data-league-theme] .opt .ico{background:linear-gradient(145deg,var(--league-track),var(--league-panel));box-shadow:inset 0 0 0 1px var(--league-border)}
+body[data-league-theme] .opt:active{border-color:var(--league-primary);box-shadow:0 0 0 1px var(--league-primary),0 8px 24px -16px var(--league-glow)}
+body[data-league-theme] .outcome{border-color:var(--league-border);border-left-color:var(--league-primary);background:linear-gradient(110deg,var(--league-panel),var(--league-panel2))}
+body[data-league-theme] .offer:not(.nba){border-color:var(--league-border);background:linear-gradient(120deg,var(--league-panel),var(--league-panel2) 78%)}
+body[data-league-theme] .offer:not(.nba) .offer-lg{color:var(--league-primary)}
+body[data-league-theme] .combine-hero{border-color:var(--league-border);background:linear-gradient(145deg,var(--league-glow),var(--league-panel2) 60%)}
+body[data-league-theme] .combine-row{border-color:var(--league-border);background:linear-gradient(100deg,var(--league-panel),var(--league-panel2))}
+body[data-league-theme] .turn-track .t.done{background:var(--league-primary);box-shadow:0 0 8px -3px var(--league-primary)}
+body[data-league-theme] .dchip.on,body[data-league-theme] .tab.on{border-color:var(--league-primary);background:var(--league-glow);color:var(--league-ink)}
+body[data-league-theme] .stp.plus{border-color:var(--league-border);background:var(--league-glow);color:var(--league-primary)}
+body[data-league-theme] .divider{background:linear-gradient(90deg,transparent,var(--league-primary),var(--league-secondary),transparent)}
+body[data-league-theme] .btn:not(.ghost):not(.gold){background:linear-gradient(100deg,var(--league-primary),var(--league-secondary));color:#081018;box-shadow:0 7px 20px -10px var(--league-glow)}
+
+/* NBA 保留金色最高殿堂，但與其他美國聯盟有明顯層級差 */
+body[data-league-theme="nba"] .hud{box-shadow:0 0 0 1px rgba(242,184,75,.10),0 12px 34px -23px rgba(242,184,75,.55)}
+body[data-league-theme="nba"] .league-strip{background:linear-gradient(90deg,rgba(242,184,75,.20),rgba(77,163,255,.08) 62%,transparent)}
+body[data-league-theme="nba"] .season-hd{box-shadow:inset 0 0 18px rgba(242,184,75,.035),0 12px 28px -22px rgba(242,184,75,.55)}
+body[data-league-theme="gleague"] .league-strip{background:linear-gradient(90deg,rgba(32,201,255,.18),rgba(130,108,255,.10) 64%,transparent)}
+body[data-league-theme="us-prep"] .league-strip{border-bottom-width:2px;background:linear-gradient(90deg,rgba(226,75,74,.17),rgba(77,163,255,.10) 62%,transparent)}
+body[data-league-theme="hbl"] .season-hd{background:linear-gradient(105deg,rgba(47,31,20,.97),var(--league-panel2) 76%)}
+
+/* 390–430px 為主要目標：保持資訊密度，不因強化風格把 HUD 撐太高 */
+@media(max-width:430px){
+  .league-strip{min-height:24px;padding:3px 12px;gap:6px}
+  .ls-name{font-size:10px;max-width:150px}.ls-tier{font-size:8.5px;letter-spacing:.07em}.ls-code{font-size:9.5px}.ls-mark{font-size:12px}
+  .hud-top{padding-top:8px;padding-bottom:8px}.hud-stats .hs{padding-top:5px;padding-bottom:5px}
+  .hud .wrap{padding-left:12px!important;padding-right:12px!important}
+  .season-hd{min-height:39px}.season-hd .stage{font-size:12px}.season-hd .yr{font-size:11.5px}
+  .panel{border-radius:14px}.opt{padding:13px 12px}.opt .ico{width:33px;height:33px}
+}
+@media(max-width:380px){.ls-tier{display:none}.ls-name{max-width:172px}}
+
 </style>
 </head>
 <body>
@@ -615,6 +819,15 @@ const PRO_TEAMS={
     {n:"名古屋鑽石",p:"#17A2B8",s:"#E9E9EC"},{n:"千葉海洋",p:"#1E5BB0",s:"#F2C230"},
     {n:"京都武士",p:"#6B3FA0",s:"#17171C"},{n:"北海道棕熊",p:"#7B4A23",s:"#E9E9EC"},
     {n:"琉球黑潮",p:"#12294D",s:"#4DA3FF"},{n:"橫濱波濤",p:"#1F8F6E",s:"#E9E9EC"},
+    {n:"仙台青葉",p:"#2E9E5B",s:"#E9E9EC"},{n:"秋田雪狼",p:"#9DB0CC",s:"#12294D"},
+    {n:"宇都宮雷光",p:"#F2C230",s:"#17171C"},{n:"群馬赤城",p:"#D8323F",s:"#12294D"},
+    {n:"茨城筑波",p:"#1E5BB0",s:"#E9E9EC"},{n:"埼玉飛燕",p:"#17A2B8",s:"#17171C"},
+    {n:"澀谷夜狐",p:"#17171C",s:"#F2C230"},{n:"川崎鋼翼",p:"#6B7F9E",s:"#D8323F"},
+    {n:"富山雷鳥",p:"#4DA3FF",s:"#E9E9EC"},{n:"信州雪峰",p:"#1F8F6E",s:"#E9E9EC"},
+    {n:"三河海龍",p:"#1E3A6B",s:"#F2C230"},{n:"三遠遠州",p:"#F0892C",s:"#12294D"},
+    {n:"滋賀湖星",p:"#4DA3FF",s:"#17171C"},{n:"島根神樂",p:"#6B3FA0",s:"#D8323F"},
+    {n:"廣島紅楓",p:"#C41E3A",s:"#E9E9EC"},{n:"佐賀熱砂",p:"#F0892C",s:"#7B4A23"},
+    {n:"長崎港鷗",p:"#17A2B8",s:"#E9E9EC"},{n:"福岡玄海",p:"#12294D",s:"#D8323F"},
   ],
   NBA:[
     {n:"亞特蘭大翔鷹",p:"#D8323F",s:"#F2C230"},{n:"波士頓綠衛",p:"#2E9E5B",s:"#E9E9EC"},
@@ -658,6 +871,10 @@ const PRO_TEAMS={
     {n:"深圳先鋒",p:"#F0892C",s:"#12294D"},{n:"廣廈猛獁",p:"#6B3FA0",s:"#F2C230"},
     {n:"山東雄鷹",p:"#D8323F",s:"#1E5BB0"},{n:"四川熊貓",p:"#17171C",s:"#2E9E5B"},
     {n:"南京同曦電",p:"#17A2B8",s:"#E9E9EC"},{n:"青島雄風",p:"#1F8F6E",s:"#F2C230"},
+    {n:"天津海河",p:"#1E5BB0",s:"#E9E9EC"},{n:"山西烈焰",p:"#D8323F",s:"#17171C"},
+    {n:"吉林雪豹",p:"#9DB0CC",s:"#12294D"},{n:"福建海峽",p:"#17A2B8",s:"#F0892C"},
+    {n:"江蘇龍城",p:"#D8323F",s:"#F2C230"},{n:"寧波港潮",p:"#1F8F6E",s:"#E9E9EC"},
+    {n:"廣州南獅",p:"#6B3FA0",s:"#F2C230"},{n:"河北長城",p:"#7B4A23",s:"#D8323F"},
   ],
   KRBL:[
     {n:"釜山鐵盾",p:"#1E3A6B",s:"#D8323F"},{n:"首爾聖騎",p:"#D8323F",s:"#17171C"},
@@ -731,6 +948,10 @@ function archetype(attr=G.attr,pos=G.pos){
   return map[t1]||"潛力型";
 }
 
+/* ---------- HBL 強權學校 ---------- */
+const HBL_POWERHOUSES=["松山高中","光復高中"];
+function isHBLPowerhouse(){ return G && G.league==="高中" && HBL_POWERHOUSES.includes(G.team); }
+
 /* ---------- 錦標賽賽制（HBL / UBA / NCAA 三月瘋） ---------- */
 function tourneyRoundsFor(lg){
   if(lg==="美國高中") return ["州錦標賽首輪","州錦標賽八強","州錦標賽四強","州冠軍賽","全美邀請賽四強","全美邀請賽冠軍戰"];
@@ -744,17 +965,23 @@ function simulateTournament(ov,teamStr,season){
   if(!rounds) return null;
   season=season||{ppg:0,rpg:0,apg:0,attr:G.attr,m:posMult()};
   const chengchi = (lg==="UBA" && G.team==="國立政治大學");
+  const hblPower = (lg==="高中" && HBL_POWERHOUSES.includes(G.team));
   const tb=(G._seasonMods&&G._seasonMods.tourneyBoost)||0;
-  const strength=chengchi?0.99:clamp(teamStr*.6 + (ov-55)*.012 + .12 + tb, .2, .97);
+  // 政大維持超級強權；松山、光復則是 HBL 強權：八強前不爆冷，至少保底四強。
+  const strength=chengchi?0.99:hblPower?0.97:clamp(teamStr*.6 + (ov-55)*.012 + .12 + tb, .2, .97);
   const log=[]; let alive=true, champ=false;
   let facedTeams = [G.team]; // 建立一個陣列，先放入自己的球隊
 
   // 【請找到迴圈內的這幾行】：
   for(let i=0;i<rounds.length;i++){
     const deep=i/rounds.length;
-    const pWin=chengchi?0.99:clamp(strength - deep*.28 + rnd(-.08,.08), .06, .96);
-    // 將 const win=chance(pWin); 改成以下這段
-    
+    let pWin=chengchi?0.99:clamp(strength - deep*.28 + rnd(-.08,.08), .06, .96);
+    if(hblPower){
+      // HBL 六輪制：index 0~3 全勝 = 至少晉級四強；四強、冠軍戰仍保留輸球可能。
+      if(i<4) pWin=1;
+      else if(i===4) pWin=Math.max(pWin,.90);
+      else pWin=Math.max(pWin,.84);
+    }
     let win = chance(pWin);
     
     // --- 新增：若有事件強制介入，覆蓋隨機勝負 ---
@@ -844,7 +1071,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.2.0.0";
+const VERSION="V.2.0.01";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -1191,7 +1418,7 @@ EVENTS["美國高中"]=[
   {t:"大學官方訪校週末",noRisk:true,x:"你受邀到幾所大學參加官方訪校。豪華球館、滿場學生、訓練中心與教練簡報輪番轟炸，招募正式進入白熱化。",
    o:[{l:"主動問清楚角色定位",i:"🗣️",h:"衝球商",f:r=>({low:mk("問題太直接，氣氛有點尷尬",{iq:1}),mid:mk("你更理解不同體系需要什麼",{iq:2,pass:1}),high:mk("教練欣賞你的成熟，直接把發展計畫攤給你看",{iq:3,pass:1},{fame:6,morale:4})}[tier(r)])},
       {l:"觀察球隊文化與隊友",i:"👀",h:"穩心態",f:r=>({low:mk("資訊太多反而更難選",{iq:1},{morale:-1}),mid:mk("你開始知道自己適合什麼環境",{iq:2},{morale:3}),high:mk("你與學長很投緣，對未來輪廓更清楚",{iq:2,pass:2},{morale:6})}[tier(r)])}]},
-  {t:"Senior Night 最後主場",x:"高中最後一個主場，家人坐在看台前排。四年來的訓練、轉機與質疑都濃縮在今晚。",
+  {t:"Senior Night 最後主場",x:"高中生涯最後一個主場，家人坐在看台前排。一路以來的訓練、轉機與質疑都濃縮在今晚。",cond:lg=>lg==="美國高中" && G.grade===4,
    o:[{l:"把最後一戰打成代表作",i:"🌠",h:"衝畢業聲量",f:r=>({low:mk("情緒太滿，反而手感冰冷",{shooting:1},{morale:-2}),mid:mk("穩定拿下勝利，和隊友一一擁抱",{shooting:2,iq:1},{fame:5,morale:7}),high:mk("你用生涯代表作告別主場，全場起立鼓掌",{shooting:3,three:2,iq:1},{fame:13,morale:10})}[tier(r)])},
       {l:"先讓學弟妹都上場",i:"🫶",h:"衝領袖與傳承",f:r=>({low:mk("比賽節奏被打亂",{pass:1}),mid:mk("全隊共享難忘的一晚",{pass:2,iq:1},{morale:8}),high:mk("教練賽後說：『你已經不是孩子，是領袖了。』",{pass:3,iq:2},{morale:10,fame:6})}[tier(r)])}]},
   {t:"球鞋品牌青少年訓練營",x:"頂尖青少年訓練營邀你和全國各州明星同場。沒有正式合約，但每個人都知道這是球探交換情報的地方。",
@@ -1734,7 +1961,7 @@ EVENTS["college"].push(
   {t:"UBA 人氣票選",noRisk:true,x:"你意外入圍 UBA 人氣球員票選，學校社群開始幫你拉票，連隔壁系的同學都來加你好友。",cond:lg=>lg==="UBA",
    o:[{l:"認真經營校園人氣",i:"📣",h:"衝名氣",f:r=>({low:mk("拉票拉得有點尷尬",{},{morale:-2,fame:2}),mid:mk("校園人氣水漲船高",{},{fame:8,morale:3}),high:mk("成為校隊看板人物，主場一位難求",{athletic:1},{fame:15,morale:5})}[tier(r)])},
       {l:"低調用實力說話",i:"🎯",h:"衝實力",f:r=>({low:mk("熱度很快退去",{iq:1}),mid:mk("場上表現才是真人氣",{shooting:1,defense:1},{fame:3}),high:mk("用一場大三元回應所有期待",{pass:2,iq:1,defense:1},{fame:8})}[tier(r)])}]},
-  {t:"語言的高牆",x:"初到美國，戰術會議全是英文與俚語，你常常聽不懂教練在喊什麼跑位，訓練頻頻出錯。",cond:lg=>lg.startsWith("NCAA"),
+  {t:"語言的高牆",x:"初到美國，戰術會議全是英文與俚語，你常常聽不懂教練在喊什麼跑位，訓練頻頻出錯。",cond:lg=>lg.startsWith("NCAA") && G.background!=="asian_american",
    o:[{l:"惡補英文與戰術板",i:"📖",h:"衝球商",f:r=>({low:mk("學得很吃力，壓力山大",{iq:1},{morale:-3}),mid:mk("聽懂戰術後，場上不再迷路",{iq:3,pass:1}),high:mk("反客為主，成為場上發號施令的人",{iq:4,pass:2},{fame:3,morale:4})}[tier(r)])},
       {l:"用球場語言溝通",i:"🤝",h:"衝默契",f:r=>({low:mk("雞同鴨講，隊友有點無奈",{},{morale:-2}),mid:mk("一次擋拆配合打破隔閡",{pass:2,defense:1},{morale:3}),high:mk("肢體語言比英文更通，融入更衣室核心",{pass:2,iq:1,defense:1},{fame:2,morale:5})}[tier(r)])}]}
 );
@@ -1780,7 +2007,7 @@ function posMult(){ // 依位置調整籃板/助攻/阻攻
     stl: p==="PG"?1.2:p==="SG"?1.1:1,
   };
 }
-function leagueGP(lg){return {"美國高中":30,"高中":24,"UBA":28,"NCAA D2":30,"NCAA D1":32,"發展聯盟":50,"SBL":30,"P+":40,"TPBL":40,"日職 B.League":56,"CBL":46,"KRBL":54,"NBA":82}[lg]||30;}
+function leagueGP(lg){return {"美國高中":30,"高中":24,"UBA":28,"NCAA D2":30,"NCAA D1":32,"發展聯盟":50,"SBL":30,"P+":40,"TPBL":40,"日職 B.League":60,"CBL":46,"KRBL":54,"NBA":82}[lg]||30;}
 
 function simulateSeason(){
   const a=G.attr, diff=DIFF[G.league]||1, m=posMult(), ov=overall();
@@ -1811,7 +2038,8 @@ function simulateSeason(){
   const mods=G._seasonMods||{winBoost:0,champBoost:0,playoffForce:false,playoffOut:false};
   // 檢查合約是否為「爭冠球隊」，若是，整支球隊實力會自帶巨大 Buff
   const contractBuff = (G.contract && G.contract.cType === "contender") ? 0.16 : 0;
-  const teamStr=clamp(rnd(.32,.68)+ (ov-60)*.006 + (mods.winBoost||0) + contractBuff, .15,.95);
+  const hblPowerBuff = isHBLPowerhouse() ? 0.18 : 0;
+  const teamStr=clamp(rnd(.32,.68)+ (ov-60)*.006 + (mods.winBoost||0) + contractBuff + hblPowerBuff, .15,.95);
   const winPct=clamp(teamStr+rnd(-.08,.08),.12,.9);
   const w=Math.round(gp*winPct), l=gp-w;
 
@@ -1884,7 +2112,8 @@ function computeAwards(s){
   if((ss>=starTh+9 || isMVP) && G.league !== "NBA"){ G.careerAwards["最佳陣容"]++; rec("最佳陣容"); }
   
   if(nbaAwardEligible&&G.attr.defense>=dpoyTh&&ss>=starTh+3&&chance(.5)){ G.careerAwards.DPOY++; rec("DPOY"); }
-  if((G.league!=="NBA"||nbaAwardEligible)&&isRookie&&ss>=(pro?60:0)&&chance(.7)){ G.careerAwards.ROTY++; rec("ROTY"); }
+  let isROTY=false;
+  if((G.league!=="NBA"||nbaAwardEligible)&&isRookie&&ss>=(pro?60:0)&&chance(.7)){ G.careerAwards.ROTY++; rec("ROTY"); isROTY=true; }
   if(pro){
     if((G.league!=="NBA"||nbaAwardEligible)&&s.ppg>=(eliteLg?24:27) && chance(.4)){ G.careerAwards["得分王"]++; rec("得分王"); grantTitle("sniper"); }
     if((G.league!=="NBA"||nbaAwardEligible)&&s.rpg>=(eliteLg?11:13) && chance(.4)){ G.careerAwards["籃板王"]++; rec("籃板王"); }
@@ -1896,7 +2125,8 @@ function computeAwards(s){
     const team = nbaAwardEligible ? ((ss>=104 || isMVP) ? "年度一隊" : ss>=92 ? "年度二隊" : ss>=82 ? "年度三隊" : null) : null;
     if(team){ G.careerAwards[team]=(G.careerAwards[team]||0)+1; rec(team); }
     if(isRookie && nbaAwardEligible){
-      const rk = ss>=80?"新秀一隊": ss>=62?"新秀二隊": null;
+      // ROTY 必然屬於該季最佳新秀群，強制同步入選 NBA 年度新秀一隊。
+      const rk = isROTY ? "新秀一隊" : (ss>=80?"新秀一隊": ss>=62?"新秀二隊": null);
       if(rk){ G.careerAwards[rk]=(G.careerAwards[rk]||0)+1; rec(rk); }
     }
   }
@@ -2029,7 +2259,12 @@ function buildJonesGroups(myTeam, otherTeam){
   for(let i=0;i<6;i++){ (i<3?gA:gB).push(chosen[i]); }
   return { A:gA, B:gB };
 }
-function jonesTeamName(){ return G.age>=27 ? "中華藍" : "中華白"; }
+function jonesTeamName(){
+  const ov=overall();
+  // 不再用年齡硬切藍白隊：夠強就直接進藍隊。大學／職業主力 74+ 或任何球員 78+ 都可越級。
+  const provenLevel = (G.stage==="大學" || isPro()) && ov>=74;
+  return (ov>=78 || provenLevel) ? "中華藍" : "中華白";
+}
 function jonesGroupOf(team){ return curJonesGroups().A.includes(team) ? "A" : "B"; }
 /* 我方（中華）整體戰力：白隊底子較弱但玩家影響大；藍隊底子強 */
 function jonesOurStrength(){
@@ -2160,8 +2395,8 @@ function pendingJones(){
   const ov=overall();
   if(!isPro() && G.stage!=="大學") { if(ov<58) return false; } 
   if(G.age<18||G.age>35) return false;
-  const th = G.age>=27 ? 68 : 58; 
-  return ov>=th;
+  // 只看實力是否達到徵召池；實際進藍／白隊交由 jonesTeamName() 判定。
+  return ov>=58;
 }
 function startJonesCup(){
   const team=jonesTeamName();
@@ -3755,6 +3990,7 @@ function finalizeDraftSigning(offer){
   if((G.collegeYears||0)===0) grantTitle("babyFaced");
   if(teamCityMatchesHome(offer.team,G.home)) grantTitle("homecoming");
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(offer.team);
+  recordLeagueTeamForJourneyman(G.league,G.team);
   G._draftMode=false;
   const pl = offer.source==="nbaUndraftedFallback"?"NBA 落選後發展聯盟邀約":(offer.pick? (offer.league==="NBA"?`${lname("NBA")} 第 ${offer.pick} 順位`:pickLabel(offer.pick)) : "海外簽約");
   G.age++;G.year++;applyAging();
@@ -3772,7 +4008,7 @@ function signOffer(offer){
   if(!offer.resign && teamCityMatchesHome(G.team,G.home)) grantTitle("homecoming");
   if(offer.tag==="最後機會") grantTitle("undraftedHero");
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(G.team);
-  if(G._teamsPlayed.size>=5) grantTitle("journeyman");
+  recordLeagueTeamForJourneyman(G.league,G.team);
   G._draftMode=false;
   G.age++;G.year++;applyAging();
   toast(`簽約 ${G.team}｜${G.contract.years} 年 · 年薪 ${fmtMoney(G.contract.salary)}`);
@@ -3849,6 +4085,7 @@ function doTrade(){
   G.team=newTeam;
   // NBA／其他聯盟交易只轉移合約歸屬，不重置年限、薪資或新秀球隊選項。
   if(G.contract) G.contract.team=newTeam;
+  recordLeagueTeamForJourneyman(G.league,newTeam);
   G._tradeRumor=null;
   G.morale=clamp(G.morale-3,0,100); // 被打包交易的失落感
   G.phase="trade"; render();
@@ -3874,6 +4111,7 @@ function acceptOverseas(){
     }
   if(teamCityMatchesHome(G.team,G.home)) grantTitle("homecoming");
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(G.team);
+  recordLeagueTeamForJourneyman(G.league,G.team);
   toast(`挑戰海外！加盟 ${o.team}（${lname(o.league)}）`);
   processOffseason();
 }
@@ -4039,7 +4277,7 @@ const TITLE_DEFS={
   glass:{name:"玻璃人",good:false,desc:"多次重傷纏身",effect:"體能 -2",buff:{athletic:-2}},
   bricklayer:{name:"打鐵匠",good:false,desc:"曾整季手感冰冷",effect:"得分 -1",buff:{shooting:-1}},
   locker:{name:"更衣室隱憂",good:false,desc:"士氣長期低迷",effect:"球商 -1",buff:{iq:-1}},
-  journeyman:{name:"浪人",good:false,desc:"生涯輾轉多隊漂泊",effect:"士氣 -4",buff:{morale:-4}},
+  journeyman:{name:"浪人",good:false,desc:"在同一聯盟至少三度轉隊、先後效力四支不同球隊",effect:"士氣 -4",buff:{morale:-4}},
   teamSoul:{name:"隊魂",good:true,desc:"同一支球隊效力超過 10 個賽季",effect:"球商 +2、士氣 +6",buff:{iq:2,morale:6}},
   oneCity:{name:"一人一城",good:true,desc:"同一支球隊效力超過 12 個賽季，城市傳奇",effect:"名氣 +8、球商 +1",buff:{fame:8,iq:1}},
   jpStar:{name:"日職巨星",good:true,desc:"在日本職業籃球聯盟打出當家等級表現",effect:"三分 +1、名氣 +4",buff:{three:1,fame:4}},
@@ -4112,6 +4350,16 @@ function showTitleInfo(i){
 }
 // 各種情境檢查
 function teamCityMatchesHome(team,home){ return team && home && team.indexOf(home)===0; }
+// 「浪人」只計同一聯盟內的多次轉隊；跨聯盟旅外不計。
+function recordLeagueTeamForJourneyman(league,team){
+  if(!league||!team)return;
+  G._leagueTeamsPlayed=G._leagueTeamsPlayed||{};
+  const arr=Array.isArray(G._leagueTeamsPlayed[league])?G._leagueTeamsPlayed[league]:[];
+  if(!arr.includes(team)) arr.push(team);
+  G._leagueTeamsPlayed[league]=arr;
+  // 同聯盟先後待過 4 支不同球隊 = 至少 3 次隊內轉換。
+  if(arr.length>=4) grantTitle("journeyman");
+}
 function checkSeasonTitles(s){
   // 隊魂 / 一人一城：同隊效力賽季數
   if(s.stage==="pro"){
@@ -4686,12 +4934,44 @@ const LEAGUE_REGION={
   "NCAA D1":"us","NCAA D2":"us","發展聯盟":"us","NBA":"us",
   "日職 B.League":"jp","CBL":"cn","KRBL":"kr"
 };
+const LEAGUE_THEME={
+  "高中":"hbl","UBA":"uba","SBL":"sbl","P+":"pplus","TPBL":"tpbl",
+  "美國高中":"us-prep","NCAA D1":"ncaa-d1","NCAA D2":"ncaa-d2","發展聯盟":"gleague","NBA":"nba",
+  "日職 B.League":"b-league","CBL":"cbl","KRBL":"krbl"
+};
+const LEAGUE_THEME_META={
+  // 僅供最上方「聯盟識別帶」顯示；內部 league key 維持原樣，避免影響存檔與遊戲邏輯。
+  // 識別帶採遊戲內自有／泛稱命名，不直接顯示真實聯賽品牌名稱。
+  "hbl":{mark:"🇹🇼",code:"高中",name:"台灣高中籃球",tier:"TAIWAN · HIGH SCHOOL"},
+  "uba":{mark:"🇹🇼",code:"大專",name:"台灣大專籃球",tier:"TAIWAN · COLLEGE"},
+  "sbl":{mark:"🇹🇼",code:"S-B-L",name:"台灣發展聯盟",tier:"TAIWAN · PRO"},
+  "pplus":{mark:"🇹🇼",code:"P-聯盟",name:"台灣職業籃球",tier:"TAIWAN · PRO"},
+  "tpbl":{mark:"🇹🇼",code:"T-PBL",name:"台灣職業籃球",tier:"TAIWAN · PRO"},
+  "us-prep":{mark:"🇺🇸",code:"US PREP",name:"美國高中籃球",tier:"VARSITY · PREP"},
+  "ncaa-d1":{mark:"🇺🇸",code:"D1",name:"美國大學一級籃球",tier:"COLLEGE · DIVISION I"},
+  "ncaa-d2":{mark:"🇺🇸",code:"D2",name:"美國大學二級籃球",tier:"COLLEGE · DIVISION II"},
+  "gleague":{mark:"🇺🇸",code:"美國發展聯盟",name:"",tier:"DEVELOPMENT · PRO"},
+  "nba":{mark:"🇺🇸",code:"美國職業籃球聯盟",name:"",tier:""},
+  "b-league":{mark:"🇯🇵",code:"日本職業籃球聯盟",name:"",tier:""},
+  "cbl":{mark:"🇨🇳",code:"CBL",name:"",tier:""},
+  "krbl":{mark:"🇰🇷",code:"KRBL",name:"",tier:""},
+  "taiwan-national":{mark:"🇹🇼",code:"中華隊",name:"",tier:"NATIONAL TEAM"}
+};
 function regionForLeague(lg){ return LEAGUE_REGION[lg] || "tw"; }
 function currentRegion(){
   if(!G) return "tw";                                   // 標題畫面：台灣主場
   if(G.phase==="jones" || G.phase==="intl") return "tw"; // 披上中華隊 → 回主場氛圍
   return regionForLeague(G.league);
 }
+function leagueThemeForState(){
+  if(!G) return "hbl";
+  if(G.phase==="jones" || G.phase==="intl") return "taiwan-national";
+  if(["nbaCombine","nbaCombineRejected","nbaUndrafted"].includes(G.phase)) return "nba";
+  if(G.phase==="draftDeclare" && G._draftPick && G._draftPick.NBA) return "nba";
+  if(G.phase==="draftResults" && (G._nbaUndrafted || (G._offers||[]).some(o=>o&&o.league==="NBA"))) return "nba";
+  return LEAGUE_THEME[G.league] || (currentRegion()==="us"?"us-prep":"hbl");
+}
+function leagueThemeMeta(theme){ return LEAGUE_THEME_META[theme||leagueThemeForState()] || LEAGUE_THEME_META.hbl; }
 function ensureBackdrop(){
   if(!document.getElementById("backdrop")){
     const d=document.createElement("div"); d.id="backdrop";
@@ -4699,15 +4979,17 @@ function ensureBackdrop(){
     document.body.insertBefore(d, document.body.firstChild);
   }
 }
-let _regionNow=null;
+let _regionNow=null,_leagueThemeNow=null;
 function applyRegionTheme(){
   ensureBackdrop();
-  const r=currentRegion();
+  const r=currentRegion(), theme=leagueThemeForState();
+  // 聯盟切換（例如 NCAA → G League → NBA）即使都在美國，也要立刻換 UI 皮膚。
+  if(theme!==_leagueThemeNow){ _leagueThemeNow=theme; document.body.dataset.leagueTheme=theme; }
   if(r===_regionNow) return;
   const bd=document.getElementById("backdrop");
   if(_regionNow===null){ _regionNow=r; document.body.dataset.region=r; return; } // 首次直接套用
   _regionNow=r;
-  // 換地區：淡出→切換→淡入
+  // 換國家：淡出→切換→淡入；聯盟 UI 已先即時切換。
   bd.classList.add("fade");
   setTimeout(()=>{ document.body.dataset.region=r; bd.classList.remove("fade"); }, 250);
 }
@@ -4751,6 +5033,7 @@ function render(){
 /* ---------- HUD ---------- */
 function hudHTML(){
   const ov=overall();
+  const themeMeta=leagueThemeMeta();
   const attrBars=ATTR_KEYS.map(k=>{
     const v=G.attr[k], prev=G.lastAttr?G.lastAttr[k]:v;
     const cls=v>prev?"up":v<prev?"down":"";
@@ -4758,6 +5041,10 @@ function hudHTML(){
       <span class="av">${v}</span></div><div class="bar"><i style="width:${v}%"></i></div></div>`;
   }).join("");
   return `<div class="hud">
+    <div class="league-strip" aria-label="${themeMeta.name||themeMeta.code}">
+      <span class="ls-mark">${themeMeta.mark}</span>${themeMeta.code?`<span class="ls-code">${themeMeta.code}</span>`:""}
+      ${themeMeta.name?`<span class="ls-name">${themeMeta.name}</span>`:""}${themeMeta.tier?`<span class="ls-tier">${themeMeta.tier}</span>`:""}
+    </div>
     <div class="hud-top">
       <div class="jersey" style="${jerseyStyle(G.team)}">${G.jersey}</div>
       <div class="hud-name"><div class="nm">${G.name} <span class="arche">${archetype()}</span>${(G.league==="NCAA D1"||G.league==="NCAA D2")&&G.lastReview&&G.lastReview.usRank?` <span class="usrank">🇺🇸全美#${G.lastReview.usRank}</span>`:""}${G.stage==="高中"&&G.background==="asian_american"&&G.lastReview&&G.lastReview.hsStars?` <span class="usrank">🇺🇸 ${G.lastReview.hsStars}★ · #${G.lastReview.hsRecruitRank||G._hsRecruitRank||"—"}</span>`:""}</div>
@@ -5435,6 +5722,7 @@ function returnToTaiwan(){
   G.contract=makeContract(lg,team,rint(1,2),ov);
   if(teamCityMatchesHome(team,G.home)) grantTitle("homecoming");
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(team);
+  recordLeagueTeamForJourneyman(G.league,G.team);
   G.fame=clamp(G.fame+6,0,100); G.morale=clamp(G.morale+8,0,100);
   // 已直接簽約，跳過後續自由市場步驟（避免又重簽）
   G.offseason=(G.offseason||[]).filter(x=>x!=="freeAgency"&&x!=="overseasOffer"&&x!=="trade");
@@ -6319,7 +6607,7 @@ function renderEnd(){
     <div class="panel center">
       <div class="jersey" style="width:64px;height:64px;font-size:30px;margin:0 auto 10px;${jerseyStyle(G.team)}">${G.jersey}</div>
       <h2 style="font-size:22px">${G.name} <span class="arche">${archetype()}</span></h2>
-      <p class="muted">${POSITIONS[G.pos].name}｜出身 ${G.home}｜${t.proSeasons} 職業賽季<br>退休原因：${G.retireReason}</p>
+      <p class="muted">${POSITIONS[G.pos].name}｜${G.height}cm / ${G.weight}kg｜出身 ${G.home}｜${t.proSeasons} 職業賽季<br>退休原因：${G.retireReason}</p>
       ${G.titles&&G.titles.length?`<div class="title-row" style="margin-top:8px">${titleBadgesHTML()}</div>`:""}
       <p class="small mt8" style="color:var(--faint)">種子碼 <b style="color:var(--dim);font-family:Oswald">${G.seed||"------"}</b>　·　分享讓朋友重玩你的生涯</p>
     </div>
@@ -6377,15 +6665,17 @@ function drawCareerCard(){
   x.fillStyle=tc.p;x.font=F(700,120);x.fillText("#"+G.jersey,78,190);
   x.fillStyle="#F4F2EC";x.font="900 60px 'Noto Sans TC',sans-serif";
   x.fillText(G.name,46,270);
-  x.fillStyle="#9DB0CC";x.font="500 30px 'Noto Sans TC',sans-serif";
-  x.fillText(`${POSITIONS[G.pos].name} · ${archetype()}　|　出身 ${G.home}　|　巔峰 OVR ${t.peakOv}`,48,318);
+  x.fillStyle="#9DB0CC";x.font="500 27px 'Noto Sans TC',sans-serif";
+  x.fillText(`${POSITIONS[G.pos].name} · ${archetype()}　|　${G.height}cm / ${G.weight}kg`,48,316);
+  x.font="500 24px 'Noto Sans TC',sans-serif";
+  x.fillText(`出身 ${G.home}　|　巔峰 OVR ${t.peakOv}`,48,350);
   // 名人堂章
   if(G._hof){ x.save();x.translate(W-160,150);x.rotate(-.12);
     x.strokeStyle="#F2B84B";x.lineWidth=5;x.strokeRect(-95,-45,190,90);
     x.fillStyle="#F2B84B";x.font=F(700,30);x.textAlign="center";x.fillText("名人堂",0,-2);
     x.font=F(600,18);x.fillText("HALL OF FAME",0,26);x.restore();x.textAlign="left"; }
   // 分隔
-  x.strokeStyle="#2A3A57";x.lineWidth=2;x.beginPath();x.moveTo(46,350);x.lineTo(W-46,350);x.stroke();
+  x.strokeStyle="#2A3A57";x.lineWidth=2;x.beginPath();x.moveTo(46,378);x.lineTo(W-46,378);x.stroke();
   // 能力雷達
   drawRadar(x,W-210,470,120);
   // 生涯數據方塊
@@ -6568,7 +6858,7 @@ function drawCareerSummary(cv){
   y+=38;
   const injN=G.majorInjuries||0;
   x.fillStyle=INK;x.font=NF(500,21);
-  x.fillText(`${POSITIONS[G.pos].name}｜${archetype()}｜${(pro[0]?pro[0].year:G.year)}–${G.year}｜引退 ${G.age} 歲｜重傷×${injN}`,L,y);
+  x.fillText(`${POSITIONS[G.pos].name}｜${archetype()}｜${G.height}cm / ${G.weight}kg｜${(pro[0]?pro[0].year:G.year)}–${G.year}｜引退 ${G.age} 歲｜重傷×${injN}`,L,y);
   y+=32;
   // 名人堂徽記（頁首帶）
   const hof=G._hallOfFame||computeHallOfFame();
