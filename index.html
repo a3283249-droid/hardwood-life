@@ -1169,7 +1169,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V2.0.15";
+const VERSION="V.2.0.16";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -3802,6 +3802,9 @@ function electiveSurgery(){
   toast(pro?`接受手術治療，花費 ${fmtMoney(cost)}，健康回升。`:"家人湊錢讓你接受治療，健康回升。");
 }
 
+/* 50 歲是最後一個可完整出賽的球季；該季回顧完成後退休，不開啟 51 歲球季。 */
+function isAgeLimitRetirementDue(){ return G.stage==="pro" && G.age>=50; }
+
 /* ---------- 賽季回顧後 → 進入休賽期流程 ---------- */
 function afterReview(){
   // 建立休賽期待辦
@@ -3813,6 +3816,12 @@ function afterReview(){
   }
   // 手術失敗／放棄手術／酒駕等 → 生涯結束
   if(s.injury&&s.injury.career){ if(!G.retireReason) G.retireReason="生涯重傷，忍痛退役"; return endCareer(); }
+  // 50 歲球季可以完整打完；回顧結束後立即謝幕，避免任何合約／自由市場流程把年齡推到 51。
+  if(isAgeLimitRetirementDue()){
+    G._ageLimitRetire=true;
+    G.retireReason="完成 50 歲球季後，依生涯年齡上限正式退休";
+    return endCareer();
+  }
   // 瓊斯盃（每年夏季的沉浸式賽事）
   if(pendingJones()) q.push("jones");
   // 其他國際賽（亞洲盃／亞運／世界盃等）
@@ -3946,6 +3955,12 @@ function processOffseason(){
   }
 }
 function advanceToNextSeason(){
+  // 防禦性檢查：正常流程會在 50 歲球季 afterReview 退休，這裡再阻止舊存檔／異常流程進入 51 歲球季。
+  if(G.stage==="pro" && G.age>=50){
+    G._ageLimitRetire=true;
+    G.retireReason="完成 50 歲球季後，依生涯年齡上限正式退休";
+    return endCareer();
+  }
   // 進職業/大學後的一般年份推進（高中在 advanceHS 已處理）
   if(G.stage!=="高中"){ G.age++; G.year++; applyAging(); }
   if(G.stage==="大學") G.collegeYears++;
@@ -4891,6 +4906,7 @@ function computeUsRank(currentProd){
   G.usRankBest=Math.min(G.usRankBest||999,rank);
   return rank;
 }
+const HOF_TH={taiwan:680, naismith:900, china:620, korea:620};
 function hofScore(){
   const c=G.careerAwards, t=careerTotals();
   const prestige=bestLeaguePrestige();
@@ -4901,40 +4917,78 @@ function hofScore(){
     + Math.max(0,(t.peakOv-80))*4 + t.totalPts/1500 + G.intlMedals*5;
   return Math.round(sc);
 }
-/* ---------- 分聯盟名人堂 ---------- */
-function computeHallOfFame(){
-  const ev={}; allLeagueEvals().forEach(e=>ev[e.league]=e.score);
-  const tw=(ev["SBL"]||0)+(ev["P+"]||0)+(ev["TPBL"]||0);
-  const twClubAwards=(G.awardLog||[]).filter(a=>["SBL","P+","TPBL"].includes(a.league)).length;
-  // 中華隊貢獻：依獎牌/榮譽加權（正式賽 > 瓊斯盃邀請賽），大幅提高國家隊份量——
-  // 讓「就算不在台灣打球，也能靠代表國家隊拿下名人堂」成為可行路線
+/* 名人堂單一資格物件：實際判定、畫面與典禮都共用，不再只顯示一個容易誤解的分數。 */
+function makeHallResult(score,scoreThreshold,seasons=0,seasonRequirement=0,seasonLabel="",extraPassed=true,extraReason=""){
+  const scorePassed=score>=scoreThreshold;
+  const seasonsPassed=seasons>=seasonRequirement;
+  const eligible=scorePassed&&seasonsPassed&&extraPassed;
+  let reason="票選分與資歷皆達標";
+  if(!eligible){
+    if(!extraPassed) reason=extraReason||"尚未符合基本入選資格";
+    else if(!scorePassed&&!seasonsPassed) reason=`票選分尚差 ${scoreThreshold-score} 分，且${seasonLabel||"聯盟"}資歷尚差 ${seasonRequirement-seasons} 季`;
+    else if(!scorePassed) reason=`名人堂票選分尚差 ${scoreThreshold-score} 分`;
+    else if(!seasonsPassed) reason=`票選分已達標，但${seasonLabel||"聯盟"}資歷尚差 ${seasonRequirement-seasons} 季`;
+  }
+  return {score,scoreThreshold,seasons,seasonRequirement,seasonLabel,scorePassed,seasonsPassed,extraPassed,eligible,reason};
+}
+/* 台灣名人堂把 SBL／P+／TPBL 視為同一份本土職籃履歷，基礎表現分只計算一次。 */
+function taiwanHallVoteScore(){
+  const twLeagues=["SBL","P+","TPBL"];
+  const ss=(G.seasonHistory||[]).filter(s=>s.stage==="pro"&&twLeagues.includes(s.league));
+  const n=ss.length;
+  const avgSS=n?ss.reduce((sum,s)=>sum+(s.seasonScore||0),0)/n:0;
+  const base=n?clamp(avgSS-30,0,90)*5+n*7:0;
+  const twAwards=(G.awardLog||[]).filter(a=>twLeagues.includes(a.league));
+  const awardPts=twAwards.reduce((sum,a)=>{
+    const w=a.award||"";
+    return sum+(w==="MVP"?70:w==="FMVP"?45:w==="冠軍"?40:w==="最佳陣容"?28:
+      w==="年度一隊"?40:w==="年度二隊"?28:w==="年度三隊"?18:w.includes("明星賽")?16:
+      w.includes("王")?16:w==="DPOY"?22:w==="ROTY"?14:w.includes("新秀")&&w.includes("隊")?8:0);
+  },0);
   let natlScore=0;
   (G.awardLog||[]).filter(a=>a.league==="中華隊").forEach(a=>{
-    const w=a.award;
+    const w=a.award||"";
     natlScore += w==="金牌"?175 : w==="銀牌"?125 : w==="銅牌"?90 : w==="賽會MVP"?75 :
       w==="瓊斯盃金牌"?60 : w==="瓊斯盃銀牌"?42 : w==="瓊斯盃銅牌"?30 :
       (w.indexOf("瓊斯盃MVP")>=0?38 : 12);
   });
-  const taiwanScore=Math.round(tw + natlScore + twClubAwards*10 + (G.madeNBA?160:0));
+  return {score:Math.round(base+awardPts+natlScore+(G.madeNBA?160:0)),seasons:n,avgSS:Math.round(avgSS),awardPts,natlScore};
+}
+/* ---------- 分聯盟名人堂 ---------- */
+function computeHallOfFame(){
+  const ev={}; allLeagueEvals().forEach(e=>ev[e.league]=e.score);
+  const tw=taiwanHallVoteScore();
+  const taiwanResult=makeHallResult(tw.score,HOF_TH.taiwan,tw.seasons,0,"台灣職籃");
+
   const nba=ev["NBA"]||0;
-  const nbaSeasons=G.seasonHistory.filter(s=>s.league==="NBA").length;
-  const naismithScore=Math.round(nba + (G.awardLog||[]).filter(a=>a.league==="NBA").reduce((s,a)=>
-    s+(a.award==="MVP"?130:a.award==="FMVP"?90:a.award==="冠軍"?60:a.award==="年度一隊"?55:a.award==="年度二隊"?35:a.award==="年度三隊"?24:a.award.includes("明星賽")?26:a.award.includes("王")?30:12),0));
-  // 中國籃球名人堂：以 CBL 資歷與榮譽為主
+  const nbaSeasons=(G.seasonHistory||[]).filter(s=>s.league==="NBA").length;
+  const naismithScore=Math.round(nba + (G.awardLog||[]).filter(a=>a.league==="NBA").reduce((s,a)=>{
+    const w=a.award||"";
+    return s+(w==="MVP"?130:w==="FMVP"?90:w==="冠軍"?60:w==="年度一隊"?55:w==="年度二隊"?35:w==="年度三隊"?24:w.includes("明星賽")?26:w.includes("王")?30:12);
+  },0));
+  const naismithResult=makeHallResult(naismithScore,HOF_TH.naismith,nbaSeasons,6,"NBA ",!!G.madeNBA,"尚未建立 NBA 正式出賽資歷");
+
   const cbl=ev["CBL"]||0;
-  const cblSeasons=G.seasonHistory.filter(s=>s.league==="CBL").length;
-  const chinaScore=Math.round(cbl + (G.awardLog||[]).filter(a=>a.league==="CBL").reduce((s,a)=>
-    s+(a.award==="MVP"?90:a.award==="FMVP"?55:a.award==="冠軍"?45:a.award==="本土MVP"?40:a.award.includes("明星賽")?18:a.award.includes("王")?22:a.award==="DPOY"?24:a.award==="ROTY"?14:10),0));
-  // 韓國籃球名人堂：以 KRBL 資歷與榮譽為主
+  const cblSeasons=(G.seasonHistory||[]).filter(s=>s.league==="CBL").length;
+  const chinaScore=Math.round(cbl + (G.awardLog||[]).filter(a=>a.league==="CBL").reduce((s,a)=>{
+    const w=a.award||"";
+    return s+(w==="MVP"?90:w==="FMVP"?55:w==="冠軍"?45:w==="本土MVP"?40:w.includes("明星賽")?18:w.includes("王")?22:w==="DPOY"?24:w==="ROTY"?14:10);
+  },0));
+  const chinaResult=makeHallResult(chinaScore,HOF_TH.china,cblSeasons,5,"CBL ");
+
   const krbl=ev["KRBL"]||0;
-  const krblSeasons=G.seasonHistory.filter(s=>s.league==="KRBL").length;
-  const koreaScore=Math.round(krbl + (G.awardLog||[]).filter(a=>a.league==="KRBL").reduce((s,a)=>
-    s+(a.award==="MVP"?90:a.award==="FMVP"?55:a.award==="冠軍"?45:a.award==="國內MVP"?40:a.award.includes("明星賽")?18:a.award.includes("王")?22:a.award==="DPOY"?24:a.award==="ROTY"?14:10),0));
+  const krblSeasons=(G.seasonHistory||[]).filter(s=>s.league==="KRBL").length;
+  const koreaScore=Math.round(krbl + (G.awardLog||[]).filter(a=>a.league==="KRBL").reduce((s,a)=>{
+    const w=a.award||"";
+    return s+(w==="MVP"?90:w==="FMVP"?55:w==="冠軍"?45:w==="國內MVP"?40:w.includes("明星賽")?18:w.includes("王")?22:w==="DPOY"?24:w==="ROTY"?14:10);
+  },0));
+  const koreaResult=makeHallResult(koreaScore,HOF_TH.korea,krblSeasons,5,"KRBL ");
+
   return {
-    taiwanScore, taiwan: taiwanScore>=880,
-    naismithScore, nbaSeasons, naismith: G.madeNBA && nbaSeasons>=5 && naismithScore>=850,
-    chinaScore, cblSeasons, china: cblSeasons>=4 && chinaScore>=560,
-    koreaScore, krblSeasons, korea: krblSeasons>=4 && koreaScore>=560,
+    taiwanScore:taiwanResult.score,taiwanSeasons:tw.seasons,taiwan:taiwanResult.eligible,taiwanResult,
+    naismithScore:naismithResult.score,nbaSeasons,naismith:naismithResult.eligible,naismithResult,
+    chinaScore:chinaResult.score,cblSeasons,china:chinaResult.eligible,chinaResult,
+    koreaScore:koreaResult.score,krblSeasons,korea:koreaResult.eligible,koreaResult,
   };
 }
 /* ---------- 退休劇情 ---------- */
@@ -4955,6 +5009,13 @@ const RETIRE_SCENES={
   asianAmericanRefusedTaiwan:[
     {e:"🇺🇸",t:"那通越洋電話之後",x:(g)=>`多年以前，台灣籃協曾透過越洋電話邀請你披上中華隊戰袍；你最後選擇婉拒中華隊，把國際賽夢想留在自己成長的美國體系。這個決定曾引來爭論，也有人始終不能諒解。退休記者會上你第一次完整談起：「我尊重自己的血統，也尊重中華隊，但代表哪裡出賽，是我必須對自己人生負責的選擇。」掌聲並不整齊，卻很長。`},
     {e:"🧭",t:"選擇自己的國家隊道路",x:(g)=>`你曾拒絕加入中華隊。有人說你忘本，也有人說身分認同不該由旁人決定。多年征戰後，你在退休專訪裡平靜地說：「我的家族故事來自台灣，我的人生與籃球養成在美國。兩件事可以同時是真的。」那一晚，討論區再次吵翻，但更多年輕華裔球員第一次看見：身分可以複雜，也可以誠實。`},
+  ],
+  age50:[
+    {e:"🕰️",t:"五十歲的最後一季",x:(g)=>`終場蜂鳴器響起時，你沒有立刻走回休息室。五十歲，這個幾乎不該再屬於職業球員的年紀，你仍穿著球衣站在場中央。對手、隊友與教練一個個上前擁抱——有些人出生時，你已經在打職業。你繞場一圈，向一路陪伴的球迷揮手，正式替這段跨越數個世代的生涯畫下句點。`},
+    {e:"👴",t:"更衣室裡最後的老前輩",x:(g)=>`生涯最後一次推開更衣室的門，你看著一排比自己小二十多歲的隊友。當年和你一起進聯盟的新人，有人早已退休、有人已經坐上教練席；而你直到五十歲仍在綁鞋帶。你把最後一卷護踝膠帶丟進垃圾桶，笑著說：「這次真的輪到我走了。」`},
+    {e:"📺",t:"跨越世代的轉播畫面",x:(g)=>`轉播單位把你的菜鳥年與最後一季畫面並排播放：球衣版型變了、隊徽變了、聯盟的年輕王牌換了一代又一代，只有你一直還在。主播說：「有些球員代表一個年代；他見證了好幾個年代。」你坐在場邊看著大螢幕，第一次真正感覺到時間走了多遠。`},
+    {e:"🏟️",t:"從學生看到成家",x:(g)=>`退休夜的看台上，有球迷舉著兩張照片：一張是學生時代穿你的球衣，另一張是今天牽著孩子來看你的最後一戰。你接過照片簽名時愣了一下。對方笑著說：「我人生很多階段都有你的比賽。」五十歲的你終於明白，長青不只是多打幾年，而是陪著一整代球迷長大。`},
+    {e:"📚",t:"聯盟的活歷史",x:(g)=>`記者問你最難忘的是哪一個冠軍、哪一位對手。你想了很久，只說：「太多了。」五十歲以前，你經歷過規則改變、球風更替、老對手退場與新明星崛起。退休公告發布後，聯盟官方用「活歷史」形容你的生涯——不是因為你永遠不老，而是因為你真的撐到了時代都換了好幾輪。`},
   ],
   legend:[
     {e:"🎽",t:"球衣高懸穹頂",x:(g)=>`在爆滿的主場，燈光聚焦，你的 ${g.jersey} 號球衣緩緩升上球館穹頂。曾並肩作戰的傳奇球星與後輩齊聚致敬，家人與摯友在場邊拭淚——這座城市，永遠記得你的名字。`},
@@ -5047,7 +5108,7 @@ function endCareer(){
   G._hallOfFame=computeHallOfFame();
   G._jerseyTeams=jerseyRetiredTeams();
   G._jerseyRetired = G._jerseyTeams.length>0 || (G._hallOfFame&&G._hallOfFame.naismith);
-  G._hof=G._hallOfFame.taiwan||G._hallOfFame.naismith||G._hallOfFame.china;
+  G._hof=G._hallOfFame.taiwan||G._hallOfFame.naismith||G._hallOfFame.china||G._hallOfFame.korea;
   let tier=retirementTier();
   if(G._undrafted) tier="undrafted"; // 落選轉跑道專屬
   // 發展聯盟長期打拼、始終沒能真正在 NBA 站穩 → 專屬「農場老兵」退休劇情
@@ -5057,6 +5118,7 @@ function endCareer(){
   if(G.background==="asian_american" && tier!=="undrafted" && tier!=="devgrind" && !G._injuryRetire){
     tier=G._canPlayForTaiwan===false?"asianAmericanRefusedTaiwan":"asianAmericanLegacy";
   }
+  if(G._ageLimitRetire && !G._injuryRetire) tier="age50"; // 50 歲正常謝幕使用超長青專屬文本
   if(G._injuryRetire) tier="injuryEnd"; // 傷退劇情優先
   G._retireScene=pick(RETIRE_SCENES[tier]||RETIRE_SCENES.obscure);
   G._retireTier=tier;
@@ -5075,6 +5137,16 @@ function fanForum(){
   const has=id=>(G.titles||[]).some(x=>x.id===id);
   const add=(user,text,likes)=>posts.push({user,text,likes:likes||rint(3,240)});
   const addF=(user,text,likes)=>filler.push({user,text,likes:likes||rint(3,240)});
+  if(G._ageLimitRetire){
+    add(pick(["時光紀錄者","資深季票族","聯盟考古學家"]),pick([
+      `五十歲還完整打完最後一季，這已經不是長青，是把聯盟好幾個世代都串在一起了。`,
+      `我學生時代看他打球，現在帶小孩看他退休，這種時間感真的太誇張。`,
+      `他的菜鳥同期早就退光了，有些甚至都當教練了，他今天才正式脫下球衣。`]),rint(700,2600));
+    add(pick(["老球迷","板凳分析師","硬漢崇拜者"]),pick([
+      `不一定每一年都是巨星，但能把身體、技術跟意志維持到 50 歲，本身就是職業運動史級別的耐久度。`,
+      `五十歲球季還能站上職業場，先不談數據，光自律就值得後輩上一整學期的課。`,
+      `聯盟換了幾代門面，他還在。今天退休真的像一本歷史書終於翻到最後一頁。`]),rint(450,1800));
+  }
   // 依成就客製
   if(hof.naismith) add(pick(G.background==="asian_american"?["華裔籃球社","AAU老球探","BayAreaHoops"]:["職籃死忠","國際線球迷","凌晨戰士"]),pick(G.background==="asian_american"?[
     "從 AAU 被質疑到奈史密斯名人堂，華裔球員的天花板被他整個掀掉了。",
@@ -6698,22 +6770,23 @@ function careerSummaryHTML(){
 }
 
 /* ---------- End / 名人堂 ---------- */
-const HOF_TH={taiwan:880, naismith:850, china:560, korea:560};
 function hallOfFameHTML(){
   const h=G._hallOfFame||computeHallOfFame();
-  const card=(name,inducted,score,th,note)=>`
-    <div class="hof-card ${inducted?"in":"no"}">
-      <div class="hof-ico">${inducted?"🏛️":"—"}</div>
+  const card=(name,r,note)=>`
+    <div class="hof-card ${r.eligible?"in":"no"}">
+      <div class="hof-ico">${r.eligible?"🏛️":"—"}</div>
       <div class="hof-name">${name}</div>
-      <div class="hof-status">${inducted?"✅ 正式入選":"未達門檻"}</div>
-      <div class="hof-score">資歷分 ${score} ／ 門檻 ${th}</div>
+      <div class="hof-status">${r.eligible?"✅ 正式入選":"❌ 未入選"}</div>
+      <div class="hof-score">名人堂票選分 ${r.score} / ${r.scoreThreshold} ${r.scorePassed?"✅":"❌"}</div>
+      ${r.seasonRequirement>0?`<div class="hof-score">${r.seasonLabel}資歷 ${r.seasons} / ${r.seasonRequirement} 季 ${r.seasonsPassed?"✅":"❌"}</div>`:""}
+      <div class="hof-note">${r.reason}</div>
       ${note?`<div class="hof-note">${note}</div>`:""}
     </div>`;
-  const ceremony = (h.taiwan||h.naismith||h.china) ? hofCeremonyHTML(h) : "";
-  const cards=[card("台灣籃球名人堂",h.taiwan,h.taiwanScore,HOF_TH.taiwan,"台灣聯盟資歷＋中華隊獎牌貢獻（可純靠國家隊入選）")];
-  if(h.cblSeasons>0 || h.china) cards.push(card("中國籃球名人堂",h.china,h.chinaScore,HOF_TH.china,lname("CBL")+" 資歷與榮譽"));
-  if(h.krblSeasons>0 || h.korea) cards.push(card("韓國籃球名人堂",h.korea,h.koreaScore,HOF_TH.korea,lname("KRBL")+" 資歷與榮譽"));
-  cards.push(card("奈史密斯名人堂",h.naismith,h.naismithScore,HOF_TH.naismith,lname("NBA")+" 殿堂，入選難度極高"));
+  const ceremony = (h.taiwan||h.naismith||h.china||h.korea) ? hofCeremonyHTML(h) : "";
+  const cards=[card("台灣籃球名人堂",h.taiwanResult,"SBL／P+／TPBL 合併計算，另計中華隊重大成就與 NBA 突破")];
+  if(h.cblSeasons>0 || h.china) cards.push(card("中國籃球名人堂",h.chinaResult,lname("CBL")+" 資歷與榮譽"));
+  if(h.krblSeasons>0 || h.korea) cards.push(card("韓國籃球名人堂",h.koreaResult,lname("KRBL")+" 資歷與榮譽"));
+  cards.push(card("奈史密斯名人堂",h.naismithResult,lname("NBA")+" 殿堂，票選分與最低年資必須同時達標"));
   return `<div class="hof-title">名人堂票選結果</div>
     <div class="hof-grid">${cards.join("")}</div>${ceremony}`;
 }
@@ -7329,7 +7402,7 @@ function drawCareerSummary(cv){
   y+=32;
   // 名人堂徽記（頁首帶）
   const hof=G._hallOfFame||computeHallOfFame();
-  const hofTags=[]; if(hof.taiwan)hofTags.push("🏛️ 台灣籃球名人堂"); if(hof.naismith)hofTags.push("🏛️ 奈史密斯名人堂");
+  const hofTags=[]; if(hof.taiwan)hofTags.push("🏛️ 台灣籃球名人堂"); if(hof.china)hofTags.push("🏛️ 中國籃球名人堂"); if(hof.korea)hofTags.push("🏛️ 韓國籃球名人堂"); if(hof.naismith)hofTags.push("🏛️ 奈史密斯名人堂");
   if(hofTags.length){ let bx=L;x.font=NF(700,18);
     hofTags.forEach(tg=>{const w=x.measureText(tg).width+24;
       x.fillStyle="rgba(242,184,75,.12)";x.strokeStyle="rgba(242,184,75,.6)";roundRect(x,bx,y-19,w,28,14);x.fill();x.stroke();
