@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>籃球人生 · Hardwood Life</title>
+<meta name="theme-color" content="#0B1220">
+<meta name="application-name" content="籃球人生">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="籃球人生">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -1071,7 +1080,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.2.0.01";
+const VERSION="V.2.0.11";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
@@ -4168,20 +4177,98 @@ function bestLeaguePrestige(){
    榮譽紀錄（含聯盟/年份）、里程碑、分聯盟評價、稱號、全美排名
    ========================================================================= */
 function logAward(league,award,year){ G.awardLog=G.awardLog||[]; G.awardLog.push({league,award,year}); }
-// 依「聯盟＋獎項」聚合，回傳 [{league,award,years:[...],n}]
+
+/*
+ * 生涯榮譽唯一資料來源。
+ * 新版以 awardLog 為主，再用 seasonHistory.awards / tourney.awards 補回舊存檔中
+ * 「畫面計數有增加、詳細 log 卻漏記」的紀錄，最後才用 careerAwards 做總數兜底。
+ * 這樣結算畫面、球員卡、下載結算圖不再各讀不同資料。
+ */
+function canonicalAwardEntries(){
+  const out=[];
+  const normYear=(year)=>{
+    if(year===null || year===undefined || year==="")return null;
+    const n=Number(year); return Number.isFinite(n)?n:null;
+  };
+  const keyOf=(league,award,year)=>`${league||"生涯"}|${award||""}|${year==null?"?":year}`;
+  const counts={};
+  const add=(league,award,year,recovered=false)=>{
+    if(!award)return;
+    const e={league:league||"生涯",award:String(award),year:normYear(year),recovered:!!recovered};
+    out.push(e); const k=keyOf(e.league,e.award,e.year); counts[k]=(counts[k]||0)+1;
+  };
+  const ensure=(league,award,year,wanted,recovered=true)=>{
+    const k=keyOf(league||"生涯",String(award||""),normYear(year));
+    while((counts[k]||0)<wanted) add(league,award,year,recovered);
+  };
+
+  // 詳細紀錄是第一優先。
+  (G.awardLog||[]).forEach(a=>add(a.league,a.award,a.year,false));
+
+  // 舊存檔救援：每季 awards 其實仍保留玩家當季真正拿到的獎項。
+  (G.seasonHistory||[]).forEach(s=>{
+    const league=s.league||s.stage||"生涯", year=s.year;
+    const seen={};
+    (s.awards||[]).forEach(a=>{ const award=String(a); seen[award]=(seen[award]||0)+1; ensure(league,award,year,seen[award],true); });
+    // 學生錦標賽的獎項有些版本只存在 tourney.awards。
+    const tSeen={};
+    ((s.tourney&&s.tourney.awards)||[]).forEach(a=>{ const award=String(a); tSeen[award]=(tSeen[award]||0)+1; ensure(league,award,year,tSeen[award],true); });
+  });
+
+  // 最後用 careerAwards 的聚合總數兜底。若舊檔連年份都缺失，就補到該獎項最常出現的聯盟，
+  // 並標記 recovered，下載圖會顯示「舊存檔補登」而不捏造年份。
+  const agg=G.careerAwards||{};
+  Object.entries(agg).forEach(([award,targetRaw])=>{
+    const target=Math.max(0,Number(targetRaw)||0); if(!target)return;
+    const same=out.filter(e=>e.award===award && e.league!=="中華隊");
+    let have=same.length; if(have>=target)return;
+    const byLeague={}; same.forEach(e=>{byLeague[e.league]=(byLeague[e.league]||0)+1;});
+    const fallback=Object.keys(byLeague).sort((a,b)=>byLeague[b]-byLeague[a])[0]||"生涯";
+    while(have<target){ add(fallback,award,null,true); have++; }
+  });
+  return out;
+}
+
+function careerAwardCounts(){
+  const base={...(G.careerAwards||{})};
+  const detailed={};
+  canonicalAwardEntries().forEach(e=>{
+    if(e.league==="中華隊" || /^\d+分$/.test(e.award))return;
+    detailed[e.award]=(detailed[e.award]||0)+1;
+  });
+  Object.entries(detailed).forEach(([k,v])=>{base[k]=Math.max(Number(base[k])||0,v);});
+  return base;
+}
+
+// 依「聯盟＋獎項」聚合。畫面與下載圖都從 canonicalAwardEntries 取得同一份紀錄。
 function groupedAwards(){
   const map={};
-  (G.awardLog||[]).forEach(a=>{const k=a.league+"|"+a.award; (map[k]=map[k]||{league:a.league,award:a.award,years:[]}).years.push(a.year);});
-  return Object.values(map).map(o=>({...o,n:o.years.length})).sort((a,b)=>a.years[0]-b.years[0]);
+  canonicalAwardEntries().forEach(a=>{
+    const k=a.league+"|"+a.award;
+    const o=(map[k]=map[k]||{league:a.league,award:a.award,years:[],n:0,recovered:0,missingYears:0});
+    o.n++; if(a.year!=null)o.years.push(a.year); else if(a.recovered)o.missingYears++; if(a.recovered)o.recovered++;
+  });
+  return Object.values(map).sort((a,b)=>{
+    const ay=a.years.length?Math.min(...a.years):999999, by=b.years.length?Math.min(...b.years):999999;
+    return ay-by || a.award.localeCompare(b.award,"zh-Hant");
+  });
 }
 // 連續年份壓縮：[2028..2035,2038] → "2028~2035,2038"
 function compressYears(years){
-  const ys=[...new Set(years)].sort((a,b)=>a-b);
+  const ys=[...new Set((years||[]).filter(y=>Number.isFinite(Number(y))).map(Number))].sort((a,b)=>a-b);
   const parts=[]; let i=0;
   while(i<ys.length){ let j=i; while(j+1<ys.length && ys[j+1]===ys[j]+1) j++;
     if(j-i>=2) parts.push(`${ys[i]}~${ys[j]}`); else for(let k=i;k<=j;k++) parts.push(""+ys[k]);
     i=j+1; }
   return parts.join(",");
+}
+function awardYearsLabel(gA){
+  const yrs=compressYears(gA.years||[]);
+  const missing=Math.max(0,gA.missingYears||0);
+  if(yrs && missing>0)return `${yrs}；舊存檔補登×${missing}`;
+  if(yrs)return yrs;
+  if(gA.recovered)return `舊存檔補登×${gA.n}`;
+  return "年份未記錄";
 }
 // 里程碑（各聯盟累積得分等）
 function checkMilestones(s){
@@ -6214,7 +6301,7 @@ function intlTableHTML(){
   return `<table class="stats" style="min-width:420px">${head}${body}</table>`;
 }
 function careerSummaryHTML(){
-  const t=careerTotals(),c=G.careerAwards;
+  const t=careerTotals(),c=careerAwardCounts();
   const aw=Object.entries(c).filter(([k,v])=>v>0).map(([k,v])=>`<span class="badge">${k} ×${v}</span>`).join("");
   return `<div class="label">生涯總結</div>
     <div class="statline mt8"><div class="s"><div class="v">${t.seasons}</div><div class="l">總賽季</div></div>
@@ -6593,11 +6680,11 @@ function drawCareerTimeline(cv){
 }
 function downloadTimelineDirect(){
   try{ const cv=document.createElement("canvas"); drawCareerTimeline(cv);
-    saveCanvasPng(cv, `${G.name}_生涯時間軸.png`);
+    saveCanvasPng(cv, `${G.name}_生涯時間軸.png`, "生涯時間軸");
   }catch(e){ toast("此環境無法下載時間軸圖"); }
 }
 function renderEnd(){
-  const t=careerTotals(),c=G.careerAwards;
+  const t=careerTotals(),c=careerAwardCounts();
   const aw=Object.entries(c).filter(([k,v])=>v>0).map(([k,v])=>`<span class="badge">${k} ×${v}</span>`).join("");
   app.innerHTML=`<div class="wrap">
     <div class="hero" style="padding:26px 10px 6px">
@@ -6643,7 +6730,7 @@ function renderEnd(){
 function drawCareerCard(){
   const cv=$("#cardCanvas"); if(!cv)return;
   const x=cv.getContext("2d"); const W=cv.width,H=cv.height;
-  const t=careerTotals(),c=G.careerAwards;
+  const t=careerTotals(),c=careerAwardCounts();
   // 背景
   const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#16233d");g.addColorStop(.5,"#0d1626");g.addColorStop(1,"#0a0f1a");
   x.fillStyle=g;x.fillRect(0,0,W,H);
@@ -6772,9 +6859,7 @@ function drawCareerChart(x,ox,oy,w,h){
 }
 function downloadCard(){
   const cv=$("#cardCanvas");if(!cv)return;
-  try{const url=cv.toDataURL("image/png");const a=document.createElement("a");
-    a.href=url;a.download=`${G.name}_生涯球員卡.png`;document.body.appendChild(a);a.click();a.remove();
-    toast("已下載球員卡！");}catch(e){toast("此環境無法下載，請長按圖片儲存");}
+  saveCanvasPng(cv, `${G.name}_生涯球員卡.png`, "球員卡");
 }
 
 /* ---------- 各聯盟累積數據 ---------- */
@@ -6814,7 +6899,7 @@ function drawCareerSummary(cv){
   const W=1240, L=48;
   // 先量測榮譽/里程碑需要幾行（用臨時 context）
   const tmp=cv.getContext("2d");
-  const honorTexts=grouped.map(gA=>`${lname(gA.league)} ${gA.award}${gA.n>1?` *${gA.n}`:""} (${compressYears(gA.years)})`);
+  const honorTexts=grouped.map(gA=>`${lname(gA.league)} ${gA.award}${gA.n>1?` *${gA.n}`:""} (${awardYearsLabel(gA)})`);
   // 榮譽兩欄，估行數
   const honorRows=Math.ceil(Math.max(honorTexts.length,1)/2);
   // 里程碑換行估算
@@ -6947,35 +7032,63 @@ function drawCareerSummary(cv){
   x.fillStyle=FAINT2;x.font=MF(500,17);x.textAlign="center";x.fillText("籃球人生 · Hardwood Life",W/2,HH-28);x.textAlign="left";
 }
 function _isIOS(){ try{return /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}catch(e){return false;} }
-function saveCanvasPng(cv, filename){
+function _isInAppBrowser(){
+  try{return /(FBAN|FBAV|Instagram|Line\/|MicroMessenger|; wv\)|\bwv\b|WebView)/i.test(navigator.userAgent||"");}catch(e){return false;}
+}
+function _openCanvasPreview(dataUrl,filename,label="圖片"){
+  const safeTitle=String(filename||label).replace(/[<>&"]/g,"");
+  const w=window.open("","_blank");
+  if(w && w.document){
+    w.document.write('<title>'+safeTitle+'</title><meta name="viewport" content="width=device-width,initial-scale=1">'
+      +'<body style="margin:0;background:#0B1220;color:#E9EFF7;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center">'
+      +'<p style="padding:14px 12px;font-size:15px;line-height:1.6">此瀏覽器不支援直接下載。<br>長按下方'+label+' → 儲存／加入照片 📥</p>'
+      +'<img src="'+dataUrl+'" alt="'+safeTitle+'" style="width:100%;height:auto;display:block"></body>');
+    w.document.close();
+    toast(`已開啟${label}預覽，長按圖片即可儲存`);
+    return true;
+  }
+  try{ location.href=dataUrl; toast(`已開啟${label}，長按即可儲存`); return true; }catch(e){ return false; }
+}
+function saveCanvasPng(cv, filename, label="生涯結算圖"){
+  if(!cv)return;
   let dataUrl;
   try{ dataUrl=cv.toDataURL("image/png"); }catch(e){ toast("此環境無法輸出圖片"); return; }
-  if(_isIOS()){
-    // iOS Safari 不支援 a.download，改開新分頁讓使用者長按存到相簿
-    const w=window.open("","_blank");
-    if(w && w.document){
-      w.document.write('<title>'+filename+'</title><meta name="viewport" content="width=device-width,initial-scale=1">'
-        +'<body style="margin:0;background:#0B1220;color:#E9EFF7;font-family:-apple-system,sans-serif;text-align:center">'
-        +'<p style="padding:14px 12px;font-size:15px">長按下方圖片 →「加入照片」即可儲存 📥</p>'
-        +'<img src="'+dataUrl+'" style="width:100%;height:auto;display:block"></body>');
-      w.document.close();
-      toast("已開新分頁，長按圖片即可儲存");
-    } else {
-      location.href=dataUrl; // 退而求其次
-      toast("已開啟圖片，長按即可儲存");
-    }
+
+  // iOS Safari 與部分 LINE / IG / Facebook WebView 對 <a download> 支援不完整；
+  // 直接改成可長按儲存的圖片頁，避免按鈕看似沒反應。
+  const probe=document.createElement("a");
+  if(_isIOS() || _isInAppBrowser() || !("download" in probe)){
+    if(!_openCanvasPreview(dataUrl,filename,label)) toast("此環境無法直接下載，請使用瀏覽器開啟後再儲存");
     return;
   }
-  const a=document.createElement("a");a.href=dataUrl;a.download=filename;document.body.appendChild(a);a.click();a.remove();
-  toast("已下載生涯結算圖！");
+
+  const clickBlob=(blob)=>{
+    if(!blob){
+      try{ probe.href=dataUrl; probe.download=filename; document.body.appendChild(probe); probe.click(); probe.remove(); toast(`已下載${label}！`); }
+      catch(e){ _openCanvasPreview(dataUrl,filename,label); }
+      return;
+    }
+    const url=URL.createObjectURL(blob);
+    try{
+      const a=document.createElement("a"); a.href=url; a.download=filename; a.rel="noopener";
+      document.body.appendChild(a); a.click(); a.remove(); toast(`已下載${label}！`);
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+    }catch(e){
+      URL.revokeObjectURL(url); _openCanvasPreview(dataUrl,filename,label);
+    }
+  };
+  try{
+    if(typeof cv.toBlob==="function") cv.toBlob(clickBlob,"image/png");
+    else clickBlob(null);
+  }catch(e){ clickBlob(null); }
 }
 function downloadSummary(){
   const cv=$("#summaryCanvas");if(!cv)return;
-  saveCanvasPng(cv, `${G.name}_生涯結算.png`);
+  saveCanvasPng(cv, `${G.name}_生涯結算.png`, "生涯結算圖");
 }
 function downloadSummaryDirect(){
   try{const cv=document.createElement("canvas");drawCareerSummary(cv);
-    saveCanvasPng(cv, `${G.name}_生涯結算.png`);
+    saveCanvasPng(cv, `${G.name}_生涯結算.png`, "生涯結算圖");
   }catch(e){toast("此環境無法下載，請改用『數據總表』頁面下載");}
 }
 
@@ -7169,6 +7282,11 @@ $("#startBtn").addEventListener("click",()=>{
 
 /* ---------- Boot ---------- */
 render();
+
+/* ---------- PWA ---------- */
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener("load",()=>{ navigator.serviceWorker.register("./sw.js").catch(()=>{}); });
+}
 </script>
 </body>
 </html>
