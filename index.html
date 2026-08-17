@@ -218,6 +218,32 @@ input[type=text]:focus{outline:none;border-color:var(--orange)}
 .combine-result{text-align:right}.combine-result b{display:block;font-family:"Oswald";font-size:16px;color:var(--ink)}.combine-result span{font-size:10px;color:#7FC1FF}
 .combine-stock{border-radius:10px;padding:9px 11px;margin-top:10px;font-size:12.5px;background:rgba(242,184,75,.08);border:1px solid rgba(242,184,75,.35);color:var(--gold)}
 
+/* ---------- NBA Scouting Report / HUD attribute collapse ---------- */
+.scout-report{margin-top:12px;border:1px solid var(--league-border,var(--line));border-radius:16px;overflow:hidden;background:linear-gradient(155deg,var(--league-panel2,var(--surface2)),rgba(10,18,32,.96));box-shadow:0 12px 30px -24px rgba(0,0,0,.9)}
+.scout-report-head{padding:14px 14px 12px;background:linear-gradient(100deg,var(--league-glow,rgba(77,163,255,.12)),transparent 68%);border-bottom:1px solid rgba(255,255,255,.07)}
+.scout-report-brand{font-family:"Oswald";font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--league-primary,var(--gold));text-transform:uppercase}
+.scout-report-title{font-size:20px;font-weight:900;margin-top:3px}
+.scout-summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:11px}
+.scout-kpi{background:rgba(5,12,24,.48);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:8px 9px;min-width:0}
+.scout-kpi .k{font-size:9.5px;color:var(--faint);letter-spacing:.05em}.scout-kpi .v{font-family:"Oswald";font-weight:700;font-size:15px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scout-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);font-size:13px;font-weight:800;color:var(--ink);background:rgba(255,255,255,.025)}
+.scout-toggle .tri{font-size:11px;color:var(--league-primary,var(--gold));transition:transform .15s}
+.scout-body{padding:0 14px 14px}.scout-section{padding-top:13px;margin-top:2px;border-top:1px dashed rgba(255,255,255,.09)}.scout-section:first-child{border-top:none}
+.scout-sec-title{font-family:"Oswald";font-weight:700;font-size:11px;letter-spacing:.12em;color:var(--league-primary,var(--gold));margin-bottom:8px}
+.scout-points{display:flex;flex-direction:column;gap:7px}.scout-point{font-size:13px;line-height:1.65;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);border-left:3px solid var(--line)}
+.scout-point.good{border-left-color:var(--green)}.scout-point.bad{border-left-color:var(--red)}
+.scout-comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.scout-comp{border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:10px;background:rgba(5,12,24,.42)}
+.scout-comp .lbl{font-size:9.5px;color:var(--faint);letter-spacing:.08em}.scout-comp .nm{font-family:"Oswald";font-weight:700;font-size:18px;color:var(--gold);margin:2px 0}.scout-comp .why{font-size:11.5px;color:var(--dim);line-height:1.55}
+.scout-history{display:flex;flex-direction:column;gap:7px}.scout-season{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:8px 9px;border-radius:9px;background:rgba(255,255,255,.035)}
+.scout-season .yr{font-family:"Oswald";font-weight:700;color:var(--league-primary,var(--gold));font-size:12px}.scout-season .ln{font-size:11.5px;line-height:1.55;color:var(--dim)}.scout-season .ln b{color:var(--ink)}
+.scout-combine-mini{display:grid;grid-template-columns:1fr auto;gap:5px 10px;font-size:11.5px}.scout-combine-mini .n{color:var(--dim)}.scout-combine-mini .r{text-align:right;font-family:"Oswald";font-weight:600}
+.scout-disclaimer{font-size:10px;line-height:1.55;color:var(--faint);margin-top:9px}
+.hud-attr-head{display:flex;align-items:center;justify-content:space-between;padding:5px 14px 4px;border-top:1px solid rgba(255,255,255,.045);font-size:9.5px;color:var(--faint);letter-spacing:.08em}
+.hud-attr-toggle{width:27px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:7px;border:1px solid var(--league-border,var(--line));background:rgba(255,255,255,.035);color:var(--league-primary,var(--orange));font-size:10px;line-height:1}
+.hud-attr-toggle:active{transform:scale(.94)}
+.hud-attr-body{padding-top:5px!important;padding-bottom:10px!important}
+@media(max-width:390px){.scout-summary-grid{grid-template-columns:1fr 1fr}.scout-comp-grid{grid-template-columns:1fr}.scout-report-head{padding-left:12px;padding-right:12px}.scout-body{padding-left:12px;padding-right:12px}}
+
 /* ---------- Tables / stats ---------- */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:0 16px}
 table.stats{border-collapse:collapse;width:100%;font-size:12px;min-width:520px}
@@ -938,23 +964,86 @@ function schoolPick(lg, exclude) {
 }
 /* ---------- 球員類型（依屬性判定） ---------- */
 function archetype(attr=G.attr,pos=G.pos){
-  const a=attr, ov=overall(attr,pos);
-  const sorted=[...ATTR_KEYS].sort((x,y)=>a[y]-a[x]);
-  const t1=sorted[0];
-  const vals=ATTR_KEYS.map(k=>a[k]).sort((x,y)=>y-x);
-  const highCount=vals.filter(v=>v>=vals[0]-6).length;
-  // 全能：至少五項能力都貼近最高值，且整體夠強
-  if(highCount>=5 && ov>=72) return "全能型";
-  // 3D 側翼：防守＋三分雙高
-  if((pos==="SF"||pos==="SG") && a.defense>=70 && a.three>=70) return "3D型";
-  // 雙能衛：得分＋組織雙高
-  if((pos==="PG"||pos==="SG") && a.pass>=72 && a.shooting>=72) return "雙能衛";
-  // 組織型長人：長人(C/PF)把組織練高，成為策應型中軸
-  if((pos==="C"||pos==="PF") && a.pass>=78) return "組織型長人";
-  // 射手：三分明顯突出
-  if(t1==="three" || (a.three>=vals[0]-2 && a.three>=72)) return "射手型";
-  const map={shooting:"得分型",three:"射手型",rebound:"籃板型",pass:"組織型",defense:"防守型",athletic:"運動型",iq:"智控型"};
-  return map[t1]||"潛力型";
+  const a=attr||{};
+  const isGuard=pos==="PG"||pos==="SG", isWing=pos==="SF", isBig=pos==="PF"||pos==="C";
+  const candidates=[];
+  const add=(name,score,ok=true)=>{if(ok)candidates.push({name,score});};
+  const avg=(...ks)=>ks.reduce((n,k)=>n+(a[k]||0),0)/ks.length;
+
+  // 後場：持球、組織、投射、壓迫防守與衝框能力的組合，而非單看最高屬性。
+  if(isGuard){
+    add("攻守兼具組織衝框者", avg("pass","defense","athletic","shooting")+6, a.pass>=76&&a.defense>=74&&a.athletic>=76&&a.shooting>=70);
+    add("防守組織型霸王", avg("pass","defense","iq")+8, a.pass>=78&&a.defense>=82&&a.iq>=76);
+    add("三層次進攻組織核心", avg("shooting","three","pass","iq")+7, a.shooting>=78&&a.three>=76&&a.pass>=80);
+    add("靈巧內外雙線得分手", avg("shooting","three","athletic")+6, a.shooting>=80&&a.three>=78&&a.athletic>=74);
+    add("高機動持球狙擊手", avg("three","pass","athletic")+6, a.three>=84&&a.pass>=72&&a.athletic>=72);
+    add("雙向外線發動機", avg("three","defense","pass")+7, a.three>=78&&a.defense>=78&&a.pass>=74);
+    add("強攻型雙能衛", avg("shooting","pass","athletic")+6, a.shooting>=82&&a.pass>=75&&a.athletic>=78);
+    add("節奏型擋拆指揮官", avg("pass","iq","shooting")+8, a.pass>=84&&a.iq>=82&&a.shooting>=70);
+    add("防守壓迫型控場者", avg("defense","pass","athletic","iq")+6, a.defense>=82&&a.pass>=78&&a.athletic>=74);
+    add("爆發型衝框組織者", avg("athletic","shooting","pass")+7, a.athletic>=84&&a.shooting>=76&&a.pass>=75);
+    add("無球跑動神射手", avg("three","iq","shooting")+7, a.three>=86&&a.iq>=74&&a.shooting>=72);
+    add("攻守兼備雙能後衛", avg("shooting","pass","defense")+7, a.shooting>=78&&a.pass>=78&&a.defense>=76);
+  }
+
+  // 側翼：強調雙向、持球、換防與內外得分的混合輪廓。
+  if(isWing||pos==="PF"){
+    add("雙向三層次側翼", avg("shooting","three","defense","athletic")+7, a.shooting>=78&&a.three>=76&&a.defense>=78);
+    add("外線鎖防雙向尖兵", avg("three","defense","iq")+8, a.three>=82&&a.defense>=82);
+    add("全能持球側翼", avg("shooting","pass","defense","rebound","iq")+7, a.shooting>=76&&a.pass>=75&&a.defense>=74&&a.rebound>=68);
+    add("爆發型攻框側翼", avg("athletic","shooting","defense")+6, a.athletic>=84&&a.shooting>=80);
+    add("空間型防守側翼", avg("three","defense","iq")+6, a.three>=78&&a.defense>=78&&a.iq>=72);
+    add("高球商全能前鋒", avg("iq","pass","defense","rebound")+7, a.iq>=82&&a.pass>=74&&a.defense>=74&&a.rebound>=70);
+    add("強攻籃板型側翼", avg("shooting","rebound","athletic")+6, a.shooting>=76&&a.rebound>=78&&a.athletic>=78);
+    add("組織防守型前鋒", avg("pass","defense","iq")+8, a.pass>=78&&a.defense>=80&&a.iq>=76);
+    add("內外雙修得分前鋒", avg("shooting","three","rebound")+6, a.shooting>=80&&a.three>=76&&a.rebound>=70);
+    add("多功能換防前鋒", avg("defense","athletic","rebound","pass")+6, a.defense>=82&&a.athletic>=78&&a.rebound>=72);
+  }
+
+  // 長人：空間、策應、護框、籃板與終結彼此組合。
+  if(isBig){
+    add("靈巧內外雙線得分手", avg("shooting","three","athletic","iq")+7, a.shooting>=80&&a.three>=74&&a.athletic>=72);
+    add("策應護框中樞", avg("pass","defense","iq","rebound")+8, a.pass>=76&&a.defense>=80&&a.iq>=76);
+    add("機動型空間護框者", avg("three","defense","athletic")+8, a.three>=76&&a.defense>=80&&a.athletic>=78);
+    add("強攻籃板終結者", avg("shooting","rebound","athletic")+8, a.shooting>=78&&a.rebound>=84&&a.athletic>=80);
+    add("低位策應型進攻中樞", avg("shooting","pass","iq","rebound")+7, a.shooting>=78&&a.pass>=78&&a.iq>=78);
+    add("防守籃板支柱", avg("defense","rebound","iq")+7, a.defense>=84&&a.rebound>=84);
+    add("高位組織空間長人", avg("pass","three","iq")+8, a.pass>=80&&a.three>=75&&a.iq>=78);
+    add("垂直空間護框者", avg("athletic","defense","rebound")+8, a.athletic>=84&&a.defense>=82&&a.rebound>=76);
+    add("內線全能霸王", avg("shooting","rebound","defense","athletic")+8, a.shooting>=80&&a.rebound>=80&&a.defense>=80&&a.athletic>=76);
+    add("技巧型進攻長人", avg("shooting","iq","pass","three")+6, a.shooting>=84&&a.iq>=76&&a.pass>=68);
+    add("空間型籃板長人", avg("three","rebound","iq")+6, a.three>=78&&a.rebound>=80);
+    add("護框策應藍領", avg("defense","pass","rebound","iq")+6, a.defense>=82&&a.pass>=72&&a.rebound>=78&&a.iq>=72);
+  }
+
+  if(candidates.length){
+    candidates.sort((x,y)=>y.score-x.score);
+    return candidates[0].name;
+  }
+
+  // 沒有達到複合模板門檻時，仍用「前兩項能力」組合名稱，避免退回單一得分型／籃板型。
+  const top=[...ATTR_KEYS].sort((x,y)=>(a[y]||0)-(a[x]||0)).slice(0,2);
+  const pair=top.slice().sort().join("+");
+  const guardPairs={
+    "pass+shooting":"持球組織得分手","shooting+three":"內外雙線得分手","athletic+shooting":"爆發型衝框得分手",
+    "defense+three":"外線鎖防尖兵","defense+pass":"防守組織型後衛","iq+pass":"高球商控場發動機",
+    "athletic+defense":"壓迫型雙向後衛","pass+three":"外線組織雙能衛","defense+shooting":"攻守雙向得分後衛",
+    "athletic+pass":"高速轉換發動機","iq+three":"高球商空間後衛","iq+shooting":"節奏型進攻後衛"
+  };
+  const wingPairs={
+    "shooting+three":"內外雙修得分側翼","defense+three":"空間鎖防側翼","defense+shooting":"雙向持球側翼",
+    "athletic+shooting":"爆發型攻框側翼","defense+pass":"組織防守型側翼","pass+shooting":"持球策應得分側翼",
+    "defense+rebound":"換防籃板型前鋒","iq+pass":"高球商策應前鋒","athletic+defense":"多位置換防尖兵",
+    "rebound+shooting":"強攻籃板側翼","rebound+three":"空間籃板前鋒","iq+defense":"高球商防守前鋒"
+  };
+  const bigPairs={
+    "rebound+shooting":"禁區強攻籃板手","shooting+three":"內外雙線進攻長人","defense+rebound":"護框籃板支柱",
+    "athletic+defense":"機動護框長人","pass+shooting":"策應進攻中樞","pass+defense":"策應護框中樞",
+    "pass+three":"高位組織空間長人","rebound+three":"空間型籃板長人","athletic+shooting":"垂直終結型長人",
+    "iq+defense":"高球商護框中樞","iq+pass":"高位策應中樞","athletic+rebound":"爆發籃板終結者"
+  };
+  const fallback=isGuard?guardPairs[pair]:(isBig?bigPairs[pair]:wingPairs[pair]);
+  return fallback || (isGuard?"多功能雙能後衛":isBig?"多功能現代長人":"多功能雙向側翼");
 }
 
 /* ---------- HBL 強權學校 ---------- */
@@ -1080,12 +1169,12 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.2.0.11";
+const VERSION="V2.0.15";
 const NAME_POOL=["林逐夢","陳姓安","鄭智隆","林智杰","李承翰","王梓豪","吳建霆","蔡宗霖","鄭凱文","許博翔",
   "劉承恩","楊子毅","周庭安","洪偉誠","謝孟軒","高振宇","盧彥勳","簡廷碩","賴冠霖","邱昱翔",
   "曾少宇","呂紹綱","范植偉","徐子謙","江宥寬"];
 const START_HOMES={
-  local:["台北","新北","基隆","宜蘭","桃園","新竹","苗栗","台中","彰化","雲林","嘉義","台南","高雄","屏東","花蓮","台東"],
+  local:["台北","新北","基隆","宜蘭","桃園","新竹","苗栗","台中","彰化","雲林","嘉義","台南","高雄","屏東","花蓮","台東","澎湖","金門","馬祖"],
   asian_american:["洛杉磯","舊金山","紐約","芝加哥","休士頓","波士頓","西雅圖","檀香山"]
 };
 function randomName(){ return pick(NAME_POOL); }
@@ -2823,7 +2912,7 @@ function prospectScore(){
   else if(G.height <= 180) heightBonus = -3; 
   else if(G.height <= 173) heightBonus = -7; 
   
-  return draftStock() + prodBonus + heightBonus + ((G._seasonMods&&G._seasonMods.draftStockAdj)||0);
+  return draftStock() + prodBonus + heightBonus + ((G._seasonMods&&G._seasonMods.draftStockAdj)||0) + (G._earlyEntryActive?(G._earlyEntryBonus||earlyEntryDraftBonus()):0);
 }
 /* 市場身價：近兩季若打出明星等級表現，即使 OVR 略降，行情仍維持高檔 */
 function marketValue(){
@@ -2989,6 +3078,11 @@ function nbaRookieContractTerms(pick,rngFn=_rng){
   }
   return {years:1,guaranteedYears:1,rookieScale:false,draftRound:null,teamOptions:null,structure:"1 年"};
 }
+function isRookieGuaranteedPeriod(contract){
+  // NBA 首輪新秀 2+1+1：前兩個球季屬保障期。交易只改 team，不改 yearsLeft，保障照樣延續。
+  return !!(contract && contract.league==="NBA" && contract.rookieScale && contract.draftRound===1 &&
+    (contract.guaranteedYears||0)>=2 && contract.yearsLeft>=3);
+}
 function rookieOptionDue(contract){
   if(!contract||!contract.rookieScale||contract.league!=="NBA"||contract.draftRound!==1)return null;
   if(contract.yearsLeft===3)return 3;
@@ -3096,6 +3190,174 @@ function nbaCombineStockText(d){
   if(d.stockDelta<=2)return "部分項目失常：預估順位可能下滑約 2 位。";
   return "體測表現低於預期：球隊疑慮增加，預估順位可能下滑約 4 位。";
 }
+
+/* ---------- Combine 後完整球探報告 ---------- */
+function collegeScoutingHistory(g=G){
+  const rows=(g.seasonHistory||[]).filter(s=>s&&s.stage==="大學");
+  return rows.map((s,i)=>({
+    label:`大${["一","二","三","四","五","六"][i]||i+1}`,
+    year:s.year,team:s.team,league:s.league,gp:s.gp,ppg:s.ppg,rpg:s.rpg,apg:s.apg,
+    spg:s.spg,bpg:s.bpg,fg:s.fg,tp:s.tp,awards:(s.awards||[]).slice()
+  }));
+}
+function _scoutSorted(cands,limit=3){
+  const seen=new Set(), out=[];
+  cands.sort((a,b)=>b.score-a.score);
+  for(const c of cands){if(!c||!c.text||seen.has(c.text))continue;seen.add(c.text);out.push(c.text);if(out.length>=limit)break;}
+  return out;
+}
+function scoutingStrengths(g=G){
+  const a=g.attr||{}, pos=g.pos, c=[];
+  const add=(score,text)=>c.push({score,text});
+  if(a.three>=78) add(a.three+8, a.three>=90?"他可能是本屆選秀會中最好的外線射手之一；射程、出手信心與無球拉開空間的價值，都足以迫使防守提早貼身。":"外線投射已經是明確的 NBA 賣點，接球後不需要太多準備時間就能完成出手。" );
+  if(a.shooting>=78&&a.athletic>=72) add(a.shooting+a.athletic*.35,"可以在人堆中完成得分，一部分來自紮實的終結能力與爆發力；防守一旦失去身體位置，他很敢直接攻擊籃框。" );
+  else if(a.shooting>=80) add(a.shooting+5,"半場陣地戰有可靠的自主取分手段，中距離與錯位單打能在進攻停滯時替球隊解題。" );
+  if(a.pass>=78) add(a.pass+7,(pos==="PG"||pos==="SG")?"能提早閱讀第二層防守，擋拆後找到弱側與順下隊友的能力，讓他具備主導一波進攻的可能。":"傳球視野優於同位置平均，拿到球後願意迅速找到下一個空檔，而不是讓進攻停在自己手上。" );
+  if(a.defense>=78) add(a.defense+7,"防守端的站位與對球壓迫都很成熟，能在多個位置之間換防，並把持球者逼向球隊預設的防守方向。" );
+  if(a.rebound>=78) add(a.rebound+5,(pos==="C"||pos==="PF")?"籃板判斷與卡位相當可靠，不只是靠身高搶球；二次起跳與提前找人的習慣能直接轉換成職業層級價值。":"以他的身材與位置來說，籃板參與度相當突出，常能提前預判長籃板落點並發動轉換進攻。" );
+  if(a.athletic>=82) add(a.athletic+6,"第一步與直線爆發力在同梯中很醒目；空間一旦被拉開，他有能力把普通突破變成直接攻框或製造犯規。" );
+  if(a.iq>=82) add(a.iq+6,"比賽閱讀速度很快，很少需要第二拍才理解場上發生什麼；無球走位、協防與臨場選擇都顯示出成熟度。" );
+  if((pos==="SG"||pos==="SF")&&a.three>=74&&a.defense>=74) add(a.three+a.defense*.7,"3&D 輪廓清楚：不必長時間持球也能影響比賽，外線牽制與對位防守讓他很容易被放進高階輪替。" );
+  if((pos==="C"||pos==="PF")&&a.pass>=72&&a.iq>=74) add(a.pass+a.iq*.55,"長人位置上的策應感很好，高位接球後能快速完成手遞手、短傳或找到底角，不容易成為進攻終點。" );
+  if(c.length<3){
+    const generic={shooting:"自主得分手段是目前最穩定的技能，面對錯位時敢於承擔進攻責任。",three:"外線威脅能有效替隊友拉開突破空間。",rebound:"籃板嗅覺與對落點的預判是可轉移到更高層級的技能。",pass:"願意分享球且能看到第一個以外的傳球選項。",defense:"防守投入度穩定，對持球人的壓迫感是目前的主要賣點。",athletic:"運動能力提供了相當大的攻防容錯率。",iq:"比賽理解與決策穩定度，是他適應不同體系的重要優勢。"};
+    Object.keys(a).sort((x,y)=>a[y]-a[x]).forEach((k,i)=>add(a[k]-i,generic[k]));
+  }
+  return _scoutSorted(c,3);
+}
+function scoutingWeaknesses(g=G){
+  const a=g.attr||{}, pos=g.pos, c=[];
+  const add=(score,text)=>c.push({score,text});
+  if(a.pass<=64 || ((pos==="PG"||pos==="SG")&&a.pass<=70)) add(108-a.pass,"對於組織一波新攻勢的節奏掌握偏慢，持球後偶爾會把第一個機會看死，壓力一上來也容易出現不專注的狀態。" );
+  if(a.iq<=64) add(107-a.iq,"比賽閱讀仍有延遲，尤其在對手連續變換防守策略時，偶爾會晚一拍才做出正確決定。" );
+  if(a.three<=62) add(105-a.three,"外線目前還不足以讓 NBA 防守者尊重；對手可以更放心地收縮禁區，這會壓縮他其他進攻武器的空間。" );
+  if(a.defense<=62) add(105-a.defense,"防守端容易在第一個掩護後失去位置，橫移與協防紀律若沒有改善，職業層級可能會被持續點名。" );
+  if(a.athletic<=62) add(104-a.athletic,"爆發力並不突出，第一步很難單靠速度製造優勢；面對更長、更快的防守者時，需要靠節奏與技巧補足。" );
+  if(a.shooting<=62) add(103-a.shooting,"半場自主得分的穩定度仍不足，碰到能守住第一拍的防守者後，缺少可靠的第二套解法。" );
+  if((pos==="C"||pos==="PF")&&a.rebound<=68) add(116-a.rebound,"以內線位置來說，籃板保護還不到安全水準；卡位常常只完成第一個接觸，沒有持續把對手隔離在落點之外。" );
+  if((pos==="PG")&&a.iq<=72) add(104-a.iq,"作為主要控球者，對比賽節奏的控制還不夠一致；領先或被追分時的回合管理需要更成熟。" );
+  if((pos==="SG"||pos==="SF")&&a.three<70) add(101-a.three,"側翼位置的空間價值仍有疑問，如果定點三分無法穩定命中，無球時可能讓進攻空間變得擁擠。" );
+  if(c.length<3){
+    const low=Object.keys(a).sort((x,y)=>a[x]-a[y]);
+    const generic={shooting:"自主進攻的效率仍有波動，需要更穩定地把優勢轉換成得分。",three:"投射穩定性仍是球探會持續追蹤的項目。",rebound:"籃板參與度還可以更積極，尤其是第一時間的卡位與追球。",pass:"傳球選擇有時過於保守，還需要更快辨認第二、第三個進攻機會。",defense:"防守細節與連續回合專注度仍有進步空間。",athletic:"身體條件不是壓倒性優勢，需要靠技巧與判斷維持效率。",iq:"臨場判斷仍會出現不必要的猶豫，對高階戰術的適應速度需要觀察。"};
+    low.forEach((k,i)=>add(100-a[k]-i,generic[k]));
+  }
+  return _scoutSorted(c,3);
+}
+function scoutingComparisons(g=G){
+  const a=g.attr||{}, p=g.pos;
+  const choices=[];
+  const add=(score,allowed,ceiling,floor,ceilingWhy,floorWhy)=>{if(allowed)choices.push({score,ceiling,floor,ceilingWhy,floorWhy});};
+
+  // 後衛／持球者
+  add(a.three*1.08+a.pass*.55+a.iq*.35,p==="PG"&&a.three>=82&&a.pass>=76,"S.Curry","S.Mills","若超遠射程、持球投射與擋拆判讀都持續兌現，可朝以投射重塑防守站位的進攻發動機發展。","若持球創造沒有成長到核心等級，仍可能以高效率外線、快速決策與替補火力建立長期價值。");
+  add(a.athletic*1.0+a.shooting*.75+a.pass*.55,(p==="PG"||p==="SG")&&a.athletic>=84&&a.shooting>=76,"D.Rose","D.Schroder","若第一步、攻框終結與傳球同步成熟，有機會成為利用爆發力撕裂第一線後再創造隊友機會的核心後衛。","若外線與半場節奏成長有限，仍可能以速度、突破與第二陣容持球任務成為高產量輪替後衛。");
+  add(a.shooting*.95+a.three*.5+a.athletic*.35,(p==="PG"||p==="SG")&&a.shooting>=72,"D.Booker","J.Clarkson","若自主得分、投射與持球閱讀持續成熟，可朝能扛大量進攻責任的得分後衛發展。","若決策與防守沒有同步進步，較可能成為以替補火力與單打得分為主的進攻型後衛。");
+  add(a.shooting*.8+a.pass*.55+a.iq*.45,(p==="PG"||p==="SG")&&a.shooting>=80&&a.pass>=78&&a.iq>=74,"K.Irving","L.Williams","若運球節奏、終結技巧與半場創造力都達到上限，可能成為能在任何防守型態下製造高品質出手的持球得分手。","若防守與無球價值不足，較可能以第二陣容持球、單打與關鍵時段取分為主要角色。");
+  add(a.pass*.98+a.iq*.6+a.shooting*.2,p==="PG"&&a.pass>=72,"S.Nash","T.Jones","若傳球視野、節奏與投射都達到上限，有機會成為以決策驅動整支進攻的核心控衛。","若突破與個人得分壓力有限，仍可往穩定控場、低失誤的輪替控衛路線發展。");
+  add(a.pass*.9+a.iq*.7+a.defense*.45,p==="PG"&&a.pass>=82&&a.iq>=80,"C.Paul","T.McConnell","若擋拆閱讀、回合管理與防守判斷全部拉滿，可能成為低失誤、高控制力的半場指揮官。","若身體與自主得分上限有限，仍可靠組織、節奏與拼勁成為可靠替補控衛。");
+  add(a.defense*.92+a.athletic*.5+a.pass*.4,(p==="PG"||p==="SG")&&a.defense>=74,"J.Holiday","P.Beverley","若身體對抗、換防與進攻端都能維持，可能成為能守最難對位的雙向後場。","若進攻創造有限，仍可能靠壓迫防守、能量與定點投射建立長期輪替價值。");
+  add(a.defense*.85+a.pass*.55+a.three*.45,(p==="PG"||p==="SG")&&a.defense>=76&&a.pass>=72&&a.three>=70,"D.White","D.Melton","若決策、防守與外線都維持高效率，可能成為不需要高使用率也能放大整體陣容的雙向後衛。","若持球進攻上限普通，仍能靠防守、多一拍傳球與定點外線成為高價值輪替。");
+  add(a.three*1.08+a.defense*.6+a.iq*.2,(p==="SG"||p==="SF")&&a.three>=72,"K.Thompson","W.Ellington","如果外線牽制與對位防守都完整兌現，可能成為不需要大量持球也能改變比賽的高階側翼。","若持球創造與防守上限沒有再往上走，較可能落在以跑位投射為主要生存方式的功能型射手。");
+  add(a.three*.95+a.iq*.4+a.shooting*.35,(p==="SG"||p==="SF")&&a.three>=84&&a.defense<76,"B.Hield","D.Bertans","若跑位、快速出手與延伸射程全數轉換到職業層級，可能成為能改變空間結構的高量射手。","若防守與持球能力不足，角色可能高度依賴外線手感與特定進攻體系。");
+
+  // 側翼／前鋒
+  add(a.defense*.88+a.three*.4+a.athletic*.45,p==="SF"&&a.defense>=72,"P.George","T.Ariza","若持球與投射進一步提升，雙向側翼輪廓有機會成為攻守都能承擔高使用率的核心。","若自主進攻沒有完全長出來，仍可朝長臂防守、接球投射與轉換進攻的成熟側翼發展。");
+  add(a.defense*.92+a.shooting*.55+a.pass*.3,(p==="SG"||p==="SF")&&a.defense>=80&&a.shooting>=76,"J.Butler","J.Crowder","若力量型切入、造犯規與高強度防守都持續成長，可朝能主導關鍵回合的雙向側翼發展。","若持球技巧停在功能型層級，仍可靠強硬防守、對抗與簡化進攻維持輪替價值。");
+  add(a.defense*1.0+a.shooting*.55+a.three*.35,p==="SF"&&a.defense>=86&&a.shooting>=78,"K.Leonard","O.Anunoby","若中距離創造、力量與頂級側翼防守同時兌現，可能成為攻守都能控制對位的核心。","若持球進攻成長有限，仍可成為高階 3&D、防守換防與低失誤終結型側翼。");
+  add(a.pass*.84+a.iq*.58+a.defense*.38,(p==="SF"||p==="PF")&&a.pass>=70,"P.Siakam","T.Young","若持球策應、轉換推進與多位置防守一起兌現，可能成為能串起整套體系的多功能前鋒。","若投射與自主得分維持普通，仍可靠策應、防守與聰明跑位成為高價值拼圖。");
+  add(a.pass*.9+a.iq*.62+a.rebound*.35,(p==="SF"||p==="PF")&&a.pass>=80&&a.iq>=78,"L.James","E.Turner","若體型、持球推進與閱讀防守都能充分兌現，可能朝以側翼身材主導進攻發展。","若得分壓力不足，仍可能成為能帶第二陣容、串聯與抓籃板推進的多功能前鋒。");
+  add(a.defense*.8+a.pass*.62+a.iq*.55,(p==="SF"||p==="PF")&&a.defense>=80&&a.pass>=76,"A.Iguodala","J.Winslow","若換防、轉換推進與二次組織都保持效率，可能成為能在季後賽放大陣容彈性的全能側翼。","若投射始終不穩，仍可依靠防守、持球轉換與功能型策應尋找輪替位置。");
+  add(a.three*.78+a.defense*.72+a.athletic*.35,(p==="SF"||p==="PF")&&a.three>=76&&a.defense>=78,"M.Bridges","D.Finney-Smith","若無球終結、外線與多位置防守同步成熟，可能成為高續航的現代雙向側翼。","若持球技能有限，仍可靠接球投射、空切與換防價值成為成熟拼圖。");
+  add(a.shooting*.92+a.athletic*.42+a.iq*.25,(p==="SF"||p==="PF")&&a.shooting>=82&&a.three<76,"D.DeRozan","T.Warren","若中距離腳步、造犯規與低位錯位都能延續，可能成為半場可靠的高產量得分前鋒。","若外線與防守價值有限，較可能成為專注自主取分與第二陣容進攻的得分型鋒線。");
+
+  // 長人
+  add(a.three*.82+a.shooting*.38+a.rebound*.36,(p==="PF"||p==="C")&&a.three>=70,"C.Bosh","R.Anderson","若投射、面框與內線效率都能兼容，有機會成為能拉開空間又能懲罰錯位的現代長人。","若防守與持球沒有明顯成長，較可能以拉開空間、接球終結為主要定位。");
+  add(a.three*.95+a.shooting*.55+a.iq*.3,(p==="PF"||p==="C")&&a.three>=82&&a.shooting>=78,"D.Nowitzki","D.Bertans","若高點出手、面框腳步與外線牽制完整兌現，可能成為難以用傳統長人對位的空間得分核心。","若內線對抗與防守不足，可能更依賴外線手感與拉開空間的功能。");
+  add(a.defense*.88+a.rebound*.68+a.athletic*.3,p==="C"&&a.defense>=70,"R.Gobert","N.Noel","若護框、籃板與防守覆蓋範圍都達到高檔，可能成為能獨力支撐禁區防守的中鋒。","若進攻技巧有限，仍可靠護框、換防與吃餅維持防守型中鋒角色。");
+  add(a.athletic*.85+a.defense*.72+a.rebound*.55,p==="C"&&a.athletic>=82&&a.defense>=76,"D.Howard","J.McGee","若垂直爆發、護框與籃板完全轉化，有機會成為大量製造空接威脅並統治禁區的高機動中鋒。","若低位技巧與決策不足，仍可依靠掩護、吃餅、護框與活動力建立輪替價值。");
+  add(a.pass*.84+a.iq*.6+a.rebound*.28,(p==="C"||p==="PF")&&a.pass>=75,"N.Jokic","M.Plumlee","若策應視野與得分威脅都充分發展，可能成為進攻可以經過他運轉的組織型長人。","若自主進攻上限較低，仍可靠高位策應、掩護與聰明傳球成為可靠輪替長人。");
+  add(a.defense*.82+a.pass*.72+a.iq*.58,(p==="PF"||p==="C")&&a.defense>=80&&a.pass>=72,"D.Green","K.Anderson","若換防、短擋拆傳球與防守溝通全部成熟，可能成為不靠大量得分也能驅動攻防的戰術中樞。","若投射與終結壓力有限，仍可依靠防守、策應與高球商扮演功能型前場。");
+  add(a.defense*.72+a.pass*.55+a.three*.48,(p==="PF"||p==="C")&&a.defense>=74&&a.pass>=70&&a.three>=68,"A.Horford","K.Olynyk","若外線、策應與團隊防守都保持穩定，可能成為能無縫銜接不同陣型的現代長人。","若護框與自主得分有限，仍可依靠空間、傳球與團隊防守成為輪替型內線。");
+  add(a.shooting*.78+a.rebound*.68+a.iq*.3,(p==="PF"||p==="C")&&a.shooting>=78&&a.rebound>=82,"Z.Randolph","E.Kanter","若低位力量、籃板與禁區手感都能維持，可能成為能靠半場強攻與二次進攻穩定產量的內線。","若防守機動性不足，較可能依靠籃板與禁區得分在特定對位中提供火力。");
+  add(a.shooting*.75+a.defense*.75+a.athletic*.55,(p==="PF"||p==="C")&&a.shooting>=80&&a.defense>=80&&a.athletic>=78,"A.Davis","J.Hayes","若面框得分、護框與機動性同時兌現，可能成為能覆蓋攻守兩端的大型前場核心。","若技巧成長有限，仍可依靠跑跳、護框、空接與換防價值留在輪替。");
+  add(a.shooting*.82+a.defense*.68+a.rebound*.55,p==="C"&&a.shooting>=84&&a.defense>=78,"J.Embiid","J.Okafor","若低位腳步、造犯規與護框都達到高檔，可能成為能以中鋒位置主導半場的核心。","若防守機動與傳球進展有限，較可能成為以禁區自主取分為主的傳統進攻中鋒。");
+  add(a.rebound*.82+a.three*.55+a.pass*.28,(p==="PF"||p==="C")&&a.rebound>=80&&a.three>=72,"K.Love","T.Lyles","若籃板、長傳與外線全部兌現，可能成為能快速開啟轉換並提供空間的進攻型前場。","若防守覆蓋範圍普通，仍可依靠籃板與投射成為第二陣容前場拼圖。");
+
+  if(!choices.length)return {ceiling:"不適用",floor:"不適用",ceilingWhy:"目前的能力組合沒有足夠明確的單一路徑，較適合繼續觀察角色定型。",floorWhy:"球風尚未定型，因此不強行套用既有 NBA 球員模板。"};
+  choices.sort((x,y)=>y.score-x.score);
+  return choices[0];
+}
+function scoutingDraftProjection(g=G){
+  const lastCollege=[...(g.seasonHistory||[])].reverse().find(s=>s&&s.stage==="大學");
+  let board=g._draftEntryBoard||g._collegeRank||(lastCollege&&lastCollege.usRank)||null;
+  const delta=(g._combineData&&Number(g._combineData.stockDelta))||0;
+  if(board) board=Math.max(1,Math.round(board+delta));
+  if(board){
+    if(board<=14)return {board,text:`樂透區（約 #${Math.max(1,board-2)}–${Math.min(14,board+2)}）`};
+    if(board<=30)return {board,text:`首輪中後段（約 #${Math.max(15,board-3)}–${Math.min(30,board+3)}）`};
+    if(board<=45)return {board,text:"首輪邊緣／次輪前段"};
+    if(board<=60)return {board,text:"次輪區間"};
+    return {board,text:"落選／發展聯盟觀察區"};
+  }
+  if(g._draftEntryStage==="高中"&&(g._finalHsStars||0)>=5){
+    const r=g._hsRecruitRank||30;
+    return {board:null,text:r<=5?"前 5 順位討論":r<=15?"樂透區討論":"首輪中後段討論"};
+  }
+  return {board:null,text:"尚無穩定共識"};
+}
+function buildDraftScoutingReport(g=G){
+  const hist=collegeScoutingHistory(g), comps=scoutingComparisons(g), proj=scoutingDraftProjection(g);
+  return {
+    name:g.name,pos:g.pos,height:g.height,weight:g.weight,age:g.age,ov:overall(g.attr,g.pos),
+    archetype:archetype(g.attr,g.pos),board:proj.board,projection:proj.text,
+    strengths:scoutingStrengths(g),weaknesses:scoutingWeaknesses(g),comparisons:comps,
+    college:hist,combine:g._combineData||null
+  };
+}
+function scoutingReportHTML(){
+  const r=buildDraftScoutingReport(G), d=r.combine, expanded=!!G._scoutingReportExpanded;
+  const history=r.college.length?r.college.map(s=>`<div class="scout-season"><div class="yr">${s.label}<br><span style="color:var(--faint);font-size:9px">${s.year}</span></div><div class="ln"><b>${s.team}</b> · ${s.league}<br>${s.gp} GP · ${s.ppg} PTS · ${s.rpg} REB · ${s.apg} AST · FG ${s.fg}% · 3P ${s.tp}%${s.awards.length?`<br><span style="color:var(--gold)">${s.awards.join(" · ")}</span>`:""}</div></div>`).join(""):`<div class="small">無大學賽季履歷；本報告以高中／其他賽事、身材與 Combine 表現為主要依據。</div>`;
+  const combineRows=d?d.tests.map(t=>`<div class="n">${t.name}</div><div class="r">${t.display} · #${t.rank}/${d.fieldSize}</div>`).join(""):`<div class="small">無 Combine 完整體測資料。</div>`;
+  return `<div class="scout-report">
+    <div class="scout-report-head"><div class="scout-report-brand">NBA SCOUTING REPORT</div><div class="scout-report-title">${r.name} · 選秀球探報告</div>
+      <div class="scout-summary-grid">
+        <div class="scout-kpi"><div class="k">BODY</div><div class="v">${r.height}cm / ${r.weight}kg</div></div>
+        <div class="scout-kpi"><div class="k">PROFILE</div><div class="v">${POSITIONS[r.pos].abbr} · ${r.archetype}</div></div>
+        <div class="scout-kpi"><div class="k">OVR / AGE</div><div class="v">${r.ov} · ${r.age}歲</div></div>
+        <div class="scout-kpi"><div class="k">DRAFT RANGE</div><div class="v">${r.projection}</div></div>
+      </div>
+    </div>
+    <button class="scout-toggle" type="button" data-toggle-scout-report aria-expanded="${expanded}"><span>📋 ${expanded?"收合完整球探報告":"查看完整球探報告"}</span><span class="tri">${expanded?"▲":"▼"}</span></button>
+    <div class="scout-body ${expanded?"":"hidden"}" data-scout-report-body>
+      <div class="scout-section"><div class="scout-sec-title">COMBINE / 體測成績</div><div class="scout-combine-mini">${combineRows}</div>${d?`<div class="combine-stock" style="margin-top:8px">綜合 #${d.overallRank}/${d.fieldSize} · ${nbaCombineStockText(d)}</div>`:""}</div>
+      <div class="scout-section"><div class="scout-sec-title">COLLEGE RESUME / 大學生涯逐年數據</div><div class="scout-history">${history}</div></div>
+      <div class="scout-section"><div class="scout-sec-title">STRENGTHS / 強項</div><div class="scout-points">${r.strengths.map(x=>`<div class="scout-point good">＋ ${x}</div>`).join("")}</div></div>
+      <div class="scout-section"><div class="scout-sec-title">WEAKNESSES / 弱項</div><div class="scout-points">${r.weaknesses.map(x=>`<div class="scout-point bad">－ ${x}</div>`).join("")}</div></div>
+      <div class="scout-section"><div class="scout-sec-title">NBA DEVELOPMENT COMP / 發展路徑對照</div><div class="scout-comp-grid">
+        <div class="scout-comp"><div class="lbl">發展上限</div><div class="nm">${r.comparisons.ceiling}</div><div class="why">${r.comparisons.ceilingWhy}</div></div>
+        <div class="scout-comp"><div class="lbl">發展下限</div><div class="nm">${r.comparisons.floor}</div><div class="why">${r.comparisons.floorWhy}</div></div>
+      </div><div class="scout-disclaimer">※ 球員對照僅代表球風與可能的發展路徑，不代表預測能達到該球員的生涯成就；若能力組合沒有合理模板，會顯示「不適用」。</div></div>
+    </div>
+  </div>`;
+}
+function toggleScoutingReport(){
+  G._scoutingReportExpanded=!G._scoutingReportExpanded;
+  const body=document.querySelector("[data-scout-report-body]"), btn=document.querySelector("[data-toggle-scout-report]");
+  if(body)body.classList.toggle("hidden",!G._scoutingReportExpanded);
+  if(btn){btn.setAttribute("aria-expanded",String(!!G._scoutingReportExpanded));btn.innerHTML=`<span>📋 ${G._scoutingReportExpanded?"收合完整球探報告":"查看完整球探報告"}</span><span class="tri">${G._scoutingReportExpanded?"▲":"▼"}</span>`;}
+}
+function toggleHudAttrs(){
+  G._hudAttrsCollapsed=!G._hudAttrsCollapsed;
+  const body=document.querySelector(".hud-attr-body"), btn=document.querySelector("[data-toggle-hud-attrs]");
+  if(body)body.classList.toggle("hidden",!!G._hudAttrsCollapsed);
+  if(btn){btn.textContent=G._hudAttrsCollapsed?"▶":"▼";btn.setAttribute("aria-expanded",String(!G._hudAttrsCollapsed));btn.setAttribute("aria-label",G._hudAttrsCollapsed?"展開個人屬性":"收合個人屬性");}
+}
+function bindPersistentUiControls(){
+  const hb=document.querySelector("[data-toggle-hud-attrs]"); if(hb)hb.addEventListener("click",toggleHudAttrs);
+  const sb=document.querySelector("[data-toggle-scout-report]"); if(sb)sb.addEventListener("click",toggleScoutingReport);
+}
+
 function applyCombinePickDelta(pick,minPick,maxPick){
   const delta=G._combineData?G._combineData.stockDelta:0;
   return clamp(Math.round(pick+delta),minPick,maxPick);
@@ -3243,6 +3505,18 @@ function withRiskOption(ev){
   }};
   return {t:ev.t,x:ev.x,o:[...ev.o,risk]};
 }
+function sanitizeOutcomeForRoll(outcome,roll){
+  if(!outcome||!outcome.attr)return outcome;
+  // 高骰代表選項執行成功：技能屬性不應因資料分支寫錯而倒扣。
+  // 若設計上真的要「成功但犧牲某項技能」，事件需明確標記 allowHighRollAttrLoss:true。
+  if(roll>=5 && !outcome.allowHighRollAttrLoss){
+    for(const k of Object.keys(outcome.attr)){
+      if(Number(outcome.attr[k])<0) outcome.attr[k]=0;
+    }
+  }
+  return outcome;
+}
+
 function applyEffects(e){
   if(e.attr) for(const k in e.attr){ if(!(k in G.attr)) continue;
     let d=e.attr[k];
@@ -3539,8 +3813,6 @@ function afterReview(){
   }
   // 手術失敗／放棄手術／酒駕等 → 生涯結束
   if(s.injury&&s.injury.career){ if(!G.retireReason) G.retireReason="生涯重傷，忍痛退役"; return endCareer(); }
-  // 高齡硬上限
-  if(isPro()&&G.age>=42){ G.retireReason="年事已高，正式高掛球鞋"; return endCareer(); }
   // 瓊斯盃（每年夏季的沉浸式賽事）
   if(pendingJones()) q.push("jones");
   // 其他國際賽（亞洲盃／亞運／世界盃等）
@@ -3563,7 +3835,7 @@ function afterReview(){
     const ov=overall(), std=LEAGUE_STANDARD[G.league]||60, mv=marketValue();
     let waived=false;
     const justExercised=(G._rookieOptionJustExercisedYear===G.year);
-    if(G.contract && !justExercised && mv < std-3){
+    if(G.contract && !justExercised && !isRookieGuaranteedPeriod(G.contract) && mv < std-3){
       const gap=std-3-mv;
       const poorSeason = s.seasonScore<40;
       const wChance=clamp(.16 + gap*.08 + (poorSeason?.15:0), .16, .9);
@@ -3722,7 +3994,55 @@ function collegeDecision(){
   G.phase="collegeDecision"; render();
 }
 function stayInCollege(){ advanceToNextSeason(); }
-function declareFromCollege(){ declareForDraft(); }
+function isEarlyCollegeEntry(){ return G.stage==="大學" && (G.collegeYears||0)<=2 && !G._mustLeave; }
+function earlyEntryDraftBonus(){
+  const eligible=G._earlyEntryActive || (G.stage==="大學" && (G.collegeYears||0)<=2);
+  if(!eligible)return 0;
+  const s=lastSeason(); if(!s)return 0;
+  const year=s.year;
+  const awards=[...(s.awards||[]),...((s.tourney&&s.tourney.awards)||[]),
+    ...(G.amateurAwards||[]).filter(a=>a&&a.year===year).map(a=>a.award)].filter(Boolean);
+  let b=s.champion?.6:0;
+  if(awards.some(a=>/MVP|最有價值/.test(a))) b+=.8;
+  if(awards.some(a=>/最佳五人|年度一隊|最佳陣容/.test(a))) b+=.45;
+  const kings=awards.filter(a=>/得分王|助攻王|籃板王/.test(a)).length;
+  b+=Math.min(.7,kings*.35);
+  return round(clamp(b,0,2.5),1);
+}
+function snapshotCollegeForEarlyEntry(){
+  if(!isEarlyCollegeEntry())return null;
+  G._earlyEntryCollege={stage:G.stage,league:G.league,team:G.team,collegeYears:G.collegeYears,
+    proStarted:G.proStarted,rookieDone:G.rookieDone,age:G.age,year:G.year};
+  G._earlyEntryActive=true;
+  G._earlyEntryBonus=earlyEntryDraftBonus();
+  return G._earlyEntryCollege;
+}
+function clearEarlyEntryDraftState(){
+  G._draftMode=false; G._draftPick=null; G._offers=[]; G._earlyEntryProOffers=null;
+  G._combineComplete=false; G._combineData=null; G._combineStep=0; G._nbaUndrafted=false; G._undrafted=false;
+  G._nbaCombineRejected=false; G._nbaCombineInviteApproved=false; G._combineInviteEval=null; G._undraftedBridge=null;
+  G._nbaDraftOrder=null; G._pendingDraftOffer=null;
+  G._draftEntryStage=null; G._draftEntryLeague=null; G._draftEntryBoard=null;
+}
+function returnToCollegeAfterEarlyEntry(){
+  const c=G._earlyEntryCollege; if(!c)return;
+  G.stage=c.stage; G.league=c.league; G.team=c.team; G.collegeYears=c.collegeYears;
+  G.proStarted=c.proStarted; G.rookieDone=c.rookieDone; G.contract=null; G.retireReason="";
+  clearEarlyEntryDraftState();
+  G._earlyEntryActive=false; G._earlyEntryBonus=0; G._earlyEntryCollege=null;
+  toast(`回到 ${G.team}，繼續完成大學籃球旅程。`,3200);
+  advanceToNextSeason();
+}
+function abandonCollegeForProAfterEarlyEntry(){
+  const offers=(G._earlyEntryProOffers||G._offers||[]).slice();
+  if(!offers.length){ toast("目前沒有職業球隊提出正式機會；回校是唯一可行選項。",3200); return; }
+  G._offers=offers; G._earlyEntryActive=false; G._earlyEntryCollege=null; G._earlyEntryBonus=0;
+  G.phase="draftResults"; render();
+}
+function declareFromCollege(){
+  if(isEarlyCollegeEntry()) snapshotCollegeForEarlyEntry();
+  declareForDraft();
+}
 
 /* ---------- 進入職業：選秀宣告（可自選台灣聯盟，最多 3 個；海外依戰力自動接觸） ---------- */
 function goProFromHS(){ declareForDraft(); }
@@ -3760,9 +4080,10 @@ function declareForDraft(){
   G._draftEntryStage=G.stage; G._draftEntryLeague=G.league;
   G._draftEntryBoard=(G.lastReview&&G.lastReview.stage==="大學")?G.lastReview.usRank:null;
   G.proStarted=true; G.stage="pro"; G.rookieDone=false;
-  // 台灣可報名聯盟（預設全選）
-  const nbaDefault=!!nbaDraftProjection() || prospectScore()>=94;
-  G._draftPick={"P+":true,"TPBL":true,"SBL":true,"CBL":false,"KRBL":false,"NBA":nbaDefault};
+  // 大一／大二 Early Entry 預設只勾 NBA，避免玩家只是試水溫卻誤簽其他聯盟；其他職業仍可自行加選。
+  const nbaDefault=G._earlyEntryActive ? true : (!!nbaDraftProjection() || prospectScore()>=94);
+  const early=!!G._earlyEntryActive;
+  G._draftPick={"P+":!early,"TPBL":!early,"SBL":!early,"CBL":false,"KRBL":false,"NBA":nbaDefault};
   G._combineComplete=false; G._combineData=null; G._combineStep=0; G._nbaUndrafted=false;
   G._nbaCombineRejected=false; G._nbaCombineInviteApproved=false; G._combineInviteEval=null;
   G.phase="draftDeclare"; render();
@@ -3847,7 +4168,7 @@ function nbaCombineHTML(){
       <div style="font-size:32px;margin-top:4px">🏀</div><h2 style="font-size:22px;margin:5px 0">五項測試，直接送進球隊選秀室</h2>
       <p class="muted" style="margin:6px 0 0">骰點不是純運氣：相關屬性越高，越容易骰出高點數；實際體測成績則由屬性與骰點共同計算。</p></div>
     <div class="combine-list">${rows}</div>
-    ${complete?`<div class="panel center mt12"><div class="label">COMBINE SCORECARD</div><div class="combine-rank">#${d.overallRank}<span style="font-size:15px;color:var(--dim)"> / ${d.fieldSize}</span></div><div class="muted">綜合分數 <b style="color:var(--ink)">${d.score}</b> · 全場總排名</div><div class="combine-stock">📈 ${nbaCombineStockText(d)}</div></div>`:`<p class="small center mt12">已完成 ${shown} / ${d.tests.length} 項。每一項都會留下成績與全場排名。</p>`}`;
+    ${complete?`<div class="panel center mt12"><div class="label">COMBINE SCORECARD</div><div class="combine-rank">#${d.overallRank}<span style="font-size:15px;color:var(--dim)"> / ${d.fieldSize}</span></div><div class="muted">綜合分數 <b style="color:var(--ink)">${d.score}</b> · 全場總排名</div><div class="combine-stock">📈 ${nbaCombineStockText(d)}</div></div>${scoutingReportHTML()}`:`<p class="small center mt12">已完成 ${shown} / ${d.tests.length} 項。每一項都會留下成績與全場排名。</p>`}`;
 }
 // NBA 落選後的發展聯盟評估：不要把「NBA 沒被選中」直接等同於「沒有職業價值」。
 // 特別是 NCAA 有實績、Big Board 還在合理區間、OVR 已具職業輪替水準的球員，
@@ -3901,24 +4222,31 @@ function buildUndraftedGLeagueOffer(ov,ps){
 function nbaDraftPickFromProfile(ps){
   const combineRank=G._combineData?.overallRank||75;
   const origin=G._draftEntryStage;
+  const earlyBonus=G._earlyEntryActive?(G._earlyEntryBonus||earlyEntryDraftBonus()):0;
   if(origin==="高中" && G.background==="asian_american" && (G._finalHsStars||0)>=5){
     const r=G._hsRecruitRank||hsRecruitRankFromStars(5);
     let base=r<=5?rint(1,5):r<=15?rint(6,14):rint(15,30);
     return r<=5?applyCombinePickDelta(base,1,5):r<=15?applyCombinePickDelta(base,6,14):applyCombinePickDelta(base,15,30);
   }
   if(origin==="大學" && G._draftEntryLeague?.startsWith("NCAA") && G._draftEntryBoard){
-    const bb=G._draftEntryBoard;
+    const rawBoard=G._draftEntryBoard;
+    const bb=Math.max(1,rawBoard-Math.round(earlyBonus*1.5));
     if(bb<=14) return applyCombinePickDelta(clamp(Math.round(bb+rnd(-2,2)),1,14),1,14);
     if(bb<=30) return applyCombinePickDelta(clamp(Math.round(bb+rnd(-2,2)),15,30),15,30);
     if(bb<=45){
-      const firstChance=clamp(.64-(bb-31)*.022 + (combineRank<=15?.12:combineRank>=60?-.10:0),.25,.78);
+      const firstChance=clamp(.64-(bb-31)*.022 + earlyBonus*.035 + (combineRank<=15?.12:combineRank>=60?-.10:0),.25,.82);
       const base=chance(firstChance)?rint(25,30):clamp(Math.round(bb+rnd(-1,7)),31,52);
       return applyCombinePickDelta(base,20,55);
     }
     if(bb<=60){
-      const selectedChance=clamp(.62-(bb-46)*.02 + (combineRank<=15?.18:combineRank>=60?-.12:0),.20,.82);
+      const selectedChance=clamp(.62-(bb-46)*.02 + earlyBonus*.045 + (combineRank<=15?.18:combineRank>=60?-.12:0),.20,.86);
       if(!chance(selectedChance))return null;
       return applyCombinePickDelta(clamp(Math.round(bb+rnd(-4,6)),31,60),28,60);
+    }
+    // 大一／大二試水溫：Big Board 61–90 仍保留小幅被次輪選中的可能；冠軍與獎項只做微幅加成。
+    if(G._earlyEntryActive && bb<=90){
+      const selectedChance=clamp(.06+(90-bb)*.004+earlyBonus*.055+(combineRank<=15?.12:combineRank>=60?-.06:0),.04,.38);
+      if(chance(selectedChance)) return applyCombinePickDelta(rint(45,60),40,60);
     }
   }
   if(ps>=100){
@@ -3969,9 +4297,14 @@ function finalizeDraftResults(){
   if(ps>=90&&!offers.some(o=>o.league==="發展聯盟")){
     const dp=devPick();offers.push({type:"draft",league:"發展聯盟",team:randTeam("發展聯盟"),pick:dp,years:1,salary:draftSalary("發展聯盟",dp,ov),tag:`🇺🇸 發展聯盟 第 ${dp} 順位`});
   }
-  if(offers.length===0){G._undrafted=true;G.retireReason="選秀會與後續職業評估都沒有球隊提出邀約，只能暫別職業賽場";return endCareer();}
   offers.sort((a,b)=>(LEAGUE_RANK[b.league]||0)-(LEAGUE_RANK[a.league]||0));
   G._offers=offers;G._draftMode=true;
+  // 大一／大二 NBA Early Entry 落選：不直接斷掉大學生涯，先讓玩家選擇回校或正式轉職業。
+  if(G._earlyEntryActive&&G._nbaUndrafted){
+    G._earlyEntryProOffers=offers.slice();
+    G.phase="earlyEntryUndrafted";render();return;
+  }
+  if(offers.length===0){G._undrafted=true;G.retireReason="選秀會與後續職業評估都沒有球隊提出邀約，只能暫別職業賽場";return endCareer();}
   // NBA 落選且收到發展聯盟善意時，先播放完整劇情，再讓玩家看報價。
   if(G._nbaUndrafted&&G._undraftedBridge){G.phase="nbaUndrafted";render();return;}
   G.phase="draftResults";render();
@@ -4001,6 +4334,7 @@ function finalizeDraftSigning(offer){
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(offer.team);
   recordLeagueTeamForJourneyman(G.league,G.team);
   G._draftMode=false;
+  G._earlyEntryActive=false; G._earlyEntryCollege=null; G._earlyEntryBonus=0; G._earlyEntryProOffers=null;
   const pl = offer.source==="nbaUndraftedFallback"?"NBA 落選後發展聯盟邀約":(offer.pick? (offer.league==="NBA"?`${lname("NBA")} 第 ${offer.pick} 順位`:pickLabel(offer.pick)) : "海外簽約");
   G.age++;G.year++;applyAging();
   toast(`${lname(offer.league)} ${pl}｜${offer.team}｜年薪 ${fmtMoney(offer.salary)}`);
@@ -4019,6 +4353,7 @@ function signOffer(offer){
   G._teamsPlayed=(G._teamsPlayed||new Set()); G._teamsPlayed.add(G.team);
   recordLeagueTeamForJourneyman(G.league,G.team);
   G._draftMode=false;
+  G._earlyEntryActive=false; G._earlyEntryCollege=null; G._earlyEntryBonus=0; G._earlyEntryProOffers=null;
   G.age++;G.year++;applyAging();
   toast(`簽約 ${G.team}｜${G.contract.years} 年 · 年薪 ${fmtMoney(G.contract.salary)}`);
   startSeason();
@@ -4052,20 +4387,38 @@ function continueRookieOption(){
   G._rookieOptionCard=null;
   afterReview();
 }
+/* 生涯續航評估：取消硬性年齡退休，改看健康、即戰力與近期產出。
+   年齡只透過自然退化、受傷風險與市場縮水間接影響生涯長度。 */
+function careerContinuationProfile(s=lastSeason()){
+  const ov=overall();
+  const health=clamp(G.health||0,0,100);
+  const prod=recentProd();
+  const ss=(s&&s.seasonScore)||0;
+  const gp=(s&&s.gp)||0;
+  const floor=(LEAGUE_STANDARD["SBL"]||54)-6;
+  const productionOK=prod>=14 || ss>=42 || (s&&s.ppg>=10);
+  const abilityOK=ov>=floor;
+  const bodyOK=health>=32;
+  const emergencyStop=health<18 || (ov<floor-5 && prod<10 && ss<30) || (health<28 && ov<floor-2 && ss<36);
+  const viable=!emergencyStop && bodyOK && (abilityOK || productionOK);
+  return {ov,health,prod,seasonScore:ss,gp,abilityOK,productionOK,bodyOK,emergencyStop,viable};
+}
+
 /* ---------- 自由市場（合約到期） ---------- */
 function freeAgency(){
   const ov=overall();
   G._offers=proOffers();
-  // 老將能力下滑時一般市場會收縮；但長年 NBA 老將仍可由 proOffers() 取得「老將底薪」最後機會。
-  if(G.age>=36 && ov<64 && !(G.madeNBA && G.league==="NBA")) G._offers=[];
+  // 不再因 34／36／42 歲等固定數字強制退役；沒有正常報價時，改由身體與近期表現判斷。
   if(!G._offers||!G._offers.length){
-    // 連 SBL 水準都不到 → 無球隊青睞，只能退休轉換跑道
-    if(ov < (LEAGUE_STANDARD["SBL"]-6) || G.age>=34){
-      G.retireReason = G._waived ? "遭球隊釋出後乏人問津，黯然退役" : "找不到願意簽約的球隊，只能高掛球鞋";
+    const life=careerContinuationProfile();
+    if(!life.viable){
+      G.retireReason = G._waived
+        ? `遭球隊釋出後，健康（${Math.round(life.health)}）與近期表現已難再換到職業合約，最終高掛球鞋`
+        : `自由市場沒有球隊提出合約；在健康（${Math.round(life.health)}）與近期表現都明顯下滑後，決定結束球員生涯`;
       G._washedOut=true; return endCareer();
     }
-    // 尚有基本水準：給一個最後機會（SBL）
-    G._offers=[{type:"pro",league:"SBL",team:randTeam("SBL"),years:1,tag:"最後機會"}];
+    // 仍有職業水準就保留一張短約試身手機會，讓高齡但健康、能打的球員可以自然延長生涯。
+    G._offers=[{type:"pro",league:"SBL",team:randTeam("SBL"),years:1,tag:"老將試身手 · 最後機會",cType:"veteran"}];
   }
   G._waived=false;
   G.phase="freeAgency"; render();
@@ -4364,7 +4717,7 @@ const TITLE_DEFS={
   glass:{name:"玻璃人",good:false,desc:"多次重傷纏身",effect:"體能 -2",buff:{athletic:-2}},
   bricklayer:{name:"打鐵匠",good:false,desc:"曾整季手感冰冷",effect:"得分 -1",buff:{shooting:-1}},
   locker:{name:"更衣室隱憂",good:false,desc:"士氣長期低迷",effect:"球商 -1",buff:{iq:-1}},
-  journeyman:{name:"浪人",good:false,desc:"在同一聯盟至少三度轉隊、先後效力四支不同球隊",effect:"士氣 -4",buff:{morale:-4}},
+  journeyman:{name:"浪人",good:false,desc:"在同一聯盟長期輾轉、先後效力七支不同球隊",effect:"士氣 -4",buff:{morale:-4}},
   teamSoul:{name:"隊魂",good:true,desc:"同一支球隊效力超過 10 個賽季",effect:"球商 +2、士氣 +6",buff:{iq:2,morale:6}},
   oneCity:{name:"一人一城",good:true,desc:"同一支球隊效力超過 12 個賽季，城市傳奇",effect:"名氣 +8、球商 +1",buff:{fame:8,iq:1}},
   jpStar:{name:"日職巨星",good:true,desc:"在日本職業籃球聯盟打出當家等級表現",effect:"三分 +1、名氣 +4",buff:{three:1,fame:4}},
@@ -4444,8 +4797,8 @@ function recordLeagueTeamForJourneyman(league,team){
   const arr=Array.isArray(G._leagueTeamsPlayed[league])?G._leagueTeamsPlayed[league]:[];
   if(!arr.includes(team)) arr.push(team);
   G._leagueTeamsPlayed[league]=arr;
-  // 同聯盟先後待過 4 支不同球隊 = 至少 3 次隊內轉換。
-  if(arr.length>=4) grantTitle("journeyman");
+  // 同聯盟先後待過 7 支不同球隊才算真正的「浪人」；跨聯盟旅外不累計。
+  if(arr.length>=7) grantTitle("journeyman");
 }
 function checkSeasonTitles(s){
   // 隊魂 / 一人一城：同隊效力賽季數
@@ -5053,7 +5406,7 @@ function currentRegion(){
 function leagueThemeForState(){
   if(!G) return "hbl";
   if(G.phase==="jones" || G.phase==="intl") return "taiwan-national";
-  if(["nbaCombine","nbaCombineRejected","nbaUndrafted"].includes(G.phase)) return "nba";
+  if(["nbaCombine","nbaCombineRejected","nbaUndrafted","earlyEntryUndrafted"].includes(G.phase)) return "nba";
   if(G.phase==="draftDeclare" && G._draftPick && G._draftPick.NBA) return "nba";
   if(G.phase==="draftResults" && (G._nbaUndrafted || (G._offers||[]).some(o=>o&&o.league==="NBA"))) return "nba";
   return LEAGUE_THEME[G.league] || (currentRegion()==="us"?"us-prep":"hbl");
@@ -5110,15 +5463,17 @@ function render(){
     case "nbaCombineRejected": stage.innerHTML=nbaCombineRejectedHTML(); break;
     case "rookieOption": stage.innerHTML=rookieOptionHTML(); break;
     case "nbaUndrafted": stage.innerHTML=nbaUndraftedHTML(); break;
+    case "earlyEntryUndrafted": stage.innerHTML=earlyEntryUndraftedHTML(); break;
     case "draftResults": stage.innerHTML=draftResultsHTML(); break;
     case "overseasOffer": stage.innerHTML=overseasOfferHTML(); break;
   }
   bindActionbar();
+  bindPersistentUiControls();
   window.scrollTo(0,0);
 }
 
 /* ---------- HUD ---------- */
-function hudHTML(){
+function hudHTML(opts={}){
   const ov=overall();
   const themeMeta=leagueThemeMeta();
   const attrBars=ATTR_KEYS.map(k=>{
@@ -5145,9 +5500,10 @@ function hudHTML(){
       <div class="hs"><div class="v">${Math.round(G.fame)}</div><div class="l">名氣</div></div>
       <div class="hs money"><div class="v">${fmtMoney(G.money)}</div><div class="l">生涯收入</div></div>
     </div>
-    <div class="wrap" style="padding-top:10px;padding-bottom:10px">
+    ${opts.hideAttrs?"":`<div class="hud-attr-head"><span>個人屬性</span><button type="button" class="hud-attr-toggle" data-toggle-hud-attrs aria-expanded="${!G._hudAttrsCollapsed}" aria-label="${G._hudAttrsCollapsed?"展開個人屬性":"收合個人屬性"}">${G._hudAttrsCollapsed?"▶":"▼"}</button></div>
+    <div class="wrap hud-attr-body ${G._hudAttrsCollapsed?"hidden":""}">
       <div class="attrs">${attrBars}</div>
-    </div>
+    </div>`}
   </div>`;
 }
 function actionbarHTML(){ return `<div class="actionbar"><div class="inner" id="abar"></div></div>`; }
@@ -5318,6 +5674,7 @@ function resolveOption(i){
     die.innerHTML=pipHTML(roll);
     const before={...G.attr};
     const outcome=opt.f(roll);
+    sanitizeOutcomeForRoll(outcome,roll);
     // 低骰懲罰：骰到 1–2 時，正屬性加成歸零，且有機率倒扣（讓爛運真的有代價）
     if(roll<=2 && outcome.attr){
       for(const k in outcome.attr){ if(outcome.attr[k]>0){ outcome.attr[k]= chance(.5)?-1:0; } }
@@ -5513,13 +5870,15 @@ function collegeDecisionHTML(){
   const ov=overall();
   const last=lastSeason(), board=last&&last.usRank;
   const boardNote=board? (board<=14?`Big Board #${board}：穩定樂透區。`:board<=30?`Big Board #${board}：首輪中後段安全區。`:board<=45?`Big Board #${board}：首輪邊緣危險區，會與其他 prospect 肉搏。`:`Big Board #${board}：目前仍有次輪／落選風險。`) : "";
+  const early=(G.collegeYears||0)<=2&&!G._mustLeave;
+  const eb=early?earlyEntryDraftBonus():0;
   return `<div class="season-hd"><span class="stage">大學 · 生涯抉擇</span><span class="yr">大${["一","二","三","四"][Math.min(G.collegeYears-1,3)]}結束</span></div>
-    <div class="panel center"><div class="label">職業選秀？</div>
-      <h2 style="font-size:22px;margin:8px 0">${G._mustLeave?"畢業了，該投入職業":"要提早投入職業選秀嗎？"}</h2>
-      <p class="muted">目前 OVR ${ov}。${boardNote?`<br><b style="color:#7FC1FF">${boardNote}</b><br>`:""}留在大學可繼續成長與曝光；投入職業可簽：<b style="color:var(--ink)">${G._proTargets.join("、")}</b></p>
+    <div class="panel center"><div class="label">${early?"NBA EARLY ENTRY · 試水溫":"職業選秀？"}</div>
+      <h2 style="font-size:22px;margin:8px 0">${G._mustLeave?"畢業了，該投入職業":early?"要不要提早測試 NBA 市場？":"要提早投入職業選秀嗎？"}</h2>
+      <p class="muted">目前 OVR ${ov}。${boardNote?`<br><b style="color:#7FC1FF">${boardNote}</b><br>`:""}${early?`大一、大二可以選擇提前挑戰 NBA；若最終沒有在 60 個順位被選中，你可以回到原大學繼續下一學年。冠軍、MVP、最佳五人與數據獎只會提供小幅選秀加成${eb?`（本季履歷約 +${eb}）`:""}，潛力值不直接增加選秀評分。`:`留在大學可繼續成長與曝光；投入職業可簽：<b style="color:var(--ink)">${G._proTargets.join("、")}</b>`}</p>
     </div>
     <div class="opts">
-      ${G._canGoPro?`<button class="btn" data-declare="1">宣布投入職業選秀 🏀</button>`:`<p class="small center">能力達 62 才能投入職業（目前 ${ov}）。</p>`}
+      ${G._canGoPro?`<button class="btn" data-declare="1">${early?"提前投入 NBA / 職業選秀 🏀":"宣布投入職業選秀 🏀"}</button>`:`<p class="small center">能力達 62 才能投入職業（目前 ${ov}）。</p>`}
       ${G._mustLeave?"":`<button class="btn ghost" data-stay="1">繼續留在大學磨練</button>`}
     </div>`;
 }
@@ -6102,6 +6461,7 @@ function jonesResolveOption(i){
     const roll=rint(1,6);
     die.classList.remove("rolling"); die.innerHTML=pipHTML(roll);
     const outcome=opt.f(roll);
+    sanitizeOutcomeForRoll(outcome,roll);
     if(roll<=2 && outcome.attr){ for(const k in outcome.attr){ if(outcome.attr[k]>0) outcome.attr[k]=chance(.5)?-1:0; } }
     applyEffects(outcome);
     if(typeof outcome.jb==="number") J.boost=clamp((J.boost||0)+outcome.jb, -.15, .22);
@@ -6156,7 +6516,7 @@ function draftDeclareHTML(){
         <div class="s"><div class="v" style="font-size:15px">${archetype()}</div><div class="l">類型</div></div>
       </div>
       <p class="small mt8">評估依據（上季 · ${seasonTag}）：${statLine}${G._draftEntryLeague&&G._draftEntryLeague.startsWith("NCAA")?`　·　美國 ${lname(G._draftEntryLeague)} 磨練加成`:""}</p>
-      ${nbaProj?`<div class="usrank-line mt8">🏀 ${nbaProj.tier}：<b>${nbaProj.text}</b></div>`:""}
+      ${nbaProj?`<div class="usrank-line mt8">🏀 ${nbaProj.tier}：<b>${nbaProj.text}</b></div>`:""}${G._earlyEntryActive?`<div class="over-note mt8">🎓 Early Entry 履歷加成：<b>+${G._earlyEntryBonus||0}</b>（僅來自本季冠軍／獎項，不計潛力值）</div>`:""}
     </div>
     <div class="panel">
       <div class="label">選擇報名的台灣聯盟（可複選，最多 3）</div>
@@ -6168,6 +6528,28 @@ function draftDeclareHTML(){
       <div class="dchips mt8">${cblChip}${krblChip}</div>
       <p class="small mt8" style="color:var(--faint)">🇨🇳 ${lname("CBL")}：水準高、中選門檻嚴，數據夠亮眼才進得去。<br>🇰🇷 ${lname("KRBL")}：韓國頂級聯賽，本土卡位激烈、中選門檻高。</p>
       ${overseasNote.length?`<div class="over-note mt12">${overseasNote.map(n=>`<div>${n}</div>`).join("")}</div>`:`<p class="small mt8" style="color:var(--faint)">目前戰力尚未吸引其他海外球隊，先打出身價吧。</p>`}
+    </div>`;
+}
+function earlyEntryUndraftedHTML(){
+  const c=G._earlyEntryCollege||{};
+  const yr=(c.collegeYears||1)===1?"大一":"大二";
+  const b=G._undraftedBridge||{};
+  const proOffers=(G._earlyEntryProOffers||G._offers||[]);
+  const proNote=proOffers.length
+    ? `同時，經紀人也收到 ${proOffers.map(o=>`${o.team}（${lname(o.league)}）`).slice(0,3).join("、")} 等職業端的詢問。`
+    : "職業端目前沒有正式合約，但學校仍願意保留你的位置。";
+  return `<div class="season-hd"><span class="stage">NBA EARLY ENTRY · UNDRAFTED</span><span class="yr">${G.year}</span></div>
+    <div class="panel" style="border-color:rgba(242,184,75,.48)">
+      <div style="font-size:48px;text-align:center">🎓📵</div>
+      <div class="event-title" style="text-align:center">試水溫結束，名字沒有被叫到</div>
+      <div class="event-text" style="line-height:1.95">
+        ${yr}球季結束後，你選擇把名字放進 NBA 選秀池。從第一輪一路等到第 60 順位，轉播最後仍沒有唸到你的名字。<br><br>
+        這次嘗試沒有換來 NBA 合約，但它也沒有抹掉你已經在 <b style="color:var(--gold)">${c.team||G.team}</b> 打出的履歷。${proNote}<br><br>
+        現在你必須做真正的決定：把這次選秀當成一次提早取得市場回饋的經驗，回到校園繼續磨練；或正式放棄學籍與剩餘大學球季，現在就踏進職業世界。
+      </div>
+      <div class="outcome good"><div class="ot">🏫 回校不會重置能力、獎項或 Big Board 紀錄；下一季會正常升到${(c.collegeYears||1)===1?"大二":"大三"}。</div></div>
+      ${proOffers.length?`<div class="outcome mt8"><div class="ot">💼 若選擇「放棄學籍，查看職業機會」，就會進入目前已收到的職業報價頁。</div></div>`:`<div class="outcome bad mt8"><div class="ot">目前沒有正式職業報價，因此最合理的選項是回校再戰。</div></div>`}
+      <p class="small center mt12">回到原大學，繼續下一學年　／　放棄學籍，查看職業機會</p>
     </div>`;
 }
 function nbaUndraftedHTML(){
@@ -6252,7 +6634,7 @@ function overseasOfferHTML(){
 /* ---------- 生涯數據總表 ---------- */
 let statsTab="pro";
 function renderStats(){
-  app.innerHTML=hudHTML()+`<div class="wrap" id="stage"></div>`+actionbarHTML();
+  app.innerHTML=hudHTML({hideAttrs:true})+`<div class="wrap" id="stage"></div>`+actionbarHTML();
   const stage=$("#stage");
   const tabs=[["pro","職業"],["amateur","學生"],["intl","國際賽"]];
   const rows=statsTab==="intl"?intlTableHTML():seasonTableHTML(statsTab);
@@ -7127,9 +7509,16 @@ function defaultPhaseActions(){
       if(step<d.tests.length)return [{t:`🎲 進行 ${d.tests[step].name}`,cls:"gold",fn:runNextCombineTest}];
       return [{t:"帶著成績單進入選秀會 ▶",cls:"gold",fn:finishNbaCombine}];
     }
-    case "nbaCombineRejected": return [{t:"返回職業選秀，改選其他聯盟 ▶",cls:"gold",fn:continueAfterCombineRejection}];
+    case "nbaCombineRejected": return G._earlyEntryActive
+      ? [{t:"回到原大學，繼續下一學年",cls:"ghost",fn:returnToCollegeAfterEarlyEntry},{t:"放棄學籍，改選其他職業聯盟 ▶",cls:"gold",fn:continueAfterCombineRejection}]
+      : [{t:"返回職業選秀，改選其他聯盟 ▶",cls:"gold",fn:continueAfterCombineRejection}];
     case "rookieOption": return [{t:G._rookieOptionCard&&G._rookieOptionCard.exercise?"接受球隊決定，準備新球季 ▶":"進入自由市場 ▶",cls:"gold",fn:continueRookieOption}];
     case "nbaUndrafted": return [{t:"查看選秀夜後的職業機會 ▶",cls:"gold",fn:continueAfterNbaUndrafted}];
+    case "earlyEntryUndrafted": {
+      const a=[{t:"回到原大學，繼續下一學年",cls:"ghost",fn:returnToCollegeAfterEarlyEntry}];
+      if((G._earlyEntryProOffers||[]).length) a.push({t:"放棄學籍，查看職業機會",cls:"gold",fn:abandonCollegeForProAfterEarlyEntry});
+      return a;
+    }
     case "overseasOffer": return [];
     case "trade": return [{t:"了解，繼續 ▶",cls:"",fn:processOffseason}];
     case "intl": return G._intlResult?[{t:"繼續 ▶",cls:"gold",fn:intlContinue}]:[];
