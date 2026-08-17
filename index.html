@@ -3634,7 +3634,7 @@ function playSeason(){
   s.awards=awards;
   G.seasonHistory.push(s);
   G.lastReview=s;
-  if(isPro()&&G.contract){ G.money+=G.contract.salary; }
+  if(isPro()&&G.contract){ G.money+=(G.contract.salary||0); }
   if(s.injury&&s.injury.major){ G.majorInjuries=(G.majorInjuries||0)+1; if(!s.injury.career) G._recovering=true; }
   else if(G._recovering){ G._recovering=false; grantTitle("phoenix"); } // 重傷後成功復出
   // 里程碑與稱號
@@ -3772,7 +3772,7 @@ function startSurgery(){
         // (因為原流程 afterReview 還沒扣受傷當季的合約，所以用 > i 來判斷是否包含復健的年份)
         if (isPro() && G.contract) {
           if (G.contract.yearsLeft > i) {
-            G.money += G.contract.salary; // 照領薪資
+            G.money += (G.contract.salary||0); // 照領薪資
             rehabTeam = G.team;
           } else {
             rehabTeam = "自由球員";
@@ -4535,7 +4535,7 @@ function finalizeDraftSigning(offer){
       rookieScale:rt.rookieScale,draftRound:rt.draftRound,draftPick:offer.pick,guaranteedYears:rt.guaranteedYears,
       teamOptions:rt.teamOptions?{...rt.teamOptions}:null,structure:rt.structure};
   }else{
-    G.contract={league:offer.league,team:offer.team,years:offer.years,yearsLeft:offer.years,salary:offer.salary};
+    G.contract={league:offer.league,team:offer.team,years:offer.years,yearsLeft:offer.years,salary:(offer.salary||makeContract(offer.league,offer.team,offer.years,ov).salary)};
   }
   G.draftInfo={league:offer.league,pick:offer.pick,year:G.year};
   if(G.league==="NBA"){ G.madeNBA=true; grantTitle("taiwanFirst"); }
@@ -4558,7 +4558,7 @@ function signOffer(offer){
   G.league=offer.league; G.team=offer.team; 
   
   // 直接使用報價上的固定薪水、年限與合約類型
-  G.contract={league:offer.league,team:offer.team,years:offer.years,yearsLeft:offer.years,salary:offer.salary,cType:offer.cType};
+  G.contract={league:offer.league,team:offer.team,years:offer.years,yearsLeft:offer.years,salary:(offer.salary||makeContract(offer.league,offer.team,offer.years,ov,offer.cType).salary),cType:offer.cType};
   
   if(G.league==="NBA"){
     G.madeNBA=true; grantTitle("taiwanFirst");
@@ -4696,7 +4696,8 @@ function freeAgency(){
       G._washedOut=true; return endCareer();
     }
     // 仍有職業水準就保留一張短約試身手機會，讓高齡但健康、能打的球員可以自然延長生涯。
-    G._offers=[{type:"pro",league:"SBL",team:randTeam("SBL"),years:1,tag:"老將試身手 · 最後機會",cType:"veteran"}];
+    const lastChanceTeam=randTeam("SBL");
+    G._offers=[{type:"pro",league:"SBL",team:lastChanceTeam,years:1,tag:"老將試身手 · 最後機會",cType:"veteran",salary:makeContract("SBL",lastChanceTeam,1,ov,"veteran").salary}];
   }
   G._waived=false;
   G.phase="freeAgency"; render();
