@@ -4631,7 +4631,15 @@ function resolveNegotiation(ask){
   const n=G._negotiation||{},o=G._offers&&G._offers[n.index];if(!o)return;
   const r=evaluateNegotiation(o,ask);G._negotiatedTeams=G._negotiatedTeams||[];if(!G._negotiatedTeams.includes(o.team))G._negotiatedTeams.push(o.team);
   o.negotiated=true;o.originalSalary=n.originalSalary;o.originalYears=n.originalYears;o.negotiationResult=r.outcome;
-  if(r.outcome==="withdraw")G._offers.splice(n.index,1);else{o.salary=r.salary;o.years=r.years;o.cType=r.cType;o.tag=r.tag||o.tag;o.negotiationText=r.text;}
+  if(r.outcome==="withdraw"){
+    G._offers.splice(n.index,1);
+    // 談崩撤回後若已無任何報價：只要球員還有職業水準，沿用自由市場保底邏輯補一張「最後機會」短約，
+    // 避免玩家停在沒有任何按鈕可按的自由市場頁面而卡死。真的打不動了則交給下方頁面的退休出口。
+    if(!G._offers.length && careerContinuationProfile().viable){
+      const lastChanceTeam=randTeam("SBL");
+      G._offers=[{type:"pro",league:"SBL",team:lastChanceTeam,years:1,tag:"老將試身手 · 最後機會",cType:"veteran",salary:makeContract("SBL",lastChanceTeam,1,overall(),"veteran").salary}];
+    }
+  }else{o.salary=r.salary;o.years=r.years;o.cType=r.cType;o.tag=r.tag||o.tag;o.negotiationText=r.text;}
   G._negotiationResult={team:o.team||n.team,...r};G._negotiation=null;G.phase="freeAgency";render();toast(r.text,3200);
 }
 function cancelNegotiation(){G._negotiation=null;G.phase="freeAgency";render();}
@@ -6240,11 +6248,17 @@ function freeAgencyHTML(){
   const offersHTML=G._offers.map((o,i)=>offerCardHTML(o,i,"pro")).join("");
   const nr=G._negotiationResult?`<div class="outcome ${G._negotiationResult.outcome==="withdraw"?"bad":"good"}"><div class="ot">🤝 ${G._negotiationResult.team}：${G._negotiationResult.text}</div></div>`:"";
   const rights=activeNbaDraftRights(),rightsNote=rights&&rights.status==="overseas-active"?`<div class="over-note"><b>🔒 NBA 簽約權仍屬 ${rights.team}</b><span>其他 NBA 球隊不會在一般自由市場向你提出正式合約；原選秀球隊仍可依 Draft Rights 召回你。</span></div>`:"";
+  // 保險出口：若所有報價都在議價後被撤回、且已無法再補出保底短約，
+  // 提供一個結束生涯的按鈕，避免自由市場頁面沒有任何可點擊動作而卡死。
+  const emptyExit = (!G._draftMode && !G._offers.length)
+    ? `<div class="outcome bad"><div class="ot">🚪 議價破局後，市場上已經沒有任何球隊願意再提供合約。</div></div>
+       <button class="btn gold" data-fa-nooffers="1" style="width:100%;margin-top:12px">接受現實，高掛球鞋</button>`
+    : "";
   return `<div class="season-hd"><span class="stage">${title}</span><span class="yr">${G.year}</span></div>
     <div class="panel center"><div class="label">${G._draftMode?"新秀合約":"新合約"}</div>
       <h2 style="font-size:20px;margin:8px 0">選擇你的下一份合約</h2>
       <p class="muted">依你目前的實力（OVR ${overall()}），收到以下報價。${G._draftMode?"":"每支球隊可嘗試議價一次；談崩時報價可能撤回。"}</p></div>
-    ${rightsNote}${nr}${offersHTML}`;
+    ${rightsNote}${nr}${offersHTML}${emptyExit}`;
 }
 
 /* ---------- 交易 ---------- */
@@ -8083,6 +8097,11 @@ function bindPhaseSpecific(){
   s.querySelectorAll("[data-negotiate]").forEach(b=>b.addEventListener("click",()=>openNegotiation(parseInt(b.dataset.negotiate))));
   s.querySelectorAll("[data-negotiation-ask]").forEach(b=>b.addEventListener("click",()=>resolveNegotiation(b.dataset.negotiationAsk)));
   const nc=s.querySelector("[data-negotiation-cancel]");if(nc)nc.addEventListener("click",cancelNegotiation);
+  // 自由市場已無任何報價時的退休出口（避免議價全撤回後卡死）
+  const fanoo=s.querySelector("[data-fa-nooffers]");if(fanoo)fanoo.addEventListener("click",()=>{
+    if(!G.retireReason) G.retireReason="議價破局後，自由市場再無球隊願意提供合約，最終高掛球鞋";
+    G._washedOut=true; endCareer();
+  });
   // 海外報價
   const ao=s.querySelector("#acceptOverseas");if(ao)ao.addEventListener("click",acceptOverseas);
   const dor=s.querySelector("#declineOverseas");if(dor)dor.addEventListener("click",declineOverseas);
