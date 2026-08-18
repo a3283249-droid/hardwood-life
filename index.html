@@ -5563,6 +5563,7 @@ function simulateUsaTournament(label){
   let place=medal?(chance(.62)?"🥇 冠軍":chance(.58)?"🥈 亞軍":"🥉 季軍"):pick(["第 4 名","八強"]);
   const gold=place.includes("冠"),mvp=gold&&ppg>=18&&chance(.28);
   G.usaMedals=(G.usaMedals||0)+(medal?1:0);if(medal)G.intlMedals=(G.intlMedals||0)+1;
+  syncNationalTeamTitles();
   if(medal)logAward("美國隊",gold?"金牌":place.includes("亞")?"銀牌":"銅牌",G.year);if(mvp)logAward("美國隊","賽會MVP",G.year);
   const rec={year:G.year,event:label,team:"美國隊",ppg:round(ppg),rpg:round(rpg),apg:round(apg),medal:medal?place.replace(/^[^\\s]+\\s/,""):"",place,advanced:true,mvp,age:G.age,injuryNote:""};
   G.intlHistory.push(rec);addHeat(gold?12:medal?8:4);addLegacy(gold?120:medal?75:35,`USA Basketball ${label} ${place}`);return rec;
@@ -5829,6 +5830,7 @@ const TITLE_DEFS={
   champDNA:{name:"冠軍基因",good:true,desc:"贏得職業總冠軍",effect:"球商 +1",buff:{iq:1}},
   sniper:{name:"神射手",good:true,desc:"曾奪得分王",effect:"三分 +1",buff:{three:1}},
   twhero:{name:"中華隊英雄",good:true,desc:"為中華隊奪牌",effect:"熱度 +5",buff:{fame:5}},
+  usaHero:{name:"夢之隊英雄",good:true,desc:"為美國隊奪牌",effect:"熱度 +5",buff:{fame:5}},
   phoenix:{name:"浴火重生",good:true,desc:"重傷後成功重返賽場",effect:"球商 +1",buff:{iq:1}},
   ncaaStar:{name:"NCAA 之光",good:true,desc:"全美排名前 25",effect:"體能 +1",buff:{athletic:1}},
   usaTop:{name:"全美第一控",good:true,desc:"登上全美排名第一",effect:"組織 +2",buff:{pass:2}},
@@ -5845,6 +5847,7 @@ const TITLE_DEFS={
   ironWall:{name:"禁區長城",good:true,desc:"曾當選年度最佳防守球員",effect:"防守 +2",buff:{defense:2}},
   ringCollector:{name:"戒指收藏家",good:true,desc:"生涯拿下 3 座以上總冠軍",effect:"球商 +1、士氣 +4",buff:{iq:1,morale:4}},
   goldGen:{name:"黃金世代",good:true,desc:"為中華隊奪得 2 面以上獎牌",effect:"熱度 +6",buff:{fame:6}},
+  usaDynasty:{name:"星條旗王朝",good:true,desc:"為美國隊奪得 2 面以上獎牌",effect:"熱度 +6",buff:{fame:6}},
   undraftedHero:{name:"落選逆襲",good:true,desc:"選秀落選後仍打上職業舞台",effect:"士氣 +6",buff:{morale:6}},
   clutchAssassin: {name:"關鍵先生", good:true, desc:"在季後賽展現極致得分火力並奪冠", effect:"得分 +2、球商 +2", buff:{shooting:2, iq:2}},
   defensiveAnchor: {name:"銅牆鐵壁", good:true, desc:"單季同時展現頂級的抄截與阻攻能力", effect:"防守 +3、體能 +1", buff:{defense:3, athletic:1}},
@@ -5904,6 +5907,37 @@ function grantTitle(id){
     else if(k==="fame") addHeat(d.buff[k]);
     else if(k==="morale") G.morale=clamp(G.morale+d.buff[k],0,100); } }
   G._newTitle=d.name; // 供賽季回顧提示
+}
+function isUsaNationalPath(state=G){
+  const st=state||{};
+  return st.background==="asian_american" && (st.nationalPath==="usa" || st._canPlayForTaiwan===false);
+}
+function dropTitle(id){
+  if(!G||!Array.isArray(G.titles))return;
+  G.titles=G.titles.filter(t=>t.id!==id);
+}
+function replaceTitleIdentity(fromId,toId){
+  if(!G||!Array.isArray(G.titles)||!TITLE_DEFS[toId])return false;
+  const idx=G.titles.findIndex(t=>t.id===fromId);if(idx<0)return false;
+  if(hasTitle(toId)){G.titles.splice(idx,1);return true;}
+  const d=TITLE_DEFS[toId];
+  G.titles[idx]={id:toId,name:d.name,good:d.good,cssClass:d.cssClass,desc:d.desc,effect:d.effect||""};
+  return true;
+}
+function syncNationalTeamTitles(){
+  if(!G)return;
+  if(isUsaNationalPath(G)){
+    const medals=Number(G.usaMedals)||0;
+    if(medals>=1){ if(!replaceTitleIdentity("twhero","usaHero")) grantTitle("usaHero"); }
+    else { dropTitle("twhero"); dropTitle("usaHero"); }
+    if(medals>=2){ if(!replaceTitleIdentity("goldGen","usaDynasty")) grantTitle("usaDynasty"); }
+    else { dropTitle("goldGen"); dropTitle("usaDynasty"); }
+    // USA 路線永遠不保留中華隊限定稱號。
+    dropTitle("twhero");dropTitle("goldGen");
+  }else if(G.nationalPath==="taiwan" || G._canPlayForTaiwan===true){
+    // 若舊狀態曾誤標美國隊稱號，台灣路線也一併清理。
+    dropTitle("usaHero");dropTitle("usaDynasty");
+  }
 }
 function grantCustomTitle(spec){
   if(!spec||!spec.id||!spec.name||hasTitle(spec.id))return;
@@ -5974,7 +6008,8 @@ function checkSeasonTitles(s){
   if((c["籃板王"]||0)>=2) grantTitle("glassCleaner");
   if((c.DPOY||0)>=1) grantTitle("ironWall");
   if((c["冠軍"]||0)>=3) grantTitle("ringCollector");
-  if((G.intlMedals||0)>=2) grantTitle("goldGen");
+  if(isUsaNationalPath(G)) syncNationalTeamTitles();
+  else if((G.intlMedals||0)>=2) grantTitle("goldGen");
   // 日職巨星：在日職有明星等級評價
   if(s.stage==="pro" && s.league==="日職 B.League"){ const ev=leagueEval("日職 B.League");
     if(ev && (ev.label.indexOf("當家")>=0||ev.label.indexOf("明星")>=0||ev.label.indexOf("傳奇")>=0)) grantTitle("jpStar"); }
@@ -6239,6 +6274,7 @@ function jerseyRetiredTeams(){
 }
 function endCareer(){
   G.retired=true;
+  syncNationalTeamTitles();
   // 隱藏稱號結算
   const proSeasons=G.seasonHistory.filter(s=>s.stage==="pro").length;
   const collegeSeasons=G.seasonHistory.filter(s=>s.stage==="大學").length;
@@ -6353,7 +6389,7 @@ function fanForum(){
   if((G.titles||[]).some(x=>x.id==="contractMess")) add("八卦鄉民","當年那個雙合約風波笑死，不過球是真的會打啦。",rint(90,450));
   if((G.titles||[]).some(x=>x.id==="homecoming")) add("家鄉父老","回到家鄉打球那季，整個城市都沸騰了，遊子歸鄉最感人。",rint(140,600));
   if((G.titles||[]).some(x=>x.id==="worldStage")) add("環遊世界仔","台灣、日本、美國三地都留下足跡，這履歷太狂了吧。",rint(200,900));
-  if(G.intlMedals>0) add("中華隊鐵粉",pick([
+  if(hasTaiwanBasketballIdentity(G) && G.intlMedals>0) add("中華隊鐵粉",pick([
     "披上國家隊戰袍替台灣拿牌的畫面，永遠記得！",
     "國際賽場上為台灣拚戰的樣子，最帥。"]),rint(150,750));
   if(G._washedOut) add("酸民甲","說難聽點，天賦就那樣，養不起來被釋出也是實力問題啦。",rint(20,190));
@@ -6422,7 +6458,7 @@ function fanForum(){
   if(has("journeyman")) add(pick(["理性派","轉隊觀察家"]),pick([
     "生涯輾轉好多隊，漂泊是漂泊，但走到哪都有球隊要，也是實力。",
     "換了那麼多球隊，能一直有人簽，代表他一直有被需要的價值。"]),rint(60,320));
-  if(G.intlMedals>=2 || has("goldGen")) add(pick(["中華隊鐵粉","國際線球迷"]),"黃金世代的代表，替中華隊拿的那幾面獎牌，是整代人的驕傲。",rint(200,950));
+  if(hasTaiwanBasketballIdentity(G) && (G.intlMedals>=2 || has("goldGen"))) add(pick(["中華隊鐵粉","國際線球迷"]),"黃金世代的代表，替中華隊拿的那幾面獎牌，是整代人的驕傲。",rint(200,950));
   if(has("overpaid")) add("酸民丙",pick([
     "領頂薪打成那樣，說真的球隊被合約綁死也是自作自受。",
     "薪水小偷實錘，那份合約的 CP 值低到讓人搖頭。"]),rint(30,240));
@@ -8043,40 +8079,48 @@ function careerStints(){
 function nationalStints(){
   const jones=G.jonesHistory||[];
   const intl=G.intlHistory||[];
-  const medalOf=p=>{ if(!p)return null; if(/冠/.test(p))return "金牌"; if(/亞/.test(p))return "銀牌"; if(/季|殿|銅/.test(p))return "銅牌"; return null; };
-  const grp={ white:{team:"中華白",white:true,years:[],hon:{}}, blue:{team:"中華藍",white:false,years:[],hon:{}} };
-  const add=(g,n)=>{ g.hon[n]=(g.hon[n]||0)+1; };
-  // 瓊斯盃：用 jonesHistory 的 team 精準歸屬藍/白
-  jones.forEach(j=>{
-    const g=(j.team==="中華白")?grp.white:grp.blue;
-    g.years.push(j.year);
-    const m=medalOf(j.place); if(m) add(g,m);
-    if(j.mvp) add(g,"瓊斯盃MVP"); else if(j.bestFive) add(g,"瓊斯盃最佳五人");
-  });
-  // 一般國際賽（非瓊斯盃）一律 senior → 中華藍配色
-  intl.filter(r=>!/瓊斯盃|中華白|中華藍/.test(r.event||"")).forEach(r=>{
-    grp.blue.years.push(r.year);
-    const m=medalOf(r.place); if(m) add(grp.blue,m);
-    if(r.mvp) add(grp.blue,"賽會MVP");
-  });
+  const medalOf=p=>{ if(!p)return null; if(/冠|金/.test(p))return "金牌"; if(/亞|銀/.test(p))return "銀牌"; if(/季|殿|銅/.test(p))return "銅牌"; return null; };
   const H_ORDER=["金牌","銀牌","銅牌","賽會MVP","瓊斯盃MVP","瓊斯盃最佳五人"];
   const H_MAJOR=new Set(["金牌","賽會MVP","瓊斯盃MVP"]);
   const rank=a=>{const i=H_ORDER.indexOf(a);return i<0?99:i;};
-  const mk=g=>{
-    if(!g.years.length) return null;
+  const add=(g,n)=>{ if(n)g.hon[n]=(g.hon[n]||0)+1; };
+  const finish=g=>{
+    if(!g.years.length)return null;
     const ys=[...g.years].sort((a,b)=>a-b);
     const yr=ys[0]===ys[ys.length-1]?`${ys[0]}`:`${ys[0]}~${ys[ys.length-1]}`;
     const honors=Object.keys(g.hon).sort((a,b)=>rank(a)-rank(b))
       .map(n=>({name:n+(g.hon[n]>1?` ×${g.hon[n]}`:""),major:H_MAJOR.has(n)}));
-    return {team:g.team,white:g.white,yr,apps:g.years.length,honors};
+    return {team:g.team,kind:g.kind,section:g.section,label:g.label,white:g.kind==="taiwanWhite",yr,apps:g.years.length,honors};
   };
-  const out=[]; const w=mk(grp.white),b=mk(grp.blue);
-  if(w)out.push(w); if(b)out.push(b);
-  return out;
+
+  if(isUsaNationalPath(G)){
+    const usa={team:"美國隊",kind:"usa",section:"美國隊",label:"USA Basketball",years:[],hon:{}};
+    intl.filter(r=>r.team==="美國隊").forEach(r=>{
+      usa.years.push(r.year);add(usa,medalOf(r.place||r.medal));if(r.mvp)add(usa,"賽會MVP");
+    });
+    const row=finish(usa);return row?[row]:[];
+  }
+
+  const grp={
+    white:{team:"中華白",kind:"taiwanWhite",section:"中華隊",label:"瓊斯盃",years:[],hon:{}},
+    blue:{team:"中華藍",kind:"taiwanBlue",section:"中華隊",label:"國際賽",years:[],hon:{}}
+  };
+  jones.forEach(j=>{
+    const g=(j.team==="中華白")?grp.white:grp.blue;
+    g.years.push(j.year);add(g,medalOf(j.place));
+    if(j.mvp)add(g,"瓊斯盃MVP");else if(j.bestFive)add(g,"瓊斯盃最佳五人");
+  });
+  // 一般中華隊國際賽一律 senior → 中華藍；明確的美國隊紀錄不混入。
+  intl.filter(r=>r.team!=="美國隊" && !/瓊斯盃|中華白|中華藍/.test(r.event||"")).forEach(r=>{
+    grp.blue.years.push(r.year);add(grp.blue,medalOf(r.place||r.medal));if(r.mvp)add(grp.blue,"賽會MVP");
+  });
+  return [finish(grp.white),finish(grp.blue)].filter(Boolean);
 }
-// 中華隊球衣配色：白隊＝白底藍框、藍隊/其他國際賽＝藍底白框
-function nationalColors(white){
-  return white ? {p:"#ECECEC",s:"#1E5BB0",ink:"#12294D"} : {p:"#1E5BB0",s:"#FFFFFF",ink:"#FFFFFF"};
+// 國家隊球衣配色：中華白＝白底藍框、中華藍＝藍底白框、美國隊＝USA 藍底紅框。
+function nationalColors(kind){
+  if(kind==="usa")return {p:"#173F7A",s:"#D6323F",ink:"#FFFFFF",accent:"#E34B55"};
+  const white=kind===true || kind==="taiwanWhite";
+  return white ? {p:"#ECECEC",s:"#1E5BB0",ink:"#12294D",accent:"#4DA3FF"} : {p:"#1E5BB0",s:"#FFFFFF",ink:"#FFFFFF",accent:"#4DA3FF"};
 }
 function careerTimelineHTML(){
   const stints=careerStints();
@@ -8107,10 +8151,11 @@ function careerTimelineHTML(){
       <div class="ct-honors">${honorHTML}</div>
     </div>`;
   }).join("");
-  // 中華隊分支（白/藍球衣）
-  const NAT_MAJOR=new Set(["金牌","賽會MVP","瓊斯盃MVP"]);
-  const natCards=nationalStints().map(s=>{
-    const c=nationalColors(s.white);
+  // 國家隊分支：台灣路線顯示中華白／藍；USA 路線只顯示美國隊。
+  const natStints=nationalStints();
+  const natCards=natStints.map(s=>{
+    const c=nationalColors(s.kind);
+    const accent=c.accent||"#4DA3FF";
     const honorHTML=s.honors.length
       ? s.honors.map(h=>`<div class="ct-h${h.major?" gold":""}">${h.name}</div>`).join("")
       : `<div class="ct-none">—</div>`;
@@ -8118,12 +8163,12 @@ function careerTimelineHTML(){
       <div class="ct-cap"></div>
       <div class="ct-jersey" style="background:${c.p};border:3px solid ${c.s};color:${c.ink}">${G.jersey}</div>
       <div class="ct-team">${s.team}</div>
-      <div class="ct-lg" style="color:#4DA3FF">${s.white?"瓊斯盃":"國際賽"}</div>
+      <div class="ct-lg" style="color:${accent}">${s.label}</div>
       <div class="ct-yr"><b>${s.yr}</b> · ${s.apps}次</div>
       <div class="ct-honors">${honorHTML}</div>
     </div>`;
   }).join("");
-  const natSep = natCards ? `<div class="ct-sep"><span>中華隊</span></div>` : "";
+  const natSep = natCards ? `<div class="ct-sep"><span>${natStints[0].section}</span></div>` : "";
   return `<div class="panel">
     <div class="label">生涯時間軸 · CAREER TIMELINE</div>
     <p class="small mt8" style="color:var(--faint)">背號 ${G.jersey}　·　依效力球隊排序，球衣下方為該隊期間榮譽（←左右滑動）</p>
@@ -8146,11 +8191,11 @@ function _tlHonorRows(){
     return {st,honors,yr};
   });
 }
-// 中華隊列（供時間軸圖用）：白/藍球衣，附配色
+// 國家隊列（供時間軸圖用）：中華白／藍或 USA Basketball，依路線切換。
 function _tlNationalRows(){
   return nationalStints().map((s,i)=>({
-    natl:true, team:s.team, white:s.white, yr:s.yr, apps:s.apps, honors:s.honors,
-    col:nationalColors(s.white), _sec:i===0
+    natl:true, team:s.team, kind:s.kind, section:s.section, label:s.label, yr:s.yr, apps:s.apps, honors:s.honors,
+    col:nationalColors(s.kind), _sec:i===0
   }));
 }
 // 把一列榮譽做自動換行排版，回傳每個 pill 的相對座標與行數
@@ -8175,7 +8220,7 @@ function drawCareerTimeline(cv){
   const spineX=112, contentX=182, contentR=W-54, pillH=40, pgap=10;
   const headTop=200; // 表頭高度
   const bannerH=52;  // 退休球衣旗幟預留高度
-  const sectionH=56; // 中華隊分段標題預留高度
+  const sectionH=56; // 國家隊分段標題預留高度
   // 該隊是否為你退休球衣（以 聯盟|隊名 比對，回鍋同隊的每一段都算）
   const retiredSet=new Set((G._jerseyTeams||[]).map(j=>j.league+"|"+j.team));
   const isRetired=st=>retiredSet.has(st.league+"|"+st.team);
@@ -8210,26 +8255,27 @@ function drawCareerTimeline(cv){
   x.fillStyle="#FF6A2C";x.font=OSW(700,34);x.fillText("#"+G.jersey,50+nameW+18,124);
   x.fillStyle="#9DB0CC";x.font=NF(500,26);
   const natApps=natRows.reduce((s,r)=>s+r.apps,0);
-  const subtitle=`${POSITIONS[G.pos].name} · ${archetype()}　|　出身 ${G.home}　|　效力 ${clubRows.length} 支球隊`+(natApps?`　|　中華隊 ${natApps} 次`:"");
+  const natSection=natRows.length?natRows[0].section:"";
+  const subtitle=`${POSITIONS[G.pos].name} · ${archetype()}　|　出身 ${G.home}　|　效力 ${clubRows.length} 支球隊`+(natApps?`　|　${natSection} ${natApps} 次`:"");
   x.fillText(subtitle,50,164);
   x.strokeStyle="#2A3A57";x.lineWidth=2;x.beginPath();x.moveTo(50,184);x.lineTo(W-50,184);x.stroke();
-  // --- 時間軸主線（俱樂部：木色 / 中華隊：藍色） ---
+  // --- 時間軸主線（俱樂部：木色 / 國家隊：依路線色） ---
   const spineSeg=(a,b,col)=>{ if(b<=a)return; x.strokeStyle=col;x.globalAlpha=.55;x.lineWidth=4;
     x.beginPath();x.moveTo(spineX,a);x.lineTo(spineX,b);x.stroke();x.globalAlpha=1; };
   if(clubRows.length>1) spineSeg(clubRows[0]._node, clubRows[clubRows.length-1]._node, "#C8873F");
-  if(natRows.length>1)  spineSeg(natRows[0]._node,  natRows[natRows.length-1]._node,  "#4DA3FF");
+  if(natRows.length>1)  spineSeg(natRows[0]._node, natRows[natRows.length-1]._node, natRows[0].kind==="usa"?"#D6323F":"#4DA3FF");
   // --- 逐段繪製 ---
   rows.forEach(r=>{
     const cy=r._node;
-    // 中華隊分段標題（第一列中華隊時畫一次）
+    // 國家隊分段標題（第一列國家隊時畫一次）
     if(r._sec){
       const sy=r._secY-18;
       x.strokeStyle="#2A3A57";x.lineWidth=2;x.beginPath();x.moveTo(50,sy);x.lineTo(W-50,sy);x.stroke();
-      x.fillStyle="#4DA3FF";x.font=OSW(700,22);x.textAlign="left";
-      x.fillText("國際賽 · 中華隊",50,sy-8);
+      x.fillStyle=r.kind==="usa"?"#E34B55":"#4DA3FF";x.font=OSW(700,22);x.textAlign="left";
+      x.fillText(`國際賽 · ${r.section}`,50,sy-8);
     }
     if(r.natl){
-      // ===== 中華隊球衣 =====
+      // ===== 國家隊球衣 =====
       const c=r.col;
       roundRect(x,spineX-42,cy-42,84,84,14);
       x.fillStyle=c.p;x.fill();x.strokeStyle=c.s;x.lineWidth=5;x.stroke();
@@ -8237,7 +8283,7 @@ function drawCareerTimeline(cv){
       x.fillText(""+G.jersey,spineX,cy+14);x.textAlign="left";
       x.fillStyle="#F4F2EC";x.font=NF(900,36);x.fillText(r.team,contentX,cy-2);
       const tnW=x.measureText(r.team).width;
-      x.fillStyle="#4DA3FF";x.font=OSW(600,22);x.fillText(r.white?"瓊斯盃":"國際賽",contentX+tnW+16,cy-4);
+      x.fillStyle=r.col.accent||"#4DA3FF";x.font=OSW(600,22);x.fillText(r.label,contentX+tnW+16,cy-4);
       x.fillStyle="#9DB0CC";x.font=OSW(600,24);x.fillText(`${r.yr}  ·  ${r.apps} 次`,contentX,cy+30);
     }else{
       // ===== 俱樂部球衣 =====
