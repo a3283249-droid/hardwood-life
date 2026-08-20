@@ -1945,7 +1945,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.2.5.0";
+const VERSION="V.2.5.1";
 /* V2.8.6.2 · SPECIALIZATION PRIME WINDOW: 專精 III 經驗 50 · 能力 89 開放 III 專項加練 · 26–28 歲基礎 SP 4 · 保留 II/III 抗老化 20%/35%。 */
 /* V2.8.6.1 · SPECIALIZATION LONGEVITY: 專精 II / III 自然老化衰退減緩 20% / 35%；不設能力硬地板。 */
 /* V2.8.6 · LIVING CAREER: Promise Reunion Landmark · Relationship Arc/Short Beats · Finals Game Personality · Rookie UI Localization · Compact Career Archive */
@@ -5775,6 +5775,15 @@ function tradeProtectionScore(){
   if((s.seasonScore||0)>=90)p+=.14; else if((s.seasonScore||0)>=76)p+=.08;
   return clamp(p,0,.44);
 }
+function roseRuleTradeProtectionActive(state=G){
+  const st=state||{},c=st.contract;if(!c||c.league!=="NBA"||!c.rookieExtension||!c.roseRule)return false;
+  const total=Math.max(1,Number(c.years)||Number(c.yearsLeft)||1),left=Math.max(0,Number(c.yearsLeft)||0);
+  // Rose 30% 延長約：生效休賽季＋第一個完整延長球季視為球隊承諾期；之後恢復正常交易市場。
+  return left>=Math.max(1,total-1);
+}
+function tradeRumorBlocked(state=G){
+  const st=state||{};return Number(st._tradeRumorProtectedYear)===Number(st.year)||roseRuleTradeProtectionActive(st);
+}
 function tradeRumorChance(){
   const base=G.league==="NBA"?.20:.22;
   return clamp(base-tradeProtectionScore()*.42,.015,.24);
@@ -7079,7 +7088,7 @@ function afterReview(){
     } else {
       // 合約還在（多年約）：不會被要求退休，也不會吃掉剩餘年限
       if(overseasJumpAvailable()) q.push("overseasOffer");
-      else if(G._tradeRumorProtectedYear!==G.year && chance(tradeRumorChance())) q.push("tradeRumor");
+      else if(!tradeRumorBlocked(G) && chance(tradeRumorChance())) q.push("tradeRumor");
     }
   }
   q.push("nextSeason");
@@ -7819,6 +7828,7 @@ function evaluateNegotiation(offer,ask,rngFn=_rng){
     else {salary=Math.round(offer.salary*.93);cType="contender";tag="球隊還價 · 爭冠定位";}
     return {outcome:"counter",salary,years,cType,tag,acceptChance:accept,text:"球隊沒有完全照單全收，但提出一份仍可接受的折衷版本。"};
   }
+  if(ask==="contender")return {outcome:"decline",salary:offer.salary,years:offer.years,cType:offer.cType||"normal",tag:offer.tag||"",acceptChance:accept,text:"球隊不願調整成爭冠定位，但你主動降薪不會讓原報價消失；原合約仍然保留。"};
   return {outcome:"withdraw",acceptChance:accept,text:"球隊認為你的要求超過目前市場定位，選擇撤回這張報價。"};
 }
 function openNegotiation(i){
@@ -7975,6 +7985,7 @@ function freeAgency(){
 
 /* ---------- 交易 ---------- */
 function doTrade(){
+  if(tradeRumorBlocked(G)){G._tradeRumor=null;toast("🌹 延長合約承諾期內，球隊暫不推進交易。",2600);return processOffseason();}
   const newTeam=(G._tradeRumor&&G._tradeRumor.to)||randTeam(G.league,G.team);
   const tone=leagueTone(G.league);
   const flavorPools={
@@ -8648,6 +8659,8 @@ function franchiseLegendTitleSpecs(profile){
 }
 function syncFranchiseLegendTitles(state=G){
   const st=state||G;if(!st)return;st.titles=(st.titles||[]).filter(t=>!["teamSoul","loyalFive"].includes(t.id));
+  // 舊版 generic franchise 稱號已由城市專屬稱號取代；跨版存檔也要清掉一次性的舊「剛獲得」提示。
+  if(["隊魂","城市熟面孔"].includes(String(st._newTitle||"")))st._newTitle=null;
   const keys=[],seen=new Set();(st.seasonHistory||[]).filter(x=>x&&x.stage==="pro"&&x.league&&x.team).forEach(x=>{const k=`${x.league}|${x.team}`;if(!seen.has(k)){seen.add(k);keys.push([x.league,x.team]);}});
   keys.forEach(([lg,tm])=>{const p=franchiseLegendProfile(st,lg,tm);franchiseLegendTitleSpecs(p).forEach(spec=>grantCustomTitle({id:`franchise:${spec.tier}:${lg}:${tm}`,name:spec.name,good:true,cssClass:spec.tier==="immortal"?"legend-yellow":spec.tier==="totem"?"legend-blue":null,desc:spec.desc,effect:"純稱號"}));});
 }
@@ -10203,6 +10216,7 @@ function tradeRumorHTML(){
     </div>`;
 }
 function doTradeRumor(){
+  if(tradeRumorBlocked(G)){G._tradeRumor=null;return processOffseason();}
   G._tradeRumor={to:randTeam(G.league,G.team)};
   G.phase="tradeRumor"; render();
 }
