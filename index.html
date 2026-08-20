@@ -3080,7 +3080,7 @@ function careerThreadReviewPages(state=G,perPage=2){
 }
 function careerThreadsOverviewHTML(state=G,page=0){
   const st=state||{},pages=careerThreadReviewPages(st,2);if(!pages.length)return"";const idx=clamp(Number(page)||0,0,pages.length-1),rows=pages[idx],year=Number(st.lastReview&&st.lastReview.year)||Number(st.year)||0,beats=idx===0?careerThreadShortBeatsForSeason(year,st):[],beatHtml=beats.length?`<div class="ct-short-beats"><div class="ct-short-title">SEASON SHORT BEATS · 本季人物片段</div>${beats.slice(0,5).map(b=>`<div class="ct-short-row"><b>◆ ${b.name}</b><span>${b.text}</span></div>`).join("")}${beats.length>5?`<div class="small" style="color:var(--faint)">另有 ${beats.length-5} 段人物片段已收進生涯記憶。</div>`:""}</div>`:"";
-  return `<div class="panel"><div class="label">CAREER THREADS · 生涯交會 <span style="color:var(--faint)">${idx+1}/${pages.length}</span></div><p class="small mt8" style="color:var(--faint)">每一個曾與你留下重要交會的人都會留在這裡；退休或離世也不會從人物史消失。</p>${beatHtml}<div class="thread-overview">${rows.map(n=>careerThreadExpandedCardHTML(n,st)).join("")}</div></div>`;
+  return `<div class="panel"><div class="label">CAREER THREADS · 生涯交會 <span style="color:var(--faint)">${idx+1}/${pages.length}</span></div><p class="small mt8" style="color:var(--faint)">每一個曾與你留下重要交會的人都會留在這裡；退休等也不會從人物史消失。</p>${beatHtml}<div class="thread-overview">${rows.map(n=>careerThreadExpandedCardHTML(n,st)).join("")}</div></div>`;
 }
 function leaguePulseForYear(year,state=G){
   const u=ensureLeagueUniverse(state),y=Number(year)||Number(state&&state.year)||0,pri={reunion:9,majorInjury:8,retirement:7,move:6,threadDraft:6,threadOverseas:5,award:4,breakout:3};const seen=new Set();
