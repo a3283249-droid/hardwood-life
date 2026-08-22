@@ -796,6 +796,13 @@ body[data-league-theme="us-prep"]{
   --league-panel:rgba(17,31,53,.98);--league-panel2:rgba(11,24,43,.99);--league-track:#091729;--league-ink:#F7FAFF;
   --league-pattern:linear-gradient(90deg,rgba(226,75,74,.045) 0 4px,transparent 4px 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 16px);
 }
+body[data-league-theme="all-american"]{
+  --league-primary:#F2B84B;--league-secondary:#9B202A;--league-glow:rgba(242,184,75,.34);--league-border:rgba(242,184,75,.62);
+  --league-panel:rgba(22,18,20,.985);--league-panel2:rgba(12,10,12,.995);--league-track:#110d0f;--league-ink:#FFFDF5;
+  --league-pattern:radial-gradient(circle at 82% 16%,rgba(242,184,75,.14) 0 2px,transparent 3px) 0 0/30px 30px,linear-gradient(115deg,transparent 0 66%,rgba(155,32,42,.16) 67% 72%,transparent 73%),repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 22px);
+}
+body[data-league-theme="all-american"] #backdrop .bd-scene{background:radial-gradient(circle at 50% 8%,rgba(255,238,186,.18),transparent 28%),linear-gradient(180deg,rgba(82,10,18,.16),transparent 52%);}
+.custom-thread-create{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.custom-thread-slot{border:1px solid var(--line);border-radius:12px;padding:11px;background:rgba(255,255,255,.025)}.custom-thread-slot .ctc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.custom-thread-slot .ctc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.custom-thread-slot input,.custom-thread-slot select{width:100%;background:#0d1626;border:1px solid var(--line);border-radius:9px;padding:9px 10px;color:var(--ink)}.aa-roster-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.aa-roster{border:1px solid var(--league-border);border-radius:12px;padding:10px;background:rgba(0,0,0,.18);overflow:hidden}.aa-roster.east{border-color:rgba(77,163,255,.55);background:linear-gradient(145deg,rgba(77,163,255,.13),rgba(12,24,43,.78))}.aa-roster.west{border-color:rgba(226,75,74,.55);background:linear-gradient(145deg,rgba(226,75,74,.13),rgba(43,15,20,.78))}.aa-roster.east>.label{color:#7FC1FF}.aa-roster.west>.label{color:#FF918B}.aa-roster-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 6px;margin:1px -4px;border-bottom:1px solid rgba(255,255,255,.06);border-radius:8px}.aa-roster-row:last-child:not(.is-player):not(.is-career-thread){border-bottom-color:transparent}.aa-roster-row.is-player{border:1px solid rgba(242,184,75,.55);background:linear-gradient(90deg,rgba(242,184,75,.20),rgba(242,184,75,.06));box-shadow:inset 3px 0 0 #F2B84B}.aa-roster-row.is-player .aa-roster-name{color:#FFE39A;font-weight:900}.aa-roster-row.is-career-thread{border:1px solid rgba(143,126,255,.48);background:linear-gradient(90deg,rgba(109,135,255,.17),rgba(182,108,255,.08));box-shadow:inset 3px 0 0 #8F7EFF}.aa-roster-row.is-career-thread .aa-roster-name{color:#C8C1FF;font-weight:850}.aa-roster-name{display:flex;align-items:center;gap:6px;min-width:0}.aa-roster-badge{flex:0 0 auto;font:800 8.5px Oswald,sans-serif;letter-spacing:.08em;font-style:normal;border-radius:999px;padding:2px 5px;white-space:nowrap}.is-player .aa-roster-badge{color:#17120A;background:#F2B84B}.is-career-thread .aa-roster-badge{color:#F4F1FF;background:#6554D9}.aa-roster-row b{flex:0 0 auto}.aa-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.aa-hero{padding:18px;border:1px solid var(--league-border);border-radius:14px;background:linear-gradient(145deg,rgba(242,184,75,.10),rgba(155,32,42,.12));box-shadow:0 0 34px var(--league-glow)}.aa-score{font-family:Oswald,Arial;font-size:30px;font-weight:900;letter-spacing:.04em}.aa-reward{display:flex;gap:8px;flex-wrap:wrap}.aa-reward span{border:1px solid var(--league-border);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800}@media(max-width:720px){.custom-thread-create,.aa-roster-grid,.aa-choice-grid{grid-template-columns:1fr}.custom-thread-slot .ctc-grid{grid-template-columns:1fr}.aa-roster-row{font-size:12px}.aa-roster-badge{font-size:8px}}
 body[data-league-theme="ncaa-d1"]{
   --league-primary:#D8323F;--league-secondary:#4DA3FF;--league-glow:rgba(216,50,63,.28);--league-border:rgba(216,50,63,.50);
   --league-panel:rgba(19,31,53,.98);--league-panel2:rgba(10,22,39,.99);--league-track:#081526;--league-ink:#FFFFFF;
@@ -970,7 +977,7 @@ body[data-region="home"] #backdrop::after{opacity:.85;background:
 .builder-score{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 10px}.builder-score>div{padding:9px 10px;border:1px solid rgba(255,255,255,.075);border-radius:10px;background:rgba(0,0,0,.19)}.builder-score b{display:block;font-family:Oswald;font-size:21px;color:var(--gold);line-height:1}.builder-score span{font-size:9px;color:var(--faint)}
 .creation-attr-list{display:flex;flex-direction:column;gap:7px}.creation-attr{display:grid;grid-template-columns:42px 1fr 34px 64px;gap:7px;align-items:center;padding:7px 8px;border-radius:10px;background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.045)}.creation-attr .ca-name{font-size:11px;color:var(--dim)}.creation-attr .ca-bar{height:8px;background:#07101d;border-radius:999px;overflow:hidden;position:relative}.creation-attr .ca-bar i{display:block;height:100%;background:linear-gradient(90deg,#4DA3FF,var(--orange));border-radius:999px}.creation-attr .ca-bar em{position:absolute;top:-2px;bottom:-2px;width:2px;background:rgba(242,184,75,.85);box-shadow:0 0 8px rgba(242,184,75,.35)}.creation-attr .ca-v{font-family:Oswald;font-weight:700;text-align:right}.creation-attr .ca-btns{display:flex;gap:4px}.creation-attr .ca-btns button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#0c1626;font-size:16px;font-weight:900}.creation-attr .ca-btns button.plus{border-color:rgba(77,163,255,.48);color:#9ACBFF}.creation-attr .ca-btns button:disabled{opacity:.25}
 .ca-meta{grid-column:2/5;display:flex;justify-content:space-between;gap:8px;margin-top:-3px;font-size:8.5px;color:var(--faint)}.ca-meta .cost{color:var(--dim)}
-.build-analysis{margin-top:11px;padding:11px;border-radius:12px;border:1px solid rgba(242,184,75,.25);background:linear-gradient(145deg,rgba(242,184,75,.08),rgba(0,0,0,.16))}.ba-kicker{font-family:Oswald;font-size:9px;letter-spacing:.14em;color:var(--faint)}.ba-name{font-weight:900;font-size:16px;color:var(--gold);margin-top:2px}.ba-types{font-size:10px;color:#9ACBFF;margin-top:3px}.ba-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.ba-tag{font-size:9px;padding:2px 6px;border-radius:999px;border:1px solid rgba(63,191,127,.25);color:var(--green)}.ba-tag.weak{border-color:rgba(242,84,91,.24);color:#FF9A9A}
+.build-analysis{margin-top:11px;padding:11px;border-radius:12px;border:1px solid rgba(242,184,75,.25);background:linear-gradient(145deg,rgba(242,184,75,.08),rgba(0,0,0,.16))}.ba-kicker{font-family:Oswald;font-size:9px;letter-spacing:.14em;color:var(--faint)}.ba-name{font-weight:900;font-size:16px;color:var(--gold);margin-top:2px}.ba-types{font-size:10px;color:#9ACBFF;margin-top:3px}.ba-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.ba-tag{font-size:9px;padding:2px 6px;border-radius:999px;border:1px solid rgba(63,191,127,.25);color:var(--green)}.ba-tag.weak{border-color:rgba(242,84,91,.24);color:#FF9A9A}.identity-preview-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0;border:0;background:transparent;color:var(--ink);text-align:left;cursor:pointer}.identity-preview-toggle span{display:block;min-width:0}.identity-preview-toggle small{display:block;font-family:Oswald;font-size:9px;letter-spacing:.13em;color:var(--faint);font-weight:700}.identity-preview-toggle b{display:block;margin-top:3px;font-size:16px;line-height:1.25;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.identity-preview-toggle i{flex:0 0 auto;width:26px;height:26px;border:1px solid rgba(242,184,75,.28);border-radius:999px;display:grid;place-items:center;font-style:normal;font-size:10px;color:var(--gold);background:rgba(242,184,75,.06)}.identity-preview-body{margin-top:8px}.identity-preview-panel .identity-preview-body{padding-top:2px}@media(max-width:699px){.identity-preview-toggle{min-height:42px}.identity-preview-toggle b{font-size:15px}.identity-preview-body .derived-style-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:380px){.creation-attr{grid-template-columns:38px 1fr 30px 60px;padding-left:6px;padding-right:6px}.body-impact{grid-template-columns:repeat(3,1fr)}}
 @media (prefers-reduced-motion: reduce){body[data-region="home"] .bd-motif,body[data-region="home"] .bd-scene,body[data-region="home"] #backdrop::after,.hero .hero-floor::after{animation:none!important}.bar>i,.chip,.btn{transition:none!important}}
 
@@ -1007,6 +1014,13 @@ body.start-ui-active #app{max-width:520px;padding-bottom:24px}
 .start-links{margin:12px 14px 6px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .start-links .home-link{padding:9px 8px;font-size:11px}
 .start-links .home-links-note{grid-column:1/-1;margin-top:0}
+.difficulty-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.difficulty-mode{appearance:none;border:1px solid rgba(127,193,255,.18);border-radius:12px;background:#0b1422;color:var(--ink);padding:11px 12px;text-align:left;cursor:pointer;transition:.15s ease;min-width:0}
+.difficulty-mode:hover{border-color:rgba(242,184,75,.38)}
+.difficulty-mode.on{border-color:rgba(242,184,75,.72);background:rgba(242,184,75,.08);box-shadow:inset 0 0 0 1px rgba(242,184,75,.12)}
+.difficulty-mode .dm-k{font:800 12px Oswald,'Noto Sans TC',sans-serif;letter-spacing:.7px;color:var(--gold)}
+.difficulty-mode .dm-t{font-size:15px;font-weight:900;margin-top:3px}
+.difficulty-mode .dm-d{font-size:11px;line-height:1.55;color:var(--faint);margin-top:4px}
 body.start-ui-active .hero{padding:30px 20px 86px;min-height:270px}
 body.start-ui-active .hero .hero-floor{height:112px}
 body.start-ui-active .hero .hero-glow{height:230px;top:31%}
@@ -1469,6 +1483,90 @@ function bodyProfile(body,pos){
   };
 }
 
+/* ---------- V6.4 · BUILD IDENTITY 3.0 · DERIVED STYLE GRADES ---------- */
+function styleGrade(score){
+  const v=Number(score)||0;
+  return v>=92?"A+":v>=88?"A":v>=84?"A-":v>=80?"B+":v>=76?"B":v>=72?"B-":v>=68?"C+":v>=64?"C":v>=60?"C-":v>=55?"D+":"D";
+}
+function derivedStyleProfile(pos,body,attr,state){
+  const a=attr||{},p=bodyProfile(body||state||{},pos||"SG"),guard=pos==="PG"||pos==="SG",big=pos==="PF"||pos==="C";
+  const sh=Number(a.shooting)||40,t3=Number(a.three)||40,reb=Number(a.rebound)||40,pass=Number(a.pass)||40,def=Number(a.defense)||40,ath=Number(a.athletic)||40,iq=Number(a.iq)||40;
+  const mobility=(Number(p.mobility)||1)-1,strength=(Number(p.strength)||1)-1,reach=Number(p.reachN)||0,height=Number(p.heightN)||0,rimBody=(Number(p.rim)||1)-1,reboundBody=(Number(p.rebound)||1)-1;
+  const scores={
+    rimPressure:clamp(sh*.48+ath*.42+iq*.10+strength*10+mobility*8+rimBody*12+(guard?0:big?2:1),0,100),
+    midRangeCreation:clamp(sh*.58+iq*.15+pass*.12+ath*.15-Math.max(0,t3-sh)*.05+mobility*5,0,100),
+    perimeterGravity:clamp(t3*.72+sh*.18+iq*.10+Math.max(0,pass-70)*.025,0,100),
+    onBallCreation:clamp(pass*.50+iq*.22+sh*.18+ath*.10+mobility*5,0,100),
+    defensivePressure:clamp(def*.62+ath*.18+iq*.12+reach*5+mobility*12+Math.max(0,(Number(p.steal)||1)-1)*8,0,100),
+    reboundingPhysicality:clamp(reb*.63+ath*.14+def*.07+iq*.04+strength*18+reach*6+height*(guard?3:6)+reboundBody*16+(big?4:0),0,100)
+  };
+  Object.keys(scores).forEach(k=>scores[k]=Math.round(scores[k]*10)/10);
+  return {version:1,scores,grades:Object.fromEntries(Object.entries(scores).map(([k,v])=>[k,styleGrade(v)]))};
+}
+function derivedBuildIdentity(pos,profile,attr,body,state){
+  const p=profile&&profile.scores?profile.scores:{},st=state||{},vals=Object.values(p).map(Number).filter(Number.isFinite),countAt=n=>vals.filter(v=>v>=n).length;
+  const mastery=st.mastery||{},masteryBreadth=Object.values(mastery).filter(v=>Number(v)>=20).length,history=(st.seasonHistory||[]).filter(Boolean),priorProfiles=history.map(x=>x.styleProfile&&x.styleProfile.scores).filter(Boolean),hadWeakness=priorProfiles.some(x=>Object.values(x).some(v=>Number(v)<60)),potential=Number(st.potential)||0;
+  const complete=countAt(80)>=4&&countAt(84)>=2&&Math.min(...(vals.length?vals:[0]))>=55&&potential>=88&&masteryBreadth>=3&&hadWeakness;
+  const r=Number(p.rimPressure)||0,m=Number(p.midRangeCreation)||0,t=Number(p.perimeterGravity)||0,c=Number(p.onBallCreation)||0,d=Number(p.defensivePressure)||0,b=Number(p.reboundingPhysicality)||0;
+  const guard=pos==="PG"||pos==="SG",big=pos==="PF"||pos==="C";
+  let name="多功能角色球員";
+  if(guard){
+    if(complete)name="全能雙能衛";
+    else if(r>=84&&d>=84)name="雙向攻框後衛";
+    else if(r>=84&&c>=84)name="突破分球型後衛";
+    else if(r>=84&&m>=80&&t>=80&&c>=76)name="三層次得分後衛";
+    else if(r>=84&&t<68)name=b>=68?"力量型強攻後衛":"爆發型攻框後衛";
+    else if(m>=84&&c>=80)name="中距離持球得分手";
+    else if(t>=84&&c>=80)name="外線自主得分手";
+    else if(t>=84&&d>=80)name="雙向外線後衛";
+    else if(t>=84&&c<72)name="定點射手";
+    else if(c>=84&&t>=72)name="投射型組織後衛";
+    else if(c>=84)name="持球創造雙能衛";
+    else if(d>=84)name="防守型後衛";
+    else if(r>=80)name="攻框型雙能衛";
+    else name="角色型雙能衛";
+  }else if(big){
+    if(complete)name="全能攻防中樞";
+    else if(b>=84&&d>=84)name="籃板護框中樞";
+    else if(r>=84&&b>=80)name="強攻籃板終結者";
+    else if(t>=84&&b>=76)name="空間型籃板長人";
+    else if(c>=82&&d>=80)name="策應護框中樞";
+    else if(m>=84)name="中距離策應長人";
+    else name="現代角色長人";
+  }else{
+    if(complete)name="完整型側翼";
+    else if(r>=84&&d>=84)name="雙向持球側翼";
+    else if(t>=84&&d>=82)name="雙向 3&D 側翼";
+    else if(m>=84&&c>=80)name="中距離持球側翼";
+    else if(t>=84&&c>=80)name="外線持球側翼";
+    else if(b>=82&&d>=80)name="換防籃板側翼";
+    else if(r>=84)name="強攻側翼";
+    else name="多功能側翼";
+  }
+  const ranked=Object.entries(p).sort((a,z)=>Number(z[1])-Number(a[1]));
+  return {version:1,name,complete,primary:ranked[0]&&ranked[0][0]||null,secondary:ranked[1]&&ranked[1][0]||null,strengths:ranked.slice(0,2).map(x=>x[0]),weaknesses:ranked.slice(-2).reverse().map(x=>x[0]),profile};
+}
+function maybeRecordBuildEvolution(previous,current,season,state){
+  const st=state||{},prev=previous&&previous.name?previous:null,cur=current&&current.name?current:null;if(!prev||!cur||prev.name===cur.name)return null;
+  const year=Number(season&&season.year)||Number(st.year)||0,h=st._buildEvolutionHistory||(st._buildEvolutionHistory=[]),recent=h.slice(-2).some(x=>x&&x.from===cur.name&&x.to===prev.name&&year-Number(x.year)<=2);if(recent)return null;
+  const row={year,from:prev.name,to:cur.name};h.push(row);
+  if(typeof recordStoryBeat==="function")recordStoryBeat({key:`buildEvolution|${year}|${prev.name}|${cur.name}`,year,type:"buildEvolution",importance:64,region:typeof _storyRegionForLeague==="function"?_storyRegionForLeague((season&&season.league)||st.league):null,league:(season&&season.league)||st.league,team:(season&&season.team)||st.team,facts:{from:prev.name,to:cur.name},tags:["identity","development"]},st);
+  return row;
+}
+function commitSeasonStyleProfile(season,state){
+  const st=state||G,s=season||{},pos=s.pos||st.pos||"SG",attr=s.attrSnapshot||st.attr||{},profile=derivedStyleProfile(pos,st,attr,st),identity=derivedBuildIdentity(pos,profile,attr,st,st),snapshot={version:1,buildName:identity.name,grades:{...profile.grades},scores:{...profile.scores}};
+  const previous=st._officialBuildIdentity&&st._officialBuildIdentity.name?{...st._officialBuildIdentity}:null;s.styleProfile=snapshot;maybeRecordBuildEvolution(previous,{name:identity.name,profile},s,st);st._officialBuildIdentity={name:identity.name,year:Number(s.year)||Number(st.year)||0,grades:{...profile.grades},scores:{...profile.scores}};return snapshot;
+}
+function derivedStyleGradesHTML(profile,compact,showScore=false){
+  const g=profile&&profile.grades||{},scores=profile&&profile.scores||{},labels=[
+    ["rimPressure","⚡","攻框威脅"],["midRangeCreation","🎚️","中距離創造"],["perimeterGravity","🎯","外線牽制"],
+    ["onBallCreation","🧠","持球創造"],["defensivePressure","🛡️","防守壓迫"],["reboundingPhysicality","💪","籃板對抗"]
+  ];
+  return `<div class="derived-style-grid${compact?" compact":""}" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px">${labels.map(([k,ico,label])=>{const sv=Number(scores[k]);return `<div style="background:var(--surface2,#111827);border:1px solid var(--line,#26334a);border-radius:9px;padding:${compact?"7px 8px":"9px 10px"};min-width:0"><span style="font-size:${compact?"10px":"11px"};color:var(--faint,#8090aa)">${ico} ${label}</span><b style="display:block;font-family:Oswald,sans-serif;font-size:${compact?"18px":"21px"};margin-top:2px">${g[k]||"—"}${showScore&&Number.isFinite(sv)?` <small style="font-size:${compact?"10px":"11px"};color:var(--dim,#9DB0CC);font-weight:600">${sv.toFixed(1)}</small>`:""}</b></div>`;}).join("")}</div>`;
+}
+
+
+
 /* ---------- MY PLAYER Builder 2.0：位置底值 → 自由配點 → 系統辨識球風 ---------- */
 const CREATION_POINT_POOL=36;
 const LOCAL_MYPLAYER_BASE_ADJ={shooting:-4,three:-4,rebound:-3,pass:-4,defense:-4,athletic:-5,iq:-2};
@@ -1510,6 +1608,42 @@ function normalizeCreationAttributes(pos,body,attr,background){
 function creationCap(k,state){
   const st=state||{},pos=st.pos||"SG",background=st.background||st.bg,base=creationBaseAttr(pos,background);
   return Math.max(base[k]||15,bodyCap(k,{...st,pos,careerMode:"myplayer",buildId:null}));
+}
+/* V6.4 · Creation-scale LIVE PREVIEW
+   生涯 Identity 仍使用 80/84 的成熟絕對尺度；捏角則把 36 點預算內「可達進度」映射到同一尺度。
+   這讓玩家在建立角色時就能看出攻框／中距離／外線等方向，而不必把起始能力硬灌到成熟期數值。 */
+function creationStyleFocusAttributes(pos,body,background,styleKey){
+  const out={...creationBaseAttr(pos,background)};
+  let left=creationPointPool(pos),guard=0;
+  while(left>0&&guard++<160){
+    const cur=Number((derivedStyleProfile(pos,body,out,{}).scores||{})[styleKey])||0;
+    let best=null;
+    for(const k of ATTR_KEYS){
+      const cap=creationCap(k,{pos,...body,background}),cost=creationPointCost(out[k]);
+      if(out[k]>=cap||cost>left)continue;
+      const next={...out,[k]:out[k]+1},score=Number((derivedStyleProfile(pos,body,next,{}).scores||{})[styleKey])||cur,gain=score-cur;
+      if(gain<=0)continue;
+      const efficiency=gain/cost;
+      if(!best||efficiency>best.efficiency+1e-9||(Math.abs(efficiency-best.efficiency)<=1e-9&&gain>best.gain+1e-9))best={k,cost,gain,efficiency};
+    }
+    if(!best)break;
+    out[best.k]++;left-=best.cost;
+  }
+  return out;
+}
+function creationPreviewStyleProfile(pos,body,attr,background){
+  const keys=["rimPressure","midRangeCreation","perimeterGravity","onBallCreation","defensivePressure","reboundingPhysicality"],baseAttr=creationBaseAttr(pos,background),neutralBody=defaultBodyForPosition(pos);
+  const current=derivedStyleProfile(pos,body,attr||baseAttr,{}),bodyBase=derivedStyleProfile(pos,body,baseAttr,{}),neutralBase=derivedStyleProfile(pos,neutralBody,baseAttr,{}),scores={};
+  for(const key of keys){
+    const focusAttr=creationStyleFocusAttributes(pos,body,background,key),focus=derivedStyleProfile(pos,body,focusAttr,{}),raw=Number(current.scores[key])||0,lo=Number(bodyBase.scores[key])||0,hi=Number(focus.scores[key])||lo,neutral=Number(neutralBase.scores[key])||lo;
+    const bodyBias=clamp(lo-neutral,-15,15),previewFloor=clamp(55+bodyBias,40,70),span=Math.max(.1,hi-lo),progress=clamp((raw-lo)/span,-.35,1);
+    scores[key]=Math.round(clamp(previewFloor+progress*(90-previewFloor),40,92)*10)/10;
+  }
+  return {version:1,creationScale:true,rawScores:{...current.scores},scores,grades:Object.fromEntries(Object.entries(scores).map(([k,v])=>[k,styleGrade(v)]))};
+}
+function creationPreviewIdentity(pos,body,attr,background){
+  const style=creationPreviewStyleProfile(pos,body,attr,background);
+  return {style,identity:derivedBuildIdentity(pos,style,attr,body,{})};
 }
 const CREATION_STYLE_LABEL={scoring:"自主得分",shooting:"外線投射",playmaking:"組織創造",defense:"雙向防守",rebounding:"籃板護框"};
 function creationStyleScores(pos,body,attr){
@@ -1581,6 +1715,8 @@ const NBA_CREATION_PROFILES=[
   _nbaP("Jalen Brunson",false,["PG"],188,86,193,{shooting:61,three:55,rebound:29,pass:52,defense:37,athletic:46,iq:52},["scoring","playmaking"]),
   _nbaP("Tyrese Haliburton",false,["PG","SG"],196,84,203,{shooting:52,three:56,rebound:31,pass:63,defense:39,athletic:48,iq:56},["playmaking","shooting"]),
   _nbaP("Allen Iverson",true,["PG","SG"],183,75,190,{shooting:63,three:49,rebound:29,pass:49,defense:43,athletic:61,iq:46},["scoring","shooting"]),
+  _nbaP("Derrick Rose",true,["PG","SG"],188,91,203,{shooting:60,three:40,rebound:32,pass:52,defense:40,athletic:66,iq:48},["scoring","playmaking"]),
+  _nbaP("Russell Westbrook",false,["PG","SG"],191,91,203,{shooting:58,three:35,rebound:45,pass:57,defense:43,athletic:66,iq:49},["scoring","playmaking"]),
   _nbaP("Steve Nash",true,["PG"],191,81,194,{shooting:52,three:59,rebound:28,pass:64,defense:32,athletic:45,iq:62},["playmaking","shooting"]),
   _nbaP("Jason Kidd",true,["PG"],193,95,203,{shooting:45,three:48,rebound:42,pass:63,defense:56,athletic:50,iq:61},["playmaking","defense"]),
   _nbaP("Gary Payton",true,["PG"],193,82,203,{shooting:51,three:44,rebound:34,pass:52,defense:64,athletic:54,iq:53},["defense","playmaking"]),
@@ -1687,8 +1823,26 @@ const NBA_CREATION_PROFILES=[
   _nbaP("Kristaps Porzingis",false,["C","PF"],221,109,231,{shooting:60,three:55,rebound:52,pass:34,defense:60,athletic:48,iq:50},["shooting","defense"]),
 ];
 function _sim01(diff,span){return clamp(1-Math.abs(diff)/Math.max(1,span),0,1);}
-function creationComparison(pos,body,attr,analysis){
-  const b=normalizeBody(pos,body),a={...creationBaseAttr(pos),...(attr||{})},an=analysis||analyzeCreationBuild(pos,b,a);
+/* Creation Comparison 先依 BUILD IDENTITY 決定「哪一類 NBA 原型應該被優先比較」，
+   再由身材、能力向量、位置與 creation style 排出同類型中的相似度。 */
+const CREATION_COMP_IDENTITY_PRIORITIES={
+  "爆發型攻框後衛":["Derrick Rose","Ja Morant","De'Aaron Fox","Allen Iverson","Russell Westbrook"],
+  "力量型強攻後衛":["Russell Westbrook","Dwyane Wade","Anthony Edwards","Derrick Rose"],
+  "攻框型雙能衛":["Derrick Rose","Russell Westbrook","Ja Morant","De'Aaron Fox","Allen Iverson"],
+  "突破分球型後衛":["Derrick Rose","Russell Westbrook","Ja Morant","De'Aaron Fox","Dwyane Wade"],
+  "雙向攻框後衛":["Dwyane Wade","Michael Jordan","Anthony Edwards","Russell Westbrook"],
+  "三層次得分後衛":["Kobe Bryant","Michael Jordan","Shai Gilgeous-Alexander","Devin Booker","Dwyane Wade"],
+  "中距離持球得分手":["Shai Gilgeous-Alexander","Kobe Bryant","Michael Jordan","Devin Booker","Dwyane Wade"],
+  "外線自主得分手":["Stephen Curry","Damian Lillard","Kyrie Irving","Devin Booker","Jamal Murray"],
+  "雙向外線後衛":["Jrue Holiday","Derrick White","Mikal Bridges","Paul George"],
+  "定點射手":["Stephen Curry","Ray Allen","Klay Thompson","Trae Young","Damian Lillard"],
+  "投射型組織後衛":["Stephen Curry","Tyrese Haliburton","Steve Nash","Trae Young","Damian Lillard"],
+  "持球創造雙能衛":["Chris Paul","Jason Kidd","Tyrese Haliburton","Luka Doncic","Russell Westbrook"],
+  "防守型後衛":["Gary Payton","Jrue Holiday","Derrick White","Jason Kidd"],
+  "角色型雙能衛":["Jrue Holiday","Derrick White","Jalen Brunson","Jamal Murray"]
+};
+function creationComparison(pos,body,attr,analysis,background){
+  const b=normalizeBody(pos,body),a={...creationBaseAttr(pos,background),...(attr||{})},an=analysis||analyzeCreationBuild(pos,b,a),preview=creationPreviewIdentity(pos,b,a,background),buildName=preview.identity.name,priority=CREATION_COMP_IDENTITY_PRIORITIES[buildName]||[],prioritySet=new Set(priority);
   const scored=[];
   for(const p of NBA_CREATION_PROFILES){
     if(!p.positions.includes(pos))continue;
@@ -1699,13 +1853,15 @@ function creationComparison(pos,body,attr,analysis){
     const bodyScore=_sim01(hDiff,17)*.45+_sim01(wDiff,32)*.25+_sim01(wsDiff,30)*.30;
     const posScore=p.positions[0]===pos?1:.88;
     const tags=p.styles||[],styleScore=(tags[0]===an.primary?0.62:tags.includes(an.primary)?0.45:0)+(tags[1]===an.secondary?0.28:tags.includes(an.secondary)?0.20:0)+(tags.includes(an.primary)&&tags.includes(an.secondary)?0.10:0);
-    const score=attrScore*.50+bodyScore*.25+posScore*.15+clamp(styleScore,0,1)*.10;
-    scored.push({name:p.name,retired:!!p.retired,score:Math.round(score*100),styles:[...(p.styles||[])]});
+    const identityFit=prioritySet.has(p.name)?1:0;
+    const identityRank=identityFit?Math.max(0,1-priority.indexOf(p.name)*.08):0;
+    const score=attrScore*.36+bodyScore*.23+posScore*.13+clamp(styleScore,0,1)*.10+identityRank*.18;
+    scored.push({name:p.name,retired:!!p.retired,score:Math.round(score*100),styles:[...(p.styles||[])],buildFit:identityFit,buildName});
   }
-  scored.sort((x,y)=>y.score-x.score);
-  const top=scored[0]&&scored[0].score>=60?scored[0]:null;
-  const secondary=top?scored.slice(1).filter(x=>x.score>=62&&x.score>=top.score-12).slice(0,2):[];
-  return {top,secondary,confidence:!top?"low":top.score>=80?"high":top.score>=69?"medium":"low"};
+  scored.sort((x,y)=>(y.buildFit-x.buildFit)||(y.score-x.score));
+  const top=scored[0]&&scored[0].score>=58?scored[0]:null;
+  const secondary=top?scored.slice(1).filter(x=>x.score>=58&&x.score>=top.score-14&&(x.buildFit||!priority.length)).slice(0,2):[];
+  return {top,secondary,buildName,confidence:!top?"low":top.score>=80?"high":top.score>=69?"medium":"low"};
 }
 
 /* ---------- V.2.3 · MY PLAYER Legendary Signature ---------- */
@@ -2457,7 +2613,46 @@ const LEAGUE_RANK={SBL:1,"P+":2,"TPBL":2,"發展聯盟":3,"日職 B.League":4,"C
 const DIFF={"美國高中":.85, "高中":.55,"UBA":.72,"NCAA D2":.82,"NCAA D1":1.05,"發展聯盟":1.08,"SBL":.88,"P+":1.0,"TPBL":1.0,"日職 B.League":1.16,"CBL":1.2,"KRBL":1.14,"NBA":1.62};
 /* 個人 box score 的聯盟縮放與世界競爭難度分離；NBA 的 1.62 仍保留給其他競爭／世界系統。 */
 const PLAYER_STAT_DIFF={NBA:1.35};
-function leagueStatDifficulty(lg){return Number(PLAYER_STAT_DIFF[lg])||Number(DIFF[lg])||1;}
+const CAREER_DIFFICULTY_PRESETS={
+  realistic:{label:"寫實",outputLabel:"寫實 · REALISTIC",statDifficulty:1,spBonus:0,developmentMultiplier:1,majorInjuryMultiplier:1,minorInjuryMultiplier:1,careerInjuryMultiplier:1,combineQualityBonus:0},
+  casual:{label:"休閒",outputLabel:"休閒 · CASUAL",statDifficulty:.82,spBonus:7,developmentMultiplier:1.22,majorInjuryMultiplier:.55,minorInjuryMultiplier:.65,careerInjuryMultiplier:.45,combineQualityBonus:5}
+};
+function normalizeCareerDifficulty(mode){return Object.prototype.hasOwnProperty.call(CAREER_DIFFICULTY_PRESETS,String(mode||""))?String(mode):"realistic";}
+function careerDifficultyConfig(state=G){const key=normalizeCareerDifficulty(state&&state.difficultyMode);return CAREER_DIFFICULTY_PRESETS[key]||CAREER_DIFFICULTY_PRESETS.realistic;}
+function careerDifficultyLabel(state=G){return careerDifficultyConfig(state).outputLabel;}
+function leagueStatDifficulty(lg,state=G){const base=Number(PLAYER_STAT_DIFF[lg])||Number(DIFF[lg])||1;return base*careerDifficultyConfig(state).statDifficulty;}
+const CASUAL_ENTRY_OVR_FLOORS={
+  local:{PG:44,SG:43,SF:43,PF:44,C:45},
+  asian_american:{PG:45,SG:44,SF:44,PF:45,C:46}
+};
+function casualEntryOvrFloor(state=G){
+  const st=state||{},bg=st.background==="asian_american"?"asian_american":"local",pos=POSITIONS[st.pos]?st.pos:"SG";
+  return Number((CASUAL_ENTRY_OVR_FLOORS[bg]||CASUAL_ENTRY_OVR_FLOORS.local)[pos])||43;
+}
+function applyCasualEntryOvrFloor(state=G){
+  const st=state||{};
+  if(normalizeCareerDifficulty(st.difficultyMode)!=="casual"||!st.attr||!POSITIONS[st.pos]||!["classic","positionless"].includes(st.careerMode))return {applied:false,changed:false,before:st.attr&&POSITIONS[st.pos]?overall(st.attr,st.pos):null,after:st.attr&&POSITIONS[st.pos]?overall(st.attr,st.pos):null,floor:null};
+  const floor=casualEntryOvrFloor(st),before=overall(st.attr,st.pos);
+  if(before>=floor)return {applied:true,changed:false,before,after:before,floor};
+  const weighted=ATTR_KEYS.slice().sort((a,b)=>(Number(POSITIONS[st.pos].w[b])||0)-(Number(POSITIONS[st.pos].w[a])||0)||ATTR_KEYS.indexOf(a)-ATTR_KEYS.indexOf(b));
+  let priority=[];
+  if(st.careerMode==="positionless"){
+    const exp=YOUTH_EXPERIENCES[st.youthExperience]||YOUTH_EXPERIENCES.balanced;
+    priority=[...(exp.strengths||[]),...weighted];
+  }else priority=[...classicBuildPrioritySkills(st.buildId,st.pos),...weighted];
+  priority=[...new Set(priority.filter(k=>ATTR_KEYS.includes(k)))];
+  let cursor=0,guard=0;
+  while(overall(st.attr,st.pos)<floor&&guard++<180){
+    let bought=false;
+    for(let i=0;i<priority.length;i++){
+      const idx=(cursor+i)%priority.length,k=priority[idx],cap=Math.min(99,Math.round(Number(bodyCap(k,st))||99));
+      if(Number(st.attr[k])<cap){st.attr[k]=Number(st.attr[k])+1;cursor=(idx+1)%priority.length;bought=true;break;}
+    }
+    if(!bought)break;
+  }
+  const after=overall(st.attr,st.pos);
+  return {applied:true,changed:after!==before,before,after,floor};
+}
 /* ---------- 薪資基準（單位：萬新台幣 / 年；續約/巔峰行情，會依能力縮放） ---------- */
 const PAY={"發展聯盟":[120,600],SBL:[150,900],"P+":[300,2200],TPBL:[300,2200],"日職 B.League":[1200,7000],CBL:[1500,9000],KRBL:[1000,6000],NBA:[4000,90000]};
 /* ---------- 新秀合約行情（較低，之後靠續約成長） ---------- */
@@ -2469,7 +2664,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    遊戲狀態
    ========================================================================= */
 /* 隨機球員名字庫 */
-const VERSION="V.2.7.0";
+const VERSION="V.2.7.35";
 /* V2.8.6.2 · SPECIALIZATION PRIME WINDOW: 專精 III 經驗 50 · 能力 89 開放 III 專項加練 · 26–28 歲基礎 SP 4 · 保留 II/III 抗老化 20%/35%。 */
 /* V2.8.6.1 · SPECIALIZATION LONGEVITY: 專精 II / III 自然老化衰退減緩 20% / 35%；不設能力硬地板。 */
 /* V2.8.6 · LIVING CAREER: Promise Reunion Landmark · Relationship Arc/Short Beats · Finals Game Personality · Rookie UI Localization · Compact Career Archive */
@@ -2535,8 +2730,14 @@ function _storyStableValue(v){
   return v;
 }
 function _storyStableString(v){try{return JSON.stringify(_storyStableValue(v));}catch(_){return String(v);}}
+function normalizeAmateurAwardRecords(state=G){
+  const st=state||{},src=Array.isArray(st.amateurAwards)?st.amateurAwards:[],fallbackYear=Number(st._allAmericanResolvedYear)||Number(st._allAmerican&&st._allAmerican.year)||Number(st.year)||0,out=[],seen=new Set();
+  for(const row of src){let rec=null;if(typeof row==="string"){const award=String(row).trim();if(!award)continue;rec={year:fallbackYear,award};}else if(row&&typeof row==="object"){const award=String(row.award||"").trim();if(!award)continue;rec={...row,year:Number(row.year)||fallbackYear,award};}if(!rec)continue;const key=`${rec.year}|${rec.award}`;if(seen.has(key))continue;seen.add(key);out.push(rec);}
+  st.amateurAwards=out;return out;
+}
 function ensureStoryState(state=G){
   const st=state||{};
+  normalizeAmateurAwardRecords(st);
   if(!Array.isArray(st.storyBeats))st.storyBeats=[];
   if(!("developmentPath" in st))st.developmentPath=null;
   if(!st.storyMeta||typeof st.storyMeta!=="object"||Array.isArray(st.storyMeta))st.storyMeta={};
@@ -2631,7 +2832,7 @@ function syncSeasonStoryBeats(season,state=G){
 
 function documentaryPeopleScore(npc,state=G){
   if(!npc)return-1;const rel=npc.relationship||{},h=rel.sharedHistory||[],stakes=h.filter(x=>["playoffMeeting","finalsMeeting","mvpTop2"].includes(x.type)).length,mem=(rel.memories||[]).length,promise=rel.promiseSameTeam?1:0,reunion=h.some(x=>x.type==="reunion")?1:0,loss=npc.deceased?1:0;
-  return stakes*16+h.length*3+Math.abs(Number(rel.score)||0)*.22+mem*2+promise*8+reunion*8+loss*12;
+  return (npc.isCustomCareerThread?30:npc.isClassStar?6:0)+stakes*16+h.length*3+Math.abs(Number(rel.score)||0)*.22+mem*2+promise*8+reunion*8+loss*12;
 }
 function documentaryPeakScore(beat,state=G){
   if(!beat)return-1;const bonus={fmvp:16,championship:14,mvpSeason:18,dpoySeason:10,historicSeason:9,nationalTeamMedal:8,franchiseLegend:7,allTimeMilestone:6}[beat.type]||0;return (Number(beat.importance)||0)+bonus;
@@ -3057,6 +3258,7 @@ function consumeNbaRoleOfferPreset(state=G,year=(state&&state.year),team=(state&
 
 function migrateV270State(state=G){
   const st=state||{};
+  if(!Array.isArray(st.customCareerThreads))st.customCareerThreads=[];
   const u=ensureLeagueUniverse(st);
   // 舊存檔不補造學生時期人物史；只標記 migration 年，之後的新事件才能產生 Career Thread。
   if(!Number.isFinite(Number(u.migratedAtYear)))u.migratedAtYear=Number(st.year)||2026;
@@ -3072,6 +3274,14 @@ function migrateV270State(state=G){
   migrateNbaCareerV1(st);
   if(st.retired&&!st.storyMeta.retirementFlowStarted&&!st.storyMeta.documentarySnapshot)ensureRetiredLegacyDocumentary(st);
   return st;
+}
+function migrateV64State(state=G){
+  const st=state||{};if(Number(st._v64MigrationVersion)>=1)return st;
+  // V6.4 migration is deliberately non-destructive: never fabricate historical awards, stats, Shot DNA, or official style snapshots.
+  const rows=Array.isArray(st.seasonHistory)?st.seasonHistory:[];
+  if(!st._officialBuildIdentity){const last=[...rows].reverse().find(s=>s&&s.styleProfile&&s.styleProfile.buildName);if(last)st._officialBuildIdentity={name:last.styleProfile.buildName,year:Number(last.year)||null,grades:{...(last.styleProfile.grades||{})}};}
+  if(st.retired){st._farewellTourEligible=null;st._lastRideOffer=null;if(st._farewellTour&&st._farewellTour.active)st._farewellTour.active=false;}
+  st._v64MigrationVersion=1;return st;
 }
 
 const UNIVERSE_FIRST_NAMES=["Evan","Marcus","Darius","Julian","Andre","Malik","Theo","KJ","Cameron","Isaiah","Jordan","Miles","Caleb","Nolan","Xavier","Terrence","Devin","Jalen","Micah","Adrian","Leo","Owen","Mason","Damian","Victor","Elijah","Noah","Roman","Ashton","Bryce","Carter","Trey"];
@@ -3143,6 +3353,89 @@ function createUniverseNpc(opts={},state=G){
     career:{seasons:[],awards:{},totals:{gp:0,pts:0,reb:0,ast:0,stl:0,blk:0},path:[]},relationship:{score:Number(opts.relationship)||0,tags:[],sharedHistory:[],memories:[]},origin:{type:opts.originType||"league",year,stage:opts.stage||"pro",team:opts.originTeam||team,draftClass:opts.draftClass||year,nameCulture,region:opts.originRegion||nameCulture,firstLeague:opts.firstLeague||opts.league||"NBA"}};
   u.npcs[id]=npc;return npc;
 }
+
+/* =========================================================================
+   V2.6.3 · CUSTOM CAREER THREADS + ALL-AMERICAN SHOWCASE
+   ========================================================================= */
+const CUSTOM_THREAD_ARCHETYPES={
+  shooter:{label:"射手",map:{PG:"scoring_guard",SG:"scoring_guard",SF:"stretch_star",PF:"stretch_star",C:"stretch_star"}},
+  creator:{label:"組織者",map:{PG:"playmaker",SG:"playmaker",SF:"two_way_wing",PF:"point_big",C:"point_big"}},
+  slashing_guard:{label:"突破型後衛",map:{PG:"scoring_guard",SG:"scoring_guard",SF:"two_way_wing",PF:"two_way_wing",C:"point_big"}},
+  defensive_stopper:{label:"防守悍將",map:{PG:"role_defender",SG:"role_defender",SF:"two_way_wing",PF:"defensive_big",C:"defensive_big"}},
+  two_way_forward:{label:"雙能鋒",map:{PG:"two_way_wing",SG:"two_way_wing",SF:"two_way_wing",PF:"two_way_wing",C:"point_big"}},
+  all_around_wing:{label:"全能側翼",map:{PG:"playmaker",SG:"two_way_wing",SF:"two_way_wing",PF:"point_big",C:"point_big"}},
+  interior_big:{label:"禁區長人",map:{PG:"rebound_specialist",SG:"rebound_specialist",SF:"defensive_big",PF:"defensive_big",C:"defensive_big"}}
+};
+const CUSTOM_THREAD_BODY={quick:{label:"小／快",height:-4,weight:-7,wingspan:-2,athletic:3},average:{label:"平均",height:0,weight:0,wingspan:0,athletic:0},big:{label:"高大／長臂",height:4,weight:8,wingspan:6,athletic:-1}};
+const CUSTOM_THREAD_RELATIONSHIPS={friend:{label:"從小一起打球的朋友",score:58,sameTeam:true},rival:{label:"從小互相比到大的勁敵",score:-12,sameTeam:false},friend_rival:{label:"好朋友，但上場誰都不讓",score:42,sameTeam:true},stranger:{label:"同屆但一開始互不認識",score:2,sameTeam:false}};
+function customCareerThreadProtected(npc){return !!(npc&&(npc.isCustomCareerThread||npc.allowDeath===false));}
+function normalizeCustomCareerThreadDrafts(list){
+  const posSet=new Set(Object.keys(POSITIONS)),archSet=new Set(Object.keys(CUSTOM_THREAD_ARCHETYPES)),bodySet=new Set(Object.keys(CUSTOM_THREAD_BODY)),relSet=new Set(Object.keys(CUSTOM_THREAD_RELATIONSHIPS));
+  return (Array.isArray(list)?list:[]).map((x,i)=>{const d=x||{},name=String(d.name||"").trim().slice(0,14);if(!name)return null;return {slot:i,name,pos:posSet.has(d.pos)?d.pos:"SG",archetype:archSet.has(d.archetype)?d.archetype:"shooter",body:bodySet.has(d.body)?d.body:"average",relationship:relSet.has(d.relationship)?d.relationship:"stranger"};}).filter(Boolean).slice(0,2);
+}
+function customThreadCreationHTML(list=[]){
+  const rows=normalizeCustomCareerThreadDrafts(list),bySlot={};for(const r of rows)bySlot[r.slot]=r;
+  const archOpts=Object.entries(CUSTOM_THREAD_ARCHETYPES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join(""),bodyOpts=Object.entries(CUSTOM_THREAD_BODY).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join(""),relOpts=Object.entries(CUSTOM_THREAD_RELATIONSHIPS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join("");
+  return `<div class="field"><label class="label">CAREER THREAD · 自訂生涯人物（選填）</label><p class="small mt8">最多 2 人。你決定名字與球風，遊戲決定能力與人生；自訂人物不會觸發死亡劇情。</p><div class="custom-thread-create">${[0,1].map(i=>{const d=bySlot[i]||{},on=!!d.name;return `<div class="custom-thread-slot" data-custom-thread-slot="${i}"><div class="ctc-head"><b>人物 ${i+1}</b><label class="small"><input type="checkbox" data-custom-thread-enabled="${i}" ${on?"checked":""}> 啟用</label></div><div class="field"><input type="text" maxlength="14" data-custom-thread-name="${i}" placeholder="朋友／勁敵名字" value="${_escCreation(d.name||"")}"></div><div class="ctc-grid"><select data-custom-thread-pos="${i}">${Object.keys(POSITIONS).map(p=>`<option value="${p}" ${d.pos===p?"selected":""}>${p}</option>`).join("")}</select><select data-custom-thread-arch="${i}">${archOpts}</select><select data-custom-thread-body="${i}">${bodyOpts}</select><select data-custom-thread-rel="${i}">${relOpts}</select></div></div>`;}).join("")}</div></div>`;
+}
+function bindCustomThreadCreationValues(root=document,list=[]){const rows=normalizeCustomCareerThreadDrafts(list),bySlot={};for(const r of rows)bySlot[r.slot]=r;for(const i of [0,1]){const d=bySlot[i];if(!d)continue;const a=root.querySelector&&root.querySelector(`[data-custom-thread-arch="${i}"]`),b=root.querySelector&&root.querySelector(`[data-custom-thread-body="${i}"]`),r=root.querySelector&&root.querySelector(`[data-custom-thread-rel="${i}"]`);if(a)a.value=d.archetype;if(b)b.value=d.body;if(r)r.value=d.relationship;}}
+function readCustomThreadCreationInputs(root=document){const out=[];for(const i of [0,1]){const q=a=>root.querySelector?root.querySelector(a):null,en=q(`[data-custom-thread-enabled="${i}"]`),name=q(`[data-custom-thread-name="${i}"]`);if(!en||!en.checked||!name||!String(name.value||"").trim())continue;out.push({slot:i,name:name.value,pos:(q(`[data-custom-thread-pos="${i}"]`)||{}).value,archetype:(q(`[data-custom-thread-arch="${i}"]`)||{}).value,body:(q(`[data-custom-thread-body="${i}"]`)||{}).value,relationship:(q(`[data-custom-thread-rel="${i}"]`)||{}).value});}return normalizeCustomCareerThreadDrafts(out);}
+function _customThreadGradYear(st){const max=st&&st.background==="asian_american"?4:3,grade=Number(st&&st.grade)||1;return (Number(st&&st.year)||2026)+Math.max(0,max-grade);}
+function _customThreadUniverseArch(d){const a=CUSTOM_THREAD_ARCHETYPES[d.archetype]||CUSTOM_THREAD_ARCHETYPES.shooter;return a.map[d.pos]||Object.values(a.map)[0]||"scoring_guard";}
+function _customThreadInitialHistory(d){return d.relationship==="friend"?"highSchoolTeammate":d.relationship==="friend_rival"?"friendlyCompetition":d.relationship==="rival"?"highSchoolOpponent":"firstMeeting";}
+function calibrateYouthUniverseNpc(npc,kind="custom",rngFn=_rng){
+  if(!npc||!npc.attrs)return npc;const rr=typeof rngFn==="function"?rngFn:_rng,age=clamp(Number(npc.age)||15,15,18),pot=Number(npc.potential)||84;
+  const base=kind==="classStar"?66+(age-18)*1.5+(pot-84)*.18:54+(age-15)*1.6+(pot-84)*.12,target=kind==="classStar"?clamp(base+(rr()-.5)*3,63,73):clamp(base+(rr()-.5)*3,49,63);
+  const cur=overall(npc.attrs,npc.pos),delta=target-cur;for(const k of ATTR_KEYS)npc.attrs[k]=clamp(Math.round((Number(npc.attrs[k])||50)+delta),35,92);
+  npc.youthAbilityTarget=round(target,1);return npc;
+}
+function createCustomCareerThreadsFromCreation(state=G,drafts=[]){
+  const st=state||{},u=ensureLeagueUniverse(st),norm=normalizeCustomCareerThreadDrafts(drafts);st.customCareerThreads=norm.map(x=>({...x}));u.customCareerThreadIds=Array.isArray(u.customCareerThreadIds)?u.customCareerThreadIds:[];const made=[];
+  for(let i=0;i<norm.length;i++){const d=norm[i],customId=`custom-thread-${i+1}`,existing=Object.values(u.npcs).find(n=>n&&n.customCareerThreadId===customId);if(existing){if(!u.careerThreads.includes(existing.id))u.careerThreads.push(existing.id);made.push(existing);continue;}const rr=universeRng(Number(st.year)||2026,`custom-career-thread-${i}-${d.name}`,st),rel=CUSTOM_THREAD_RELATIONSHIPS[d.relationship]||CUSTOM_THREAD_RELATIONSHIPS.stranger,league=st.background==="asian_american"?"美國高中":"高中",same=!!rel.sameTeam,schools=SCHOOLS[league]||[],team=same?st.team:(schools.filter(t=>t!==st.team)[Math.floor(rr()*Math.max(1,schools.filter(t=>t!==st.team).length))]||st.team),arch=_customThreadUniverseArch(d),npc=createUniverseNpc({year:st.year,age:st.age,league,team,pos:d.pos,archetype:arch,name:d.name,originType:"customCareerThread",originTeam:team,stage:"高中",relationship:rel.score,draftClass:_customThreadGradYear(st),rng:rr},st),bp=CUSTOM_THREAD_BODY[d.body]||CUSTOM_THREAD_BODY.average;
+    npc.height=clamp(Number(npc.height)+bp.height,160,225);npc.weight=clamp(Number(npc.weight)+bp.weight,55,150);npc.wingspan=clamp(Number(npc.wingspan)+bp.wingspan,165,245);npc.attrs.athletic=clamp(Number(npc.attrs.athletic)+bp.athletic,35,99);calibrateYouthUniverseNpc(npc,"custom",rr);npc.allAmericanRank=Math.round(clamp(70-((Number(npc.potential)||80)-80)*2.6+(rr()-.5)*26,8,95));npc.isCareerThread=true;npc.isCustomCareerThread=true;npc.allowDeath=false;npc.customCareerThreadId=customId;npc.customTemplate={...d};npc.highSchoolGraduationYear=_customThreadGradYear(st);npc.relationship.customRelationship=d.relationship;npc.origin.type="customCareerThread";npc.origin.draftClass=_customThreadGradYear(st);npc.origin.firstLeague=league;
+    u.customCareerThreadIds.push(npc.id);u.careerThreads.push(npc.id);const hist=_customThreadInitialHistory(d);recordSharedHistory(npc.id,hist,{year:st.year,league,team,note:CUSTOM_THREAD_RELATIONSHIPS[d.relationship].label},st);if(d.relationship==="friend_rival")recordSharedHistory(npc.id,"friendlyCompetition",{year:st.year,league,team,note:"從小一起打球，也一直互相比較"},st);recordCareerThreadFirstMeetingBeat(npc,{kind:"高中",sameTeam:same,year:st.year,league,team},st);made.push(npc);
+  }u.customCareerThreadIds=[...new Set(u.customCareerThreadIds)];u.careerThreads=[...new Set(u.careerThreads)];return made;
+}
+function customCareerThreadStoryPriority(npc,state=G){if(!npc)return 0;const h=npc.relationship&&npc.relationship.sharedHistory||[],stakes=h.filter(x=>["playoffMeeting","finalsMeeting","mvpTop2","allAmericanWeekend"].includes(x.type)).length;return (npc.isCustomCareerThread?1000:npc.isClassStar?300:0)+stakes*40+h.length*6+Math.abs(Number(npc.relationship&&npc.relationship.score)||0);}
+
+function ensureHighSchoolClassStars(state=G,count=4){
+  const st=state||{},u=ensureLeagueUniverse(st),n=clamp(Math.round(Number(count)||4),3,5),grad=_customThreadGradYear(st);u.classStarIds=Array.isArray(u.classStarIds)?u.classStarIds:[];const valid=u.classStarIds.map(id=>u.npcs[id]).filter(x=>x&&Number(x.origin&&x.origin.draftClass)===grad);if(valid.length>=n)return valid.slice(0,n);
+  const used=new Set(u.classStarIds),rankAnchors=[5,14,27,39,48];for(let i=valid.length;i<n;i++){const rr=universeRng(grad,`class-star-${i}`,st),arch=_uPick(["scoring_guard","playmaker","two_way_wing","stretch_star","defensive_big","point_big"],rr),a=UNIVERSE_ARCHETYPES[arch],pos=_uPick(a.pos,rr),schools=SCHOOLS["美國高中"]||[],team=schools[Math.floor(rr()*schools.length)]||"US Prep",npc=createUniverseNpc({year:st.year,age:st.age,league:"美國高中",team,pos,archetype:arch,originType:"classStar",originTeam:team,stage:"高中",draftClass:grad,rng:rr},st);calibrateYouthUniverseNpc(npc,"classStar",rr);npc.isClassStar=true;npc.highSchoolGraduationYear=grad;npc.allAmericanRank=rankAnchors[i]||clamp(10+i*9,1,50);npc.origin.type="classStar";npc.origin.draftClass=grad;u.classStarIds.push(npc.id);used.add(npc.id);}u.classStarIds=[...new Set(u.classStarIds)];return u.classStarIds.map(id=>u.npcs[id]).filter(x=>x&&Number(x.origin&&x.origin.draftClass)===grad).slice(0,n);
+}
+function advanceGraduatingClassPeers(state=G){const st=state||{},u=ensureLeagueUniverse(st),ids=[...new Set([...(u.customCareerThreadIds||[]),...(u.classStarIds||[])])],year=Number(st.year)||0,moved=[];for(const id of ids){const n=u.npcs[id];if(!n||n.active===false||n.retired||n.deceased||n.careerStage!=="高中")continue;const grad=Number(n.highSchoolGraduationYear)||Number(n.origin&&n.origin.draftClass)||0;if(!grad||grad>year)continue;_threadCollegeRoute(n,year,st,universeRng(year,`graduating-peer-${id}`,st));moved.push(n);}return moved;}
+function allAmericanNpcRank(npc,state=G){if(!npc)return 999;if(Number(npc.allAmericanRank)>0)return Number(npc.allAmericanRank);const rr=universeRng(_customThreadGradYear(state),`all-american-rank-${npc.id}`,state),ov=overall(npc.attrs||{},npc.pos||"SF"),pot=Number(npc.potential)||80;return Math.round(clamp(82-(ov-65)*1.7-(pot-80)*.55+(rr()-.5)*18,1,120));}
+function _allAmericanFiller(state,year,i,usedNames){const rr=universeRng(year,`aa-filler-${i}`,state),pos=_uPick(Object.keys(POSITIONS),rr),name=_uniqueUniverseName(ensureLeagueUniverse(state),rr,"usa",usedNames);usedNames.add(name);return {id:`aa-filler-${year}-${i}`,name,pos,team:_uPick(SCHOOLS["美國高中"]||["US Prep"],rr),rank:clamp(8+i*3+Math.floor(rr()*7),1,75),persistent:false,isFiller:true};}
+function buildAllAmericanRoster(state=G){
+  const st=state||{},u=ensureLeagueUniverse(st),year=Number(st.year)||0,grad=_customThreadGradYear(st),rank=Number(st._hsRecruitRank)||999,rows=[{id:"player",name:st.name||"PLAYER",pos:st.pos||"SG",team:st.team||"US Prep",rank,persistent:true,isPlayer:true}],seen=new Set(["player"]),add=n=>{if(!n||seen.has(n.id))return;seen.add(n.id);rows.push(n);};
+  const customs=(u.careerThreads||[]).map(id=>u.npcs[id]).filter(n=>n&&n.isCustomCareerThread&&n.active!==false&&!n.retired&&n.league==="美國高中"&&n.careerStage==="高中"&&Number(n.origin&&n.origin.draftClass)===grad).map(n=>({...n,rank:allAmericanNpcRank(n,st),persistent:true})).filter(n=>n.rank<=50).sort((a,b)=>a.rank-b.rank);customs.forEach(add);
+  const existing=Object.values(u.npcs).filter(n=>n&&!n.isCustomCareerThread&&n.active!==false&&!n.retired&&n.league==="美國高中"&&n.careerStage==="高中"&&Number(n.origin&&n.origin.draftClass)===grad).map(n=>({...n,rank:allAmericanNpcRank(n,st),persistent:true})).filter(n=>n.rank<=55).sort((a,b)=>a.rank-b.rank);existing.forEach(add);ensureHighSchoolClassStars(st,4).map(n=>({...n,rank:allAmericanNpcRank(n,st),persistent:true})).sort((a,b)=>a.rank-b.rank).forEach(add);
+  const usedNames=new Set(rows.map(x=>x.name));let i=0;while(rows.length<24)add(_allAmericanFiller(st,year,i++,usedNames));rows.sort((a,b)=>Number(a.rank||999)-Number(b.rank||999)||String(a.id).localeCompare(String(b.id)));const playerIndex=rows.findIndex(x=>x.id==="player");if(playerIndex>=24){rows.splice(playerIndex,1);rows[23]={id:"player",name:st.name||"PLAYER",pos:st.pos||"SG",team:st.team||"US Prep",rank,persistent:true,isPlayer:true};}const players=rows.slice(0,24),east=[],west=[];players.forEach((x,i)=>(i%2===0?east:west).push(x));return {year,players,east,west,playerTeam:east.some(x=>x.id==="player")?"east":"west"};
+}
+
+const ALL_AMERICAN_PHASES=["allAmericanSelection","allAmericanPractice","allAmericanMedia","allAmericanGame","allAmericanClosing"];
+function allAmericanSelectionChance(rank,state=G){const r=Math.round(Number(rank)||999),casual=normalizeCareerDifficulty(state&&state.difficultyMode)==="casual";if(casual)return r<=10?1:r<=25?.98:r<=40?.85:r<=50?.60:r<=60?.25:0;return r<=10?.98:r<=25?.90:r<=40?.65:r<=50?.30:0;}
+function allAmericanSelectionDecision(state=G){const st=state||{},year=Number(st.year)||0,rank=Number(st._hsRecruitRank)||999,chance=allAmericanSelectionChance(rank,st);if(st._allAmericanSelection&&Number(st._allAmericanSelection.year)===year&&Number(st._allAmericanSelection.rank)===rank&&Number(st._allAmericanSelection.chance)===chance)return st._allAmericanSelection;const eligible=st.stage==="高中"&&st.league==="美國高中"&&Number(st.grade)>=4&&!st._allAmericanResolvedYear&&chance>0,rr=universeRng(year,`all-american-selection-${rank}`,st),roll=round(rr(),6),selected=!!eligible&&roll<chance;return st._allAmericanSelection={year,rank,chance,roll,eligible,selected};}
+function grantAllAmericanSp(state=G,amount=1,reason="Showcase"){const st=state||{},aa=st._allAmerican||(st._allAmerican={spEarned:0,rewards:{}}),room=Math.max(0,3-(Number(aa.spEarned)||0)),give=Math.min(room,Math.max(0,Math.round(Number(amount)||0)));if(give){st._pendingSP=(Number(st._pendingSP)||0)+give;aa.spEarned=(Number(aa.spEarned)||0)+give;aa.rewards=aa.rewards||{};aa.rewards.sp=(Number(aa.rewards.sp)||0)+give;aa.rewards.lastSpReason=reason;}return give;}
+function _allAmericanSelectionReward(st){const aa=st._allAmerican;if(aa.rewards&&aa.rewards.selectionApplied)return;aa.rewards=aa.rewards||{};aa.rewards.selectionApplied=true;if(st===G)addHeat(8);else st.fame=clamp((Number(st.fame)||0)+8,0,100);st.morale=clamp((Number(st.morale)||0)+3,0,100);if(st===G)addLegacy(8,"McDonald’s All-American 入選");else st.legacy=(Number(st.legacy)||0)+8;aa.rewards.selection={fame:8,morale:3,legacy:8};st.amateurAwards=Array.isArray(st.amateurAwards)?st.amateurAwards:[];normalizeAmateurAwardRecords(st);if(!st.amateurAwards.some(a=>a&&Number(a.year)===Number(st.year)&&a.award==="McDonald’s All-American")){st.amateurAwards.push({year:st.year,award:"McDonald’s All-American"});if(st===G)logAward("美國高中","McDonald’s All-American",st.year);}recordStoryBeat({key:`allAmericanSelection|${aa.year}`,year:aa.year,age:st.age,type:"allAmericanSelection",importance:82,region:"us",league:"美國高中",team:st.team,facts:{rank:aa.rank},tags:["showcase","school","people"]},st);}
+function prepareAllAmericanWeekend(state=G){const st=state||{},sel=allAmericanSelectionDecision(st);if(!sel.selected)return null;if(st._allAmerican&&Number(st._allAmerican.year)===Number(st.year))return st._allAmerican;const roster=buildAllAmericanRoster(st);st._allAmerican={version:1,year:st.year,rank:sel.rank,selected:true,phase:"selection",roster,spEarned:0,rewards:{},practiceChoice:null,mediaChoice:null,game:null};_allAmericanSelectionReward(st);return st._allAmerican;}
+function startAllAmericanWeekend(state=G){const st=state||{},aa=prepareAllAmericanWeekend(st);if(!aa)return processOffseason();aa.phase="selection";st.phase="allAmericanSelection";if(st===G)render();return aa;}
+function continueAllAmericanSelection(state=G){const st=state||{},aa=st._allAmerican;if(!aa)return;aa.phase="practice";st.phase="allAmericanPractice";if(st===G)render();}
+function _allAmericanFeaturedNpc(st){const aa=st._allAmerican,u=ensureLeagueUniverse(st),ids=(aa&&aa.roster&&aa.roster.players||[]).filter(x=>x&&x.id!=="player"&&x.persistent).map(x=>x.id),npcs=ids.map(id=>u.npcs[id]).filter(Boolean);return npcs.sort((a,b)=>customCareerThreadStoryPriority(b,st)-customCareerThreadStoryPriority(a,st))[0]||null;}
+function allAmericanPracticeChoice(key,state=G){const st=state||{},aa=st._allAmerican;if(!aa||aa.practiceChoice)return false;const choices={shooting:"three",pass:"pass",defense:"defense"},skill=choices[key]||null;aa.practiceChoice=key;if(skill)addMastery(skill,.6,"All-American Showcase Practice",st,{source:"showcase",year:st.year});else{const m=ensureMasteryState(st),top=["shooting","three","rebound","pass","defense","iq"].sort((a,b)=>(Number(m[b])||0)-(Number(m[a])||0))[0]||"shooting";addMastery(top,.3,"All-American Spotlight Scrimmage",st,{source:"showcase",year:st.year});aa.practiceMasterySkill=top;}grantAllAmericanSp(st,1,"Showcase Practice");const n=_allAmericanFeaturedNpc(st);if(n){n.relationship.score=clamp((Number(n.relationship.score)||0)+(key==="defense"?-1:4),-100,100);recordSharedHistory(n.id,key==="defense"?"friendlyCompetition":"showcasePractice",{year:st.year,league:"美國高中",team:st.team,note:"McDonald’s All-American Showcase Practice"},st);}aa.phase="media";st.phase="allAmericanMedia";if(st===G)render();return true;}
+function allAmericanMediaChoice(key,state=G){const st=state||{},aa=st._allAmerican;if(!aa||aa.mediaChoice)return false;aa.mediaChoice=key;const n=_allAmericanFeaturedNpc(st);if(key==="respect"){if(st===G)addHeat(2);else st.fame=clamp((Number(st.fame)||0)+2,0,100);st.morale=clamp((Number(st.morale)||0)+2,0,100);if(n)n.relationship.score=clamp((Number(n.relationship.score)||0)+5,-100,100);}else if(key==="challenge"){if(st===G)addHeat(5);else st.fame=clamp((Number(st.fame)||0)+5,0,100);st.morale=clamp((Number(st.morale)||0)+1,0,100);if(n)n.relationship.score=clamp((Number(n.relationship.score)||0)-3,-100,100);}else{st.morale=clamp((Number(st.morale)||0)+3,0,100);}recordStoryBeat({key:`allAmericanMedia|${st.year}|${key}`,year:st.year,type:"allAmericanMedia",importance:58,region:"us",league:"美國高中",team:st.team,refs:n?{npcIds:[n.id]}:undefined,facts:{choice:key,npcName:n&&n.name||null},tags:["showcase","media"]},st);aa.phase="game";st.phase="allAmericanGame";simulateAllAmericanFirstThreeQuarters(st);if(st===G)render();return true;}
+function _allAmericanBaseLine(st,rr){const a=st.attr||{},rank=Number(st._hsRecruitRank)||40,role=clamp(1.12-(rank-1)*.006,.70,1.12);return {pts:Math.round(clamp((a.shooting*.17+a.three*.08+a.athletic*.035-7)*role+(rr()-.5)*6,4,27)),reb:Math.round(clamp((a.rebound*.065+(st.pos==="C"?2:st.pos==="PF"?1:0))*role+(rr()-.5)*3,1,11)),ast:Math.round(clamp((a.pass*.075+a.iq*.025-2)*role+(rr()-.5)*3,0,10)),stl:round(clamp((a.defense-45)/38+(rr()-.5)*.7,.2,2.5),1),blk:round(clamp((a.defense+a.rebound-105)/70+(["PF","C"].includes(st.pos)?.3:0)+(rr()-.5)*.5,0,2.3),1),fg:Math.round(clamp(39+(a.shooting-50)*.24+(rr()-.5)*8,35,65)),tp:Math.round(clamp(27+(a.three-50)*.28+(rr()-.5)*10,20,55))};}
+function simulateAllAmericanFirstThreeQuarters(state=G){const st=state||{},aa=st._allAmerican;if(!aa)return null;if(aa.game)return aa.game;const rr=universeRng(Number(st.year)||0,"all-american-game",st),line=_allAmericanBaseLine(st,rr),east=clamp(Math.round(78+(rr()-.5)*18),65,92),west=clamp(Math.round(78+(rr()-.5)*18),65,92),margin=Math.abs(east-west),rank=Number(st._hsRecruitRank)||50,meaningful=rank<=50,decisions=clamp(margin<=12&&meaningful?2+Math.floor(rr()*3):1,1,4);aa.game={quarter:4,line,eastScore:east,westScore:west,playerTeam:aa.roster&&aa.roster.playerTeam||"east",decisionsRemaining:decisions,decisionsTotal:decisions,decisionIndex:0,choices:[],resolved:false,standout:false,mvpId:null};return aa.game;}
+function allAmericanGameImpact(line={}){const l=line||{},eff=((Number(l.fg)||0)-45)*.06+((Number(l.tp)||0)-35)*.04;return round((Number(l.pts)||0)+(Number(l.ast)||0)*1.45+(Number(l.reb)||0)*.75+(Number(l.stl)||0)*1.9+(Number(l.blk)||0)*1.8+eff,1);}
+function _allAmericanResolveGame(state=G){const st=state||{},aa=st._allAmerican,g=aa&&aa.game;if(!g||g.resolved)return g;const rr=universeRng(Number(st.year)||0,"all-american-game-close",st),us=g.playerTeam==="east"?g.eastScore:g.westScore,them=g.playerTeam==="east"?g.westScore:g.eastScore;if(us===them){if(g.playerTeam==="east")g.eastScore++;else g.westScore++;}g.resolved=true;const impact=allAmericanGameImpact(g.line),competition=round(32+rr()*10,1);g.impact=impact;g.standout=impact>=30;g.mvpId=impact>=competition?"player":((aa.roster.players||[]).filter(x=>x.id!=="player").sort((a,b)=>(a.rank||99)-(b.rank||99))[0]||{}).id||null;if(g.standout&&!aa.rewards.standoutApplied){aa.rewards.standoutApplied=true;grantAllAmericanSp(st,1,"Showcase Standout");if(st===G){addHeat(3);addLegacy(4,"All-American Showcase 亮眼表現");}else{st.fame=clamp((Number(st.fame)||0)+3,0,100);st.legacy=(Number(st.legacy)||0)+4;}}if(g.mvpId==="player"&&!aa.rewards.mvpApplied){aa.rewards.mvpApplied=true;grantAllAmericanSp(st,1,"All-American Game MVP");if(st===G){addHeat(6);addLegacy(10,"McDonald’s All-American Game MVP");}else{st.fame=clamp((Number(st.fame)||0)+6,0,100);st.legacy=(Number(st.legacy)||0)+10;}st.amateurAwards=Array.isArray(st.amateurAwards)?st.amateurAwards:[];normalizeAmateurAwardRecords(st);if(!st.amateurAwards.some(a=>a&&Number(a.year)===Number(st.year)&&a.award==="McDonald’s All-American Game MVP")){st.amateurAwards.push({year:st.year,award:"McDonald’s All-American Game MVP"});if(st===G)logAward("美國高中","McDonald’s All-American Game MVP",st.year);}recordStoryBeat({key:`allAmericanMVP|${st.year}`,year:st.year,type:"allAmericanMVP",importance:88,region:"us",league:"美國高中",team:st.team,facts:{line:{...g.line}},tags:["showcase","award"]},st);}aa.phase="closing";st.phase="allAmericanClosing";return g;}
+function allAmericanGameDecision(key,state=G){const st=state||{},aa=st._allAmerican,g=aa&&aa.game;if(!g||g.resolved||g.decisionsRemaining<=0)return false;const i=g.decisionIndex||0,rr=universeRng(Number(st.year)||0,`all-american-clutch-${i}-${key}`,st),success=rr()<({takeover:.58,create:.68,rival:.52,safe:.76,trust:.70}[key]||.62);g.choices.push({key,success});if(success){if(key==="create"||key==="trust"){g.line.ast+=1;if(g.playerTeam==="east")g.eastScore+=2;else g.westScore+=2;}else if(key==="safe"){g.line.pts+=2;g.line.fg=clamp(g.line.fg+1,0,100);if(g.playerTeam==="east")g.eastScore+=2;else g.westScore+=2;}else{const three=(key==="takeover"&&Number(st.attr&&st.attr.three)>=Number(st.attr&&st.attr.shooting)-3&&rr()<.45),pts=three?3:2;g.line.pts+=pts;if(g.playerTeam==="east")g.eastScore+=pts;else g.westScore+=pts;}}else if(key==="rival"){g.line.stl=round(Math.max(.2,g.line.stl-.1),1);}g.decisionsRemaining--;g.decisionIndex++;if(g.decisionsRemaining<=0)_allAmericanResolveGame(st);if(st===G)render();return true;}
+function _recordAllAmericanSharedHistory(st){const aa=st._allAmerican,u=ensureLeagueUniverse(st),ids=(aa&&aa.roster&&aa.roster.players||[]).filter(x=>x&&x.id!=="player"&&x.persistent).map(x=>x.id);for(const id of ids){const n=u.npcs[id];if(!n)continue;recordSharedHistory(id,"allAmericanWeekend",{year:st.year,league:"美國高中",team:n.team,note:"McDonald’s All-American Showcase Weekend"},st);const h=n.relationship&&n.relationship.sharedHistory||[];if((n.isCustomCareerThread||(n.isClassStar&&allAmericanNpcRank(n,st)<=15)||h.length>=2)&&!u.careerThreads.includes(id))u.careerThreads.push(id);}u.careerThreads=[...new Set(u.careerThreads)];}
+function finalizeAllAmericanWeekend(state=G){const st=state||{},aa=st._allAmerican;if(!aa)return false;if(aa.game&&!aa.game.resolved)_allAmericanResolveGame(st);if(!aa.sharedHistoryRecorded){_recordAllAmericanSharedHistory(st);aa.sharedHistoryRecorded=true;}st._allAmericanResolvedYear=Number(aa.year)||Number(st.year)||0;recordStoryBeat({key:`allAmericanWeekend|${aa.year}`,year:aa.year,type:"allAmericanWeekend",importance:84,region:"us",league:"美國高中",team:st.team,facts:{rank:aa.rank,spEarned:aa.spEarned,line:aa.game&&aa.game.line||null,mvp:aa.game&&aa.game.mvpId==="player"},tags:["showcase","school","people"]},st);aa.completed=true;if(st===G){st.phase="hsDecision";processOffseason();}return true;}
+function allAmericanSelectionHTML(state=G){const st=state||{},aa=st._allAmerican||prepareAllAmericanWeekend(st),r=aa&&aa.roster;if(!aa||!r)return `<div class="panel">Showcase invitation unavailable.</div>`;const u=ensureLeagueUniverse(st),careerThreadIds=new Set(Array.isArray(u&&u.careerThreads)?u.careerThreads:[]),row=x=>{const isPlayer=x&&x.id==="player",isThread=!!(x&&!isPlayer&&careerThreadIds.has(x.id)),cls=isPlayer?" is-player":isThread?" is-career-thread":"",badge=isPlayer?`<em class="aa-roster-badge">★ YOU</em>`:isThread?`<em class="aa-roster-badge">◆ CAREER THREAD</em>`:"";return `<div class="aa-roster-row${cls}"><span class="aa-roster-name">${badge}${x.name}</span><b>#${x.rank||"—"} · ${x.pos||""}</b></div>`;},team=(key,label,rows)=>`<div class="aa-roster ${key}"><div class="label">${label}</div>${rows.map(row).join("")}</div>`;return `<div class="season-hd"><span class="stage">McDONALD’S ALL-AMERICAN · SELECTION NIGHT</span><span class="yr">${aa.year}</span></div><div class="aa-hero"><div class="label">NATIONAL SHOWCASE INVITATION</div><h2>你的名字，進了全美明星週末</h2><p class="event-text">全美招募 #${aa.rank}。四年 Prep 生涯最後一段，不再是普通校隊比賽：24 名同屆頂尖球員將在同一個舞台集合。</p><div class="aa-reward"><span>Fame +8</span><span>Morale +3</span><span>Legacy +8</span></div></div><div class="aa-roster-grid mt12">${team("east","TEAM EAST",r.east)}${team("west","TEAM WEST",r.west)}</div>`;}
+function allAmericanPracticeHTML(state=G){const aa=(state||{})._allAmerican;return `<div class="season-hd"><span class="stage">ALL-AMERICAN · SHOWCASE PRACTICE</span><span class="yr">${aa&&aa.year||""}</span></div><div class="panel"><div class="label">PRACTICE · 讓這群人先記住你</div><h2>第一場真正的全美菁英合練</h2><p class="event-text">完成練習固定獲得 +1 下季訓練 SP；選擇會累積 Mastery，而不是直接灌能力。</p><div class="aa-choice-grid"><button class="opt" data-aa-practice="shooting"><span class="ico">🎯</span><span class="ot"><b>跟射手群加練</b><div class="oh">三分專精經驗 +0.6</div></span></button><button class="opt" data-aa-practice="pass"><span class="ico">🧠</span><span class="ot"><b>和頂尖控衛磨合</b><div class="oh">組織專精經驗 +0.6</div></span></button><button class="opt" data-aa-practice="defense"><span class="ico">🛡️</span><span class="ot"><b>主動守最高排名新秀</b><div class="oh">防守專精經驗 +0.6 · 競爭關係升溫</div></span></button><button class="opt" data-aa-practice="spotlight"><span class="ico">🔥</span><span class="ot"><b>搶下練習賽焦點</b><div class="oh">目前最高專精經驗 +0.3 · 角色聲量提升</div></span></button></div></div>`;}
+function allAmericanMediaHTML(state=G){const n=_allAmericanFeaturedNpc(state||G);return `<div class="season-hd"><span class="stage">ALL-AMERICAN · MEDIA DAY</span></div><div class="panel"><div class="label">THE QUESTIONS START NOW</div><h2>${n?`記者把你和 ${n.name} 放到同一個問題裡`:`全美媒體第一次把麥克風全部轉向你`}</h2><p class="event-text">這一幕不增加能力與 SP；它只留下聲量、關係與多年後還能被翻出的話。</p><div class="opts"><button class="opt" data-aa-media="respect"><span class="ico">🤝</span><span class="ot"><b>稱讚同屆高手</b><div class="oh">關係更正向 · Fame 小幅提升</div></span></button><button class="opt" data-aa-media="challenge"><span class="ico">⚔️</span><span class="ot"><b>「球場上會有答案」</b><div class="oh">聲量更高 · rivalry 更強</div></span></button><button class="opt" data-aa-media="quiet"><span class="ico">◌</span><span class="ot"><b>把答案留到比賽</b><div class="oh">Morale + · 不炒作</div></span></button></div></div>`;}
+function allAmericanGameHTML(state=G){const st=state||{},aa=st._allAmerican,g=aa&&aa.game||simulateAllAmericanFirstThreeQuarters(st);if(!g)return `<div class="panel">Game unavailable.</div>`;const line=g.line,teamKey=g.playerTeam||aa.roster&&aa.roster.playerTeam||"east",mate=((aa.roster&&aa.roster[teamKey])||[]).find(x=>x&&x.id!=="player"&&x.isCustomCareerThread),oppKey=teamKey==="east"?"west":"east",rival=((aa.roster&&aa.roster[oppKey])||[]).find(x=>x&&x.isCustomCareerThread),trustBtn=mate?`<button class="opt" data-aa-game="trust"><span class="ico">🤝</span><span class="ot"><b>相信 ${mate.name}</b><div class="oh">把這個回合交給一路走來的人</div></span></button>`:"",rivalLabel=rival?`點名 ${rival.name}`:"點名最高排名對手",choices=g.resolved?"":`<div class="aa-choice-grid mt12"><button class="opt" data-aa-game="takeover"><span class="ico">🔥</span><span class="ot"><b>自己接管</b><div class="oh">提高個人終結機會，失敗風險較高</div></span></button><button class="opt" data-aa-game="create"><span class="ico">🧠</span><span class="ot"><b>替隊友創造機會</b><div class="oh">成功時增加助攻，風險低於單打</div></span></button>${trustBtn}<button class="opt" data-aa-game="rival"><span class="ico">⚔️</span><span class="ot"><b>${rivalLabel}</b><div class="oh">正面挑戰對手，成功率較低</div></span></button><button class="opt" data-aa-game="safe"><span class="ico">◆</span><span class="ot"><b>做正確的籃球選擇</b><div class="oh">成功率最高，優先做穩健選擇</div></span></button></div>`;return `<div class="season-hd"><span class="stage">McDONALD’S ALL-AMERICAN GAME · 4Q</span><span class="yr">${aa.year}</span></div><div class="aa-hero"><div class="label">FOURTH QUARTER</div><div class="aa-score">EAST ${g.eastScore} – ${g.westScore} WEST</div><p class="muted">前三節快速模擬完成。剩餘關鍵回合：${g.decisionsRemaining}</p><div class="statline"><div class="s"><div class="v">${line.pts}</div><div class="l">PTS</div></div><div class="s"><div class="v">${line.reb}</div><div class="l">REB</div></div><div class="s"><div class="v">${line.ast}</div><div class="l">AST</div></div><div class="s"><div class="v">${line.stl}</div><div class="l">STL</div></div></div>${choices}</div>`;}
+function allAmericanClosingHTML(state=G){const aa=(state||{})._allAmerican,g=aa&&aa.game,l=g&&g.line||{};return `<div class="season-hd"><span class="stage">ALL-AMERICAN WEEKEND · CLOSING</span></div><div class="aa-hero center"><div class="label">A CHAPTER ENDS</div><h2>${g&&g.mvpId==="player"?"⭐ ALL-AMERICAN GAME MVP":"McDonald’s All-American"}</h2><div class="aa-score">${g&&g.playerTeam==="east"?g.eastScore:g&&g.westScore} – ${g&&g.playerTeam==="east"?g.westScore:g&&g.eastScore}</div><p class="event-text">${l.pts||0} PTS · ${l.reb||0} REB · ${l.ast||0} AST · ${l.stl||0} STL · ${l.blk||0} BLK<br>FG ${l.fg||0}% · 3P ${l.tp||0}%</p><div class="aa-reward" style="justify-content:center"><span>Weekend SP +${aa&&aa.spEarned||0}</span>${g&&g.standout?"<span>Standout</span>":""}${g&&g.mvpId==="player"?"<span>Game MVP</span>":""}</div><p class="small mt12">這些人物與這場比賽已寫入 Career Thread / League Universe，未來 NCAA、選秀與職業舞台可以再次引用。</p></div>`;}
+
 function bootstrapLeagueStars(state=G){
   const st=state||{},u=ensureLeagueUniverse(st);if(u._nbaBootstrapped)return activeLeagueNpcs("NBA",st);
   const target=28,rng=universeRng(u.bootstrapYear||st.year||2026,"nba-bootstrap",st),keys=Object.keys(UNIVERSE_ARCHETYPES);
@@ -3242,7 +3535,7 @@ function simulateUniverseSeason(year,league="NBA",state=G){
     const t=npc.career.totals;t.gp+=line.gp;t.pts+=Math.round(line.ppg*line.gp);t.reb+=Math.round(line.rpg*line.gp);t.ast+=Math.round(line.apg*line.gp);t.stl+=Math.round(line.spg*line.gp);t.blk+=Math.round(line.bpg*line.gp);
     npc.age+=1;
     const ov=overall(npc.attrs,npc.pos),retireP=npc.age>=41?.92:npc.age>=39?.58:npc.age>=37?.20:0;
-    if(npc.age>=43||ov<66||(npc.age>=36&&npc.health<35&&rng()<.65)||rng()<retireP){if(u.careerThreads.includes(npc.id))markCareerThreadRetired(npc,year,st,"宣布退休");else{npc.retired=true;npc.active=false;npc.retiredYear=year;_recordUniversePulse(st,{year,type:"retirement",text:`👋 ${npc.name} 宣布退休，屬於他的聯盟篇章告一段落。`,npcId:npc.id});}}
+    if(npc.age>=43||((!npc.isCustomCareerThread||npc.age>=22)&&ov<66)||(npc.age>=36&&npc.health<35&&rng()<.65)||rng()<retireP){if(u.careerThreads.includes(npc.id))markCareerThreadRetired(npc,year,st,"宣布退休");else{npc.retired=true;npc.active=false;npc.retiredYear=year;_recordUniversePulse(st,{year,type:"retirement",text:`👋 ${npc.name} 宣布退休，屬於他的聯盟篇章告一段落。`,npcId:npc.id});}}
     else {const oldTeam=npc.team;_npcMaybeMove(npc,year,st,rng);if(npc.team!==oldTeam)_recordUniversePulse(st,{year,type:"move",text:`🔄 ${npc.name} 離開 ${oldTeam}，轉往 ${npc.team}。`,npcId:npc.id});}
     out.push(line);
   }
@@ -3374,13 +3667,13 @@ function maybeCareerAlteringThreadInjury(npc,year,state=G){
   if(!npc||npc._careerAlteringInjuryDone||npc.deceased||npc.retired||npc.careerStage!=="pro")return false;if(typeof npc._careerAlteringInjuryTicket!=="boolean"){const base=Number(npc.proStartYear)||Number(npc.origin&&npc.origin.year)||Number(year),rr=universeRng(base,`career-injury-ticket-${npc.id}`,state);npc._careerAlteringInjuryTicket=rr()<.08;npc._careerAlteringInjuryAge=23+Math.floor(rr()*12);}if(!npc._careerAlteringInjuryTicket||Number(npc.age)<Number(npc._careerAlteringInjuryAge))return false;return applyCareerAlteringInjury(npc,year,state,universeRng(year,`career-injury-impact-${npc.id}`,state));
 }
 function deathEligibleCareerThreads(state=G,year=null){
-  const st=state||{},u=ensureV273LifeState(st),y=Number(year)||Number(st.year)||0;return (u.careerThreads||[]).map(id=>u.npcs[id]).filter(n=>{if(!n||n.deceased||n.retired||n.active===false)return false;const h=n.relationship&&n.relationship.sharedHistory||[],knownFrom=Math.min(Number(n.origin&&n.origin.year)||y,...h.map(x=>Number(x.year)||y)),stakes=h.filter(x=>["playoffMeeting","finalsMeeting","mvpTop2"].includes(x.type)).length,deep=Number(n.relationship&&n.relationship.score)>=55||stakes>=4;return y-knownFrom>=5&&h.length>=4&&deep;});
+  const st=state||{},u=ensureV273LifeState(st),y=Number(year)||Number(st.year)||0;return (u.careerThreads||[]).map(id=>u.npcs[id]).filter(n=>{if(!n||n.deceased||n.retired||n.active===false||customCareerThreadProtected(n))return false;const h=n.relationship&&n.relationship.sharedHistory||[],knownFrom=Math.min(Number(n.origin&&n.origin.year)||y,...h.map(x=>Number(x.year)||y)),stakes=h.filter(x=>["playoffMeeting","finalsMeeting","mvpTop2"].includes(x.type)).length,deep=Number(n.relationship&&n.relationship.score)>=55||stakes>=4;return y-knownFrom>=5&&h.length>=4&&deep;});
 }
 function maybeLockCareerThreadDeath(year,state=G){
-  const st=state||{},u=ensureV273LifeState(st),f=u.lifeFlags,y=Number(year)||Number(st.year)||0;if(f.deathOccurred)return null;if(f.lockedDeath)return f.lockedDeath;if(!f.deathTicket||y<Number(f.deathWindowYear||9999))return null;const candidates=deathEligibleCareerThreads(st,y);if(!candidates.length)return null;const rr=universeRng(Number(f.deathWindowYear)||y,"career-thread-death-target",st),npc=candidates[Math.floor(rr()*candidates.length)%candidates.length],cause=rr()<.5?"illness":"accident";f.lockedDeath={npcId:npc.id,year:y,cause};return f.lockedDeath;
+  const st=state||{},u=ensureV273LifeState(st),f=u.lifeFlags,y=Number(year)||Number(st.year)||0;if(f.deathOccurred)return null;if(f.lockedDeath){const lockedNpc=u.npcs[f.lockedDeath.npcId];if(lockedNpc&&customCareerThreadProtected(lockedNpc))f.lockedDeath=null;else return f.lockedDeath;}if(!f.deathTicket||y<Number(f.deathWindowYear||9999))return null;const candidates=deathEligibleCareerThreads(st,y);if(!candidates.length)return null;const rr=universeRng(Number(f.deathWindowYear)||y,"career-thread-death-target",st),npc=candidates[Math.floor(rr()*candidates.length)%candidates.length],cause=rr()<.5?"illness":"accident";f.lockedDeath={npcId:npc.id,year:y,cause};return f.lockedDeath;
 }
 function applyCareerThreadDeath(lock,state=G){
-  const st=state||{},u=ensureV273LifeState(st),f=u.lifeFlags;if(!lock||f.deathOccurred)return false;const npc=u.npcs[lock.npcId];if(!npc||npc.deceased||npc.retired)return false;const year=Number(lock.year)||Number(st.year)||0,cause=lock.cause==="accident"?"accident":"illness",h=npc.relationship&&npc.relationship.sharedHistory||[],stakes=h.filter(x=>["playoffMeeting","finalsMeeting","mvpTop2"].includes(x.type)).length,rival=stakes>=4&&Number(npc.relationship&&npc.relationship.score)<40;
+  const st=state||{},u=ensureV273LifeState(st),f=u.lifeFlags;if(!lock||f.deathOccurred)return false;const npc=u.npcs[lock.npcId];if(!npc||npc.deceased||npc.retired||customCareerThreadProtected(npc))return false;const year=Number(lock.year)||Number(st.year)||0,cause=lock.cause==="accident"?"accident":"illness",h=npc.relationship&&npc.relationship.sharedHistory||[],stakes=h.filter(x=>["playoffMeeting","finalsMeeting","mvpTop2"].includes(x.type)).length,rival=stakes>=4&&Number(npc.relationship&&npc.relationship.score)<40;
   npc.deceased=true;npc.active=false;npc.retired=false;delete npc.retiredYear;npc.deceasedYear=year;npc.careerStage="deceased";npc.contract=null;npc.lifeEvents=npc.lifeEvents||[];npc.lifeEvents.push({type:"death",year,cause});f.deathOccurred=true;f.deathNpcId=npc.id;f.lockedDeath={npcId:npc.id,year,cause};recordSharedHistory(npc.id,"death",{year,league:npc.league,team:npc.team,note:cause==="illness"?"因突發疾病離世":"休賽期間因意外離世"},st);recordRelationshipMemory(npc.id,"finalFarewell",rival?"你們從來不是朋友，但他一直是最懂你有多難對付的人之一。":"你們共同的故事停在這一年，但以前留下的每一段記憶都沒有被刪掉。",{year,type:"death"},st);_recordUniversePulse(st,{year,type:"death",text:`🕯️ ${npc.name} ${cause==="illness"?"因突發疾病離世":"在休賽期間因意外離世"}。`,npcId:npc.id});
   recordStoryBeat({key:`careerThreadDeath|${year}|${npc.id}`,year,type:"careerThreadDeath",importance:99,region:_storyRegionForLeague(npc.league),league:npc.league,team:npc.team,refs:{npcIds:[npc.id]},facts:{npcName:npc.name,cause,reason:cause==="illness"?"因突發疾病離世":"休賽期間因意外離世",rival},tags:["people","scar","loss"]},st);
   queueCareerThreadEvent({id:`death|${npc.id}|${year}`,type:"death",priority:100,npcId:npc.id,year,kicker:rival?"CAREER THREAD · THE RIVAL":"CAREER THREAD · AN EMPTY SEAT",title:rival?"那個最熟悉的對手，不在了":"那個空著的位置",body:rival?`更衣室裡沒有人說話。你和 ${npc.name} 從來沒有真正喜歡過彼此，但你突然意識到，那個最懂你有多強、也最知道怎麼讓你難受的人，不在了。`:`消息來得沒有任何戲劇性的預告。${npc.name}${cause==="illness"?"因突發疾病離世":"在休賽期間因意外離世"}。沒有能力值、沒有可以改寫結果的選項；只剩下那些你們真的一起走過的年份。`,callback:relationshipMemoryCallback(npc),options:["坐下，看完"]},st);return true;
@@ -3485,13 +3778,14 @@ function _advanceThreadOverseasPro(npc,year,state,rng){
   if((npc.career.seasons||[]).some(s=>Number(s.year)===Number(year)))return;if(maybeCareerAlteringThreadInjury(npc,year,state)&&npc.retired)return;_applyNpcCareerCurve(npc,year,rng);
   evolveNpcArchetype(npc,year);const line=npcSeasonLine(npc,{year,state},rng);npc.career.seasons.push(line);const t=npc.career.totals;t.gp+=line.gp;t.pts+=Math.round(line.ppg*line.gp);t.reb+=Math.round(line.rpg*line.gp);t.ast+=Math.round(line.apg*line.gp);t.stl+=Math.round(line.spg*line.gp);t.blk+=Math.round(line.bpg*line.gp);
   const majorRisk=clamp(.012+(1-npc.durability)*.05+Math.max(0,npc.age-31)*.004,.008,.11);if(rng()<majorRisk){npc.health=clamp(npc.health-_uInt(22,42,rng),25,100);npc.career.lastMajorInjury=year;ensureLeagueUniverse(state).leaguePulse.push({year,type:"majorInjury",text:`🩹 ${npc.name} 遭遇重大傷勢，生涯走向出現變數。`,npcId:npc.id});}else npc.health=clamp(npc.health+_uInt(1,6,rng),40,100);
-  npc.age+=1;const ov=overall(npc.attrs,npc.pos);if(npc.age>=42||ov<64||(npc.age>=37&&rng()<.32)){markCareerThreadRetired(npc,year,state,"宣布退休");}else if(!maybeThreadNbaCallUp(npc,year,state,rng))_npcMaybeMove(npc,year,state,rng);
+  npc.age+=1;const ov=overall(npc.attrs,npc.pos);if(npc.age>=42||((!npc.isCustomCareerThread||npc.age>=22)&&ov<64)||(npc.age>=37&&rng()<.32)){markCareerThreadRetired(npc,year,state,"宣布退休");}else if(!maybeThreadNbaCallUp(npc,year,state,rng))_npcMaybeMove(npc,year,state,rng);
 }
 function advanceCareerThreads(year,state=G){
   const st=state||{},u=ensureV273LifeState(st),y=Number(year)||Number(st.year)||2026;let nbaActive=false;const deathLock=maybeLockCareerThreadDeath(y,st);if(deathLock)applyCareerThreadDeath(deathLock,st);
-  for(const id of u.careerThreads||[]){const npc=u.npcs[id];if(!npc||npc.retired||npc.active===false)continue;npc.careerStage=npc.careerStage||npc.origin&&npc.origin.stage||"pro";if(Number(npc._threadAdvancedYear)>=y)continue;
+  const advanceIds=[...new Set([...(u.careerThreads||[]),...(u.classStarIds||[])])];
+  for(const id of advanceIds){const npc=u.npcs[id];if(!npc||npc.retired||npc.active===false)continue;npc.careerStage=npc.careerStage||npc.origin&&npc.origin.stage||"pro";if(Number(npc._threadAdvancedYear)>=y)continue;
     const rng=universeRng(y,`thread-life-${id}`,st);
-    if(npc.careerStage==="高中"){_applyNpcCareerCurve(npc,y,rng);npc.age+=1;if(npc.age>=18)_threadCollegeRoute(npc,y,st,rng);}
+    if(npc.careerStage==="高中"){_applyNpcCareerCurve(npc,y,rng);npc.age+=1;const gradYear=Number(npc.highSchoolGraduationYear)||0;if((gradYear&&y>gradYear)||(!gradYear&&npc.age>=18))_threadCollegeRoute(npc,y,st,rng);}
     else if(npc.careerStage==="大學"){_applyNpcCareerCurve(npc,y,rng);npc.collegeYears=(Number(npc.collegeYears)||0)+1;npc.age+=1;if(npc.collegeYears>=4||npc.age>=22)_threadTurnPro(npc,y,st,rng);}
     else if(npc.careerStage==="pro"&&npc.league!=="NBA")_advanceThreadOverseasPro(npc,y,st,rng);
     if(!npc.deceased)advanceSameTeamPromise(npc,y,st);npc._threadAdvancedYear=y;if(npc.careerStage==="pro"&&npc.league==="NBA"&&Number(npc.proStartYear||0)<=y)nbaActive=true;
@@ -3516,7 +3810,7 @@ function _careerThreadEncounterEvent(npc,state=G){if(!npc)return null;const st=s
 function maybeCareerThreadStoryEvent(state=G){
   const st=state||{},u=ensureLeagueUniverse(st),year=Number(st.year)||0;if(!(u.careerThreads||[]).length)return null;
   u._threadStoryKeys=u._threadStoryKeys||[];u._threadStoryYears=u._threadStoryYears||[];if(u._threadStoryYears.includes(year))return null;
-  const npcs=u.careerThreads.map(id=>u.npcs[id]).filter(n=>n&&n.active!==false&&!n.retired&&Number(n.origin&&n.origin.year)!==year);
+  const npcs=u.careerThreads.map(id=>u.npcs[id]).filter(n=>n&&n.active!==false&&!n.retired&&Number(n.origin&&n.origin.year)!==year).sort((a,b)=>customCareerThreadStoryPriority(b,st)-customCareerThreadStoryPriority(a,st)||String(a.id).localeCompare(String(b.id)));
   const hasHist=(n,t)=>(n.relationship&&n.relationship.sharedHistory||[]).some(h=>h.type===t),stakes=n=>(n.relationship&&n.relationship.sharedHistory||[]).filter(h=>["playoffMeeting","finalsMeeting","mvpTop2"].includes(h.type)).length;
   const mems=n=>(n.relationship&&Array.isArray(n.relationship.memories))?n.relationship.memories:[];
   const sameTeam=n=>n.league===st.league&&n.team===st.team,sameLeague=n=>n.league===st.league;
@@ -3757,7 +4051,7 @@ function newGame(name,pos,home,jersey,seed,bg,creation){
     }
   }
   G={
-    name,pos:initialPos,home,jersey:jn,careerMode:creationProfile.mode,
+    name,pos:initialPos,home,jersey:jn,careerMode:creationProfile.mode,difficultyMode:normalizeCareerDifficulty(creation&&creation.difficultyMode),
     height,weight,wingspan,_growthBoost:0,buildId,creationBuild,creationBuildName,
     youthExperience:positionless?creationProfile.youthExperience:null,positionlessGrowth:positionless?{...creationProfile.positionlessGrowth}:null,
     _coachNeeds:positionless?{...creationProfile.coachNeeds}:null,positionHistory:[],
@@ -3765,6 +4059,7 @@ function newGame(name,pos,home,jersey,seed,bg,creation){
     _positionlessStageSeen:positionless?{highSchool:false,college:false,pro:false}:null,_pendingPositionlessCoachEvents:[],_pendingPositionlessRoleReview:null,
     creationComp:creationProfile.creationComp||null,legendaryMatch:creationProfile.legendaryMatch||null,
     favoriteNbaTeam:(creation&&TEAMS.NBA&&TEAMS.NBA.includes(creation.favoriteNbaTeam))?creation.favoriteNbaTeam:"",
+    customCareerThreads:normalizeCustomCareerThreadDrafts(creation&&creation.customCareerThreads),
     _creationBodyLocked:creationProfile.mode==="myplayer",
     attr,potential:rollHiddenPotential(),_scoutBias:rnd(-.7,.7),
     age:15,year:2026,stage:"高中",grade:1,league:"高中",team:schoolPick("高中"),
@@ -3802,7 +4097,12 @@ function newGame(name,pos,home,jersey,seed,bg,creation){
   }else{
     const nb=normalizeBody(pos,G);G.height=nb.height;G.weight=nb.weight;G.wingspan=nb.wingspan;
   }
+  const entryFloorResult=applyCasualEntryOvrFloor(G);
+  if(entryFloorResult.changed&&G.careerMode==="classic"){
+    const refreshed=analyzeCreationBuild(G.pos,G,G.attr);G.creationBuild=refreshed;G.creationBuildName=refreshed.name;G.creationComp=creationComparison(G.pos,G,G.attr,refreshed);
+  }
   migrateV270State(G);
+  createCustomCareerThreadsFromCreation(G,G.customCareerThreads);
   recordStoryBeat({key:`careerOrigin|${G.background||"local"}|${G.home||""}|2026`,year:2026,age:15,type:"careerOrigin",importance:72,region:G.background==="asian_american"?"us":"tw",league:G.background==="asian_american"?"美國高中":"高中",team:G.team||null,facts:{background:G.background||"local",home:G.home||""},tags:["origin"]},G);
   if(eggTitle)grantTitle(eggTitle);
   const finalAnalysis=G.creationBuild||analyzeCreationBuild(G.pos,G,G.attr);
@@ -3898,6 +4198,21 @@ function pickInjury(sev){
   const sevLabel = sev==="career"?"毀滅性大傷":sev==="major"?"重傷":"輕傷";
   return {partKey:def.key, part:def.name, emoji:def.emoji, severity:sev,
           sevLabel, text:def[sev]||def.major||def.minor};
+}
+function injuryPermanentAttributeLoss(injury={},career=false,rngFn=_rng,state=G){
+  const st=state||{},a=st.attr||{},part=String(injury.partKey||""),maps={
+    ankle:{athletic:[1,3],defense:[0,2]},
+    knee:{athletic:[2,5],defense:[1,3],rebound:[0,1]},
+    achilles:{athletic:[3,6],defense:[1,3]},
+    hamstring:{athletic:[1,4],defense:[0,1]},
+    finger:{shooting:[1,3],three:[1,3],pass:[0,1]},
+    back:{athletic:[2,4],rebound:[1,3],defense:[1,3]},
+    shoulder:{shooting:[1,3],three:[0,2],rebound:[0,1]},
+    head:{iq:[0,1]}
+  },spec=maps[part]||{athletic:[1,3]},losses={};
+  const rr=typeof rngFn==="function"?rngFn:_rng;
+  for(const [k,range] of Object.entries(spec)){if(!(k in a))continue;let lo=Number(range[0])||0,hi=Number(range[1])||lo;if(career){lo+=lo>0?1:0;hi+=2;}const roll=lo+Math.floor(clamp(Number(rr()),0,.999999)*(hi-lo+1)),before=Number(a[k])||0,after=clamp(Math.round(before-roll),15,99);a[k]=after;if(before!==after)losses[k]=before-after;}
+  return losses;
 }
 
 const EVENTS={
@@ -5207,6 +5522,7 @@ function nbaCareerRankFromRoleKey(role,mpg=0){
 }
 
 const NBA_WEAPON_THRESHOLDS={
+  shooting:{B:79,A:85,S:92,label:"自主得分"},
   defense:{B:78,A:84,S:90,label:"鎖式防守"},
   three:{B:78,A:84,S:90,label:"外線投射"},
   rebound:{B:79,A:85,S:91,label:"籃板卡位"},
@@ -5228,7 +5544,9 @@ function nbaWeaponProfile(state=G){
   weapons.sort((x,y)=>y.roleValue-x.roleValue||y.score-x.score);
   const gradeAt=(k,g)=>{const w=weapons.find(x=>x.skill===k),rank={B:1,A:2,S:3};return !!w&&rank[w.grade]>=rank[g];};
   let archetype="No Clear NBA Skill",synergy=0;
-  if(gradeAt("three","A")&&gradeAt("defense","A")){archetype="3&D Wing";synergy=7;}
+  if(gradeAt("shooting","A")&&gradeAt("three","A")){archetype="Microwave Scorer";synergy=7;}
+  else if(gradeAt("shooting","A")&&gradeAt("athletic","A")){archetype="Slashing Scorer";synergy=6;}
+  else if(gradeAt("three","A")&&gradeAt("defense","A")){archetype="3&D Wing";synergy=7;}
   else if(gradeAt("iq","A")&&gradeAt("pass","A")){archetype=Number(st.age)>=31?"Veteran Organizer":"Connector";synergy=6;}
   else if(gradeAt("defense","A")&&gradeAt("athletic","A")){archetype="Point-of-Attack Defender";synergy=6;}
   else if(gradeAt("rebound","A")&&gradeAt("athletic","A")){archetype="Energy Big / Glass Cleaner";synergy=6;}
@@ -5238,6 +5556,7 @@ function nbaWeaponProfile(state=G){
   else if(gradeAt("defense","A"))archetype="Point-of-Attack Defender";
   else if(gradeAt("rebound","A"))archetype="Glass Cleaner";
   else if(gradeAt("iq","A"))archetype=Number(st.age)>=31?"Veteran Organizer":"Connector";
+  else if(gradeAt("shooting","A"))archetype="Bench Scorer";
   else if(gradeAt("athletic","A"))archetype="Energy Athlete";
   const top=weapons[0],aCount=weapons.filter(w=>w.grade==="A"||w.grade==="S").length;
   let roleFloorRank=0;if(top&&top.grade==="A")roleFloorRank=2;if(top&&top.grade==="S")roleFloorRank=3;if(aCount>=2)roleFloorRank=Math.max(roleFloorRank,3);
@@ -5245,6 +5564,45 @@ function nbaWeaponProfile(state=G){
   const securityBonus=clamp(weapons.reduce((n,w)=>n+(w.grade==="S"?13:w.grade==="A"?9:4),0)+synergy,0,28);
   const marketBonus=clamp(weapons.reduce((n,w)=>n+w.marketValue,0)+synergy,0,32);
   return {weapons,archetype,roleFloorRank,securityBonus,marketBonus,synergy};
+}
+function derivedIdentityRoleProfile(state=G,previousSeason=null){
+  const st=state||{},a=st.attr||{},profile=st._derivedStyleTest&&st._derivedStyleTest.scores?st._derivedStyleTest:derivedStyleProfile(st.pos||"SG",st,a,st),p=profile.scores||{},health=Number(st.health)||0,iq=Number(a.iq)||0,signals=[];
+  const add=(key,type,label)=>{const score=Number(p[key])||0;if(score>=84)signals.push({key,type,label,score,grade:score>=92?"S":"A"});};
+  add("rimPressure","slasher","攻框威脅");add("perimeterGravity","shooter","外線牽制");add("onBallCreation","creator","持球創造");add("defensivePressure","stopper","防守壓迫");add("reboundingPhysicality","rebounder","籃板對抗");
+  let usable=health>=55&&iq>=48,reasons=[];if(health<55)reasons.push("健康狀態不足以支撐衍生角色");if(iq<48)reasons.push("球商短板抵消衍生角色價值");
+  const offense=signals.some(x=>["slasher","shooter","creator"].includes(x.type));if(offense&&Number(a.defense)<35&&iq<58){usable=false;reasons.push("進攻身份被嚴重防守／判讀短板抵消");}
+  let floorRank=0,usageFloor=0;if(usable&&signals.length){floorRank=2;const credible=!!previousSeason&&(Number(previousSeason.gp)||0)>=35&&((Number(previousSeason.seasonScore)||0)>=50||(Number(previousSeason.ppg)||0)>=8||(Number(previousSeason.apg)||0)>=5||(Number(previousSeason.rpg)||0)>=7);if(signals.length>=2&&credible)floorRank=3;
+    if(signals.some(x=>x.type==="slasher"))usageFloor=Math.max(usageFloor,.76);if(signals.some(x=>x.type==="shooter"))usageFloor=Math.max(usageFloor,.68);if(signals.some(x=>x.type==="creator"))usageFloor=Math.max(usageFloor,.72);
+    reasons.push(`${signals[0].label}形成可辨識的 NBA 角色身份`);
+  }
+  return {version:1,profile,signals,usable,floorRank,usageFloor:Math.round(usageFloor*100)/100,reasons};
+}
+function identityStatShape(profile,pos){
+  const p=profile&&profile.scores||{},ex=v=>clamp(((Number(v)||65)-65)/27,0,1),off=Math.max(ex(p.rimPressure),ex(p.midRangeCreation),ex(p.perimeterGravity)),creator=ex(p.onBallCreation),def=ex(p.defensivePressure),reb=ex(p.reboundingPhysicality),guard=pos==="PG"||pos==="SG";
+  return {ppg:1+off*.04,rpg:1+reb*(guard?.16:.10),apg:1+creator*.12,spg:1+def*.08,bpg:1+def*.05};
+}
+function nbaWeaponRoleFloorProfile(state=G,weaponProfile=nbaWeaponProfile(state),previousSeason=null){
+  const st=state||{},wp=weaponProfile||nbaWeaponProfile(st),prev=previousSeason||null,a=st.attr||{},health=Number(st.health)||0,iq=Number(a.iq)||0,weapons=wp.weapons||[],high=weapons.filter(w=>w.grade==="A"||w.grade==="S"),top=high[0]||null,derived=derivedIdentityRoleProfile(st,prev);
+  const reasons=[];let floorRank=0,usageFloor=0,usable=true;
+  if(health<55){usable=false;reasons.push("健康狀態不足以保護輪替");}
+  if(iq<48){usable=false;reasons.push("球商短板過於明顯");}
+  if(top&&["shooting","three"].includes(top.skill)&&Number(a.defense)<35&&iq<58){usable=false;reasons.push("進攻武器仍被嚴重防守／判讀短板抵消");}
+  if(top&&top.skill==="rebound"&&Math.max(Number(a.defense)||0,Number(a.athletic)||0)<48){usable=false;reasons.push("籃板武器缺少足夠的禁區可用性");}
+  if(top&&top.skill==="defense"&&Math.max(Number(a.athletic)||0,iq)<50){usable=false;reasons.push("防守武器缺少足夠的移動／判讀支撐");}
+  const majorInjury=!!(prev&&prev.injury&&(prev.injury.major||prev.injury.career||prev.injury.severity==="major")),collapse=!!prev&&((Number(prev.seasonScore)||0)<32||(Number(prev.gp)||0)<20);
+  if(usable&&top){
+    floorRank=2;reasons.push(`${top.label}提供可辨識的 NBA 角色價值`);const credible=!!prev&&(Number(prev.gp)||0)>=35&&((Number(prev.seasonScore)||0)>=50||(Number(prev.ppg)||0)>=8||(Number(prev.apg)||0)>=5||(Number(prev.rpg)||0)>=7);if((top.grade==="S"&&credible)||(high.length>=2&&credible))floorRank=3;
+    const by=skill=>weapons.find(w=>w.skill===skill),shoot=by("shooting"),three=by("three"),pass=by("pass"),ath=by("athletic");
+    if(shoot&&shoot.grade==="S")usageFloor=Math.max(usageFloor,.82);else if(shoot&&shoot.grade==="A")usageFloor=Math.max(usageFloor,.76);
+    if(shoot&&["A","S"].includes(shoot.grade)&&three&&["A","S"].includes(three.grade))usageFloor=Math.max(usageFloor,shoot.grade==="S"?.86:.80);
+    if(pass&&pass.grade==="S")usageFloor=Math.max(usageFloor,.78);else if(pass&&pass.grade==="A")usageFloor=Math.max(usageFloor,.72);
+    const shootHigh=!!(shoot&&["A","S"].includes(shoot.grade));
+    if(!shootHigh&&three&&three.grade==="S")usageFloor=Math.max(usageFloor,.68);else if(!shootHigh&&three&&three.grade==="A")usageFloor=Math.max(usageFloor,.64);
+    if(shoot&&ath&&["A","S"].includes(ath.grade))usageFloor=Math.max(usageFloor,.78);
+  }
+  if(derived.usable&&derived.signals.length){floorRank=Math.max(floorRank,Number(derived.floorRank)||0);usageFloor=Math.max(usageFloor,Number(derived.usageFloor)||0);reasons.push(...derived.reasons);}
+  if(majorInjury){floorRank=Math.min(floorRank,1);usageFloor=0;}if(collapse){floorRank=Math.min(floorRank,1);usageFloor=0;}if(!usable)usageFloor=0;
+  return {floorRank,usageFloor:round(usageFloor,2),usable,reasons,highWeaponCount:high.length,topWeapon:top,archetype:wp.archetype||"",derivedSignals:derived.signals||[]};
 }
 
 function nbaTeamRoleContext(state=G,previousSeason=null){
@@ -5269,14 +5627,15 @@ function nbaRoleCompetitionScore(state=G,previousSeason=null,weaponProfile=nbaWe
   const ovComp=nbaRoleOvrComponent(ov);
   const gp=Number(prev&&prev.gp)||0,ss=Number(prev&&prev.seasonScore)||0,box=(Number(prev&&prev.ppg)||0)+(Number(prev&&prev.apg)||0)*1.25+(Number(prev&&prev.rpg)||0)*.75+(Number(prev&&prev.spg)||0)*1.5+(Number(prev&&prev.bpg)||0)*1.5;
   const perfComp=prev?clamp(25+(ss-40)*.72+(box-10)*1.15,5,100):45;
-  const weaponComp=clamp(25+weaponProfile.securityBonus*2.4,10,100);
+  const weaponUsability=nbaWeaponRoleFloorProfile(st,weaponProfile,prev),weaponFactor=weaponUsability.usable?1:.38;
+  const weaponComp=clamp(25+weaponProfile.securityBonus*2.4*weaponFactor,10,100);
   const priorMpg=Number(prev&&prev.roleProfile&&prev.roleProfile.mpg)||Number(st.nbaRoleState&&st.nbaRoleState.mpg)||12;
   const inertiaComp=clamp(20+priorMpg*2.1,10,100);
   const availability=prev?clamp((gp/82)*65+(Number(st.health)||70)*.35,0,100):clamp(Number(st.health)||70,0,100);
   const teamComp=clamp(50+(teamContext.opportunity+teamContext.fit+teamContext.patience)*2,10,90);
   const rr=universeRng(Number(st.year)||0,`nba-role-score-${st.team||"team"}`,st),variance=round((rr()-.5)*10,1);
   const score=clamp(round(ovComp*.25+perfComp*.25+weaponComp*.20+inertiaComp*.10+availability*.10+teamComp*.10+variance,1),0,100);
-  return {score,variance,components:{ov:ovComp,performance:perfComp,weapon:weaponComp,inertia:inertiaComp,availability,team:teamComp},reasons:[]};
+  return {score,variance,components:{ov:ovComp,performance:perfComp,weapon:weaponComp,inertia:inertiaComp,availability,team:teamComp},weaponUsable:weaponUsability.usable,reasons:weaponUsability.usable?[]:(weaponUsability.reasons||[])};
 }
 function nbaRoleRankFromScore(score){const s=Number(score)||0;return s>=94?8:s>=88?7:s>=82?6:s>=74?5:s>=64?4:s>=53?3:s>=43?2:s>=32?1:0;}
 function nbaApplyRoleInertia(previousRank,targetRank,evidence={}){
@@ -5324,10 +5683,13 @@ function createNbaRookieTransition(state=G,opts={}){
   return {version:1,draftPick:pick,draftAge,source,draftYear,entryRole:entry.key,entryRoleLabel:entry.role,initialMpgTarget,initialUsageModifier,breakout:null,seasonYear:Math.max(Number(st.year)||0,draftYear+1),teamContext:{rebuild:!!teamOpp.profile.rebuild,contender:!!teamOpp.profile.contender,currentStrength:Number(teamOpp.profile.currentStrength)||.52}};
 }
 function rookieRoleStateFromTransition(transition,state=G,breakout=null){
-  const st=state||{},tr=transition||{},br=breakout||tr.breakout||{tier:"none",mpgBonus:0,usageBonus:0},pick=Math.max(0,Number(tr.draftPick)||0),tier=String(br.tier||"none"),role=tier!=="none"?tier:String(tr.entryRole||"development"),roleLabel=tier==="starBreakout"?"Star Breakout":tier==="starterRise"?"Starter Rise":tier==="rotationRise"?"Rotation Rise":String(tr.entryRoleLabel||"Development / Roster Battle"),mpg=round(clamp((Number(tr.initialMpgTarget)||8)+(Number(br.mpgBonus)||0),4,38),1),usageModifier=round(clamp((Number(tr.initialUsageModifier)||.5)+(Number(br.usageBonus)||0),.30,1.15),2);
+  const st=state||{},tr=transition||{},br=breakout||tr.breakout||{tier:"none",mpgBonus:0,usageBonus:0},pick=Math.max(0,Number(tr.draftPick)||0),tier=String(br.tier||"none");
+  let role=tier!=="none"?tier:String(tr.entryRole||"development"),roleLabel=tier==="starBreakout"?"Star Breakout":tier==="starterRise"?"Starter Rise":tier==="rotationRise"?"Rotation Rise":String(tr.entryRoleLabel||"Development / Roster Battle"),mpg=round(clamp((Number(tr.initialMpgTarget)||8)+(Number(br.mpgBonus)||0),4,38),1),usageModifier=round(clamp((Number(tr.initialUsageModifier)||.5)+(Number(br.usageBonus)||0),.30,1.15),2);
   let security=pick===1?82:pick<=5?76:pick<=14?68:pick<=30?58:pick<=45?46:pick<=60?38:30;if(tr.teamContext&&tr.teamContext.rebuild)security+=4;if(tr.teamContext&&tr.teamContext.contender)security-=3;if(tier!=="none")security+=5;
-  const roleRank=nbaCareerRankFromRoleKey(role,mpg),wp=st.attr?nbaWeaponProfile(st):{weapons:[],archetype:null};
-  return {version:1,seasonYear:Number(st.year)||Number(tr.seasonYear)||0,source:"nbaRookieDraft",role,roleLabel,roleRank,mpg,usageModifier,minuteScale:round(clamp(mpg/30,.20,1.22),3),competitionScore:50,security:clamp(Math.round(security),20,95),trend:tier!=="none"?"up":"flat",reasons:[pick?`NBA 選秀總第 ${pick} 順位帶來新秀輪替信任`:"落選新秀名單競爭"],weapons:wp.weapons||[],archetype:wp.archetype||null,teamContext:tr.teamContext||null,draftPick:pick||null,breakout:tier};
+  const wp=st.attr?nbaWeaponProfile(st):{weapons:[],archetype:null},wf=st.attr?nbaWeaponRoleFloorProfile(st,wp,null):{floorRank:0,reasons:[]};let roleRank=nbaCareerRankFromRoleKey(role,mpg);
+  if(tier==="none"&&Number(wf.floorRank)>=2&&roleRank<2){role="benchRotation";roleLabel="Bench Rotation · Weapon Role";roleRank=2;mpg=round(Math.max(mpg,11.5),1);security=Math.max(security,44);}
+  if(wf.usable&&Number(wf.usageFloor)>0)usageModifier=round(Math.max(usageModifier,Math.min(.90,Number(wf.usageFloor))),2);
+  return {version:1,seasonYear:Number(st.year)||Number(tr.seasonYear)||0,source:"nbaRookieDraft",role,roleLabel,roleRank,mpg,usageModifier,minuteScale:round(clamp(mpg/30,.20,1.22),3),competitionScore:50,security:clamp(Math.round(security),20,95),trend:tier!=="none"?"up":"flat",reasons:[pick?`NBA 選秀總第 ${pick} 順位帶來新秀輪替信任`:"落選新秀名單競爭",...(wf.reasons||[])].slice(0,4),weapons:wp.weapons||[],archetype:wp.archetype||null,teamContext:tr.teamContext||null,draftPick:pick||null,breakout:tier};
 }
 function ensureNbaRookieTransition(state=G){
   const st=state||{};if(st._nbaRookieTransition&&typeof st._nbaRookieTransition==="object")return st._nbaRookieTransition;
@@ -5353,9 +5715,13 @@ function nbaRookieYearTwoRole(state,previousSeason){
   const prev=previousSeason||[...(st.seasonHistory||[])].reverse().find(x=>x&&x.league==="NBA"&&Number(x.year)===Number(st.year)-1);if(!prev)return null;
   const pick=Number(tr.draftPick)||61,ov=st.attr?overall(st.attr,st.pos):(Number(prev.ov)||70),pot=Number(st.potential)||ov,ss=Number(prev.seasonScore)||0,prod=(Number(prev.ppg)||0)+(Number(prev.apg)||0)*1.25+(Number(prev.rpg)||0)*.75,priorMpg=Number(prev.roleProfile&&prev.roleProfile.mpg)||Number(tr.initialMpgTarget)||12;
   let growth=1.5+clamp((ov-74)*.32,-2,5)+clamp((pot-80)*.10,-1,2.2)+clamp((ss-45)*.055,-2.5,4)+clamp((prod-12)*.12,-1.5,2.5);if(pick<=30)growth+=1.5;else if(pick<=45)growth+=.7;
-  const maxMpg=pick<=30?32:pick<=45?27:22,mpg=round(clamp(priorMpg+growth,8,maxMpg),1),usageModifier=round(clamp((Number(tr.initialUsageModifier)||.55)+(mpg-priorMpg)*.012+clamp((ss-50)*.002,-.04,.08),.40,1.0),2);
-  const role=mpg>=25?"starterRise":mpg>=19?"rotationRise":mpg>=14?"benchRotation":"development",roleLabel=role==="starterRise"?"Starter Rise":role==="rotationRise"?"Rotation Rise":role==="benchRotation"?"Bench Rotation":"Development / Roster Battle";
-  return {version:1,role,roleLabel,mpg,usageModifier,minuteScale:round(clamp(mpg/30,.25,1.08),3),source:"nbaRookieDraft",draftPick:pick,breakout:role==="starterRise"?"starterRise":role==="rotationRise"?"rotationRise":"none",developmentYear:2};
+  const maxMpg=pick<=30?32:pick<=45?27:22;let mpg=round(clamp(priorMpg+growth,8,maxMpg),1),usageModifier=round(clamp((Number(tr.initialUsageModifier)||.55)+(mpg-priorMpg)*.012+clamp((ss-50)*.002,-.04,.08),.40,1.0),2);
+  const wp=st.attr?nbaWeaponProfile(st):{weapons:[],archetype:null},wf=st.attr?nbaWeaponRoleFloorProfile(st,wp,prev):{floorRank:0,reasons:[]};let weaponFloorApplied=false;
+  if(Number(wf.floorRank)>=3&&mpg<16){mpg=16;weaponFloorApplied=true;}else if(Number(wf.floorRank)>=2&&mpg<11.5){mpg=11.5;weaponFloorApplied=true;}
+  if(wf.usable&&Number(wf.usageFloor)>0)usageModifier=Math.max(usageModifier,Number(wf.usageFloor));
+  mpg=round(clamp(mpg,8,maxMpg),1);usageModifier=round(clamp(usageModifier,.40,1.0),2);
+  const role=mpg>=25?"starterRise":mpg>=16?"rotationRise":mpg>=11.5?"benchRotation":"development",roleLabel=role==="starterRise"?"Starter Rise":role==="rotationRise"?(weaponFloorApplied?"Rotation Rise · Weapon Role":"Rotation Rise"):role==="benchRotation"?(weaponFloorApplied?"Bench Rotation · Weapon Role":"Bench Rotation"):"Development / Roster Battle";
+  return {version:1,role,roleLabel,mpg,usageModifier,minuteScale:round(clamp(mpg/30,.25,1.08),3),source:"nbaRookieDraft",draftPick:pick,breakout:role==="starterRise"?"starterRise":(!weaponFloorApplied&&role==="rotationRise"?"rotationRise":"none"),developmentYear:2,weaponFloorApplied,weapons:wp.weapons||[],archetype:wp.archetype||null};
 }
 function nbaCareerRoleProfile(state=G,context={}){
   const st=state||{},ctx=context||{},year=Number(st.year)||0;
@@ -5370,15 +5736,16 @@ function nbaCareerRoleProfile(state=G,context={}){
   const majorInjury=!!(prev&&prev.injury&&(prev.injury.major||prev.injury.severity==="major"||prev.injury.career)),majorCollapse=!!prev&&(ss<34||gp<28),breakout=!!prev&&ss>=78&&gp>=55&&previousRank<=5;
   let targetRank=nbaRoleRankFromScore(sc.score),roleRank;
   if(preset)roleRank=previousRank;else roleRank=nbaApplyRoleInertia(previousRank,targetRank,{majorInjury,majorCollapse,breakout,tradeReset:!!ctx.tradeReset});
-  const catastrophic=(Number(st.health)||0)<35||(prev&&ss<28&&gp<25);
-  if(!catastrophic)roleRank=Math.max(roleRank,Math.min(3,Number(wp.roleFloorRank)||0));
+  const catastrophic=(Number(st.health)||0)<35||(prev&&ss<28&&gp<25),weaponFloor=nbaWeaponRoleFloorProfile(st,wp,prev);
+  if(!catastrophic)roleRank=Math.max(roleRank,Math.min(3,Number(weaponFloor.floorRank)||0));
   roleRank=clamp(roleRank,0,8);
   const def=nbaRoleByRank(roleRank),sec=nbaRoleSecurity(st,prev,def,sc,wp,tc),security=sec.security;
   const rr=universeRng(year,`nba-role-minutes-${st.team||"team"}`,st);
   const useRange=preset&&Array.isArray(preset.mpgRange)?preset.mpgRange:[def.minMpg,def.maxMpg],minMpg=Number(useRange[0]),maxMpg=Number(useRange[1]);
   const position=clamp(security*.006+sc.score*.004+tc.opportunity*.008+(rr()-.5)*.08,0,1);
   const mpg=round(clamp(minMpg+(maxMpg-minMpg)*position,minMpg,maxMpg),1);
-  const usagePos=clamp(position*.65+clamp((overall(st.attr,st.pos)-80)/18,0,1)*.35,0,1),usageModifier=round(def.usageMin+(def.usageMax-def.usageMin)*usagePos,2);
+  const usagePos=clamp(position*.65+clamp((overall(st.attr,st.pos)-80)/18,0,1)*.35,0,1);let usageModifier=round(def.usageMin+(def.usageMax-def.usageMin)*usagePos,2);
+  if(weaponFloor.usable&&Number(weaponFloor.usageFloor)>0)usageModifier=round(Math.max(usageModifier,Number(weaponFloor.usageFloor)),2);
   const gpModifier=roleRank>=3?1:roleRank===2?clamp(.90+security/100*.10,.90,1):roleRank===1?clamp(.52+security/100*.30,.52,.82):clamp(.30+security/100*.30,.30,.60);
   const dnpRate=roleRank>=2?0:round(clamp(roleRank===1?.35-security*.006:.62-security*.008,.05,.65),2);
   const trend=roleRank>previousRank?"up":roleRank<previousRank?"down":mpg>prevMpg+1.5?"up":mpg<prevMpg-1.5?"down":"flat";
@@ -5393,7 +5760,7 @@ function seasonRoleProfile(state=G,baseUsage=1,context={}){
     const tr=ensureNbaRookieTransition(st);if(tr){const br=nbaRookieBreakoutProfile(tr,st,ctx.rngFn||null),out=rookieRoleStateFromTransition(tr,st,br);st.nbaRoleState=out;return out;}
   }
   if(st.league==="NBA"&&st.rookieDone){const prev=[...(st.seasonHistory||[])].reverse().find(x=>x&&x.league==="NBA"&&Number(x.year)===Number(st.year)-1),yr2=nbaRookieYearTwoRole(st,prev);if(yr2)return yr2;return nbaCareerRoleProfile(st,{previousSeason:prev,rngFn:ctx.rngFn||null});}
-  if(st.stage==="pro"){const proven=provenLevelProfile(st),trust=provenRoleTrust(proven,st.league);if(trust>1){const mpg=round(clamp(30+(trust-1)*28,30,36),1);return {version:1,role:"provenCore",roleLabel:"Proven-Level Role",mpg,usageModifier:trust,minuteScale:round(clamp(1+(trust-1)*.62,1,1.18),3),source:"provenLevel",draftPick:null,breakout:"none",provenTier:proven.tier};}}
+  if(st.stage==="pro"){const proven=provenLevelProfile(st),translated=crossLeagueRoleTranslation(st,st.league,proven);if(translated.applies)return {version:1,...translated,draftPick:null,breakout:"none"};}
   return {version:1,role:"standard",roleLabel:"Standard Role",mpg:30,usageModifier:1,minuteScale:1,source:"standard",draftPick:null,breakout:"none"};
 }
 function rookieRoleVisibleLabel(roleOrKey){
@@ -5423,6 +5790,7 @@ function simulateSeason(){
   
   const noise=()=>rnd(.85,1.15);
   const bp=bodyProfile(G,G.pos);
+  const styleIdentity=derivedStyleProfile(G.pos,G,a,G),statShape=identityStatShape(styleIdentity,G.pos);
 
   const minuteScale=(roleProfile.minuteScale||1)*(G.careerMode==="positionless"?clamp(1+positionlessRoleMod*.6,.94,1.03):1);
   let ppg=((a.shooting*.5+a.three*.32+a.athletic*.18)/diff)*.48*usage*noise()*clamp(.985+bp.mobility*.015,.97,1.02)*minuteScale;
@@ -5430,6 +5798,7 @@ function simulateSeason(){
   let apg=((a.pass*.7+a.iq*.3)/diff)*.078*m.ast*noise()*clamp(.96+bp.mobility*.04,.94,1.04)*minuteScale;
   let spg=((a.defense*.5+a.athletic*.3+a.iq*.2)/diff)*.027*m.stl*noise()*bp.steal*minuteScale;
   let bpg=((a.defense*.5+a.athletic*.5)/diff)*.032*m.blk*noise()*bp.rim*minuteScale;
+  ppg*=statShape.ppg;rpg*=statShape.rpg;apg*=statShape.apg;spg*=statShape.spg;bpg*=statShape.bpg;
   const fg=clamp(.36+(a.shooting-40)*.0028+(bp.strength-1)*.075+rnd(-.02,.02),.33,.62);
   const threeBodyScale=1+(bp.shooting-1)*(1-clamp(Number(m.three)||0,0,1)*.75);
   const tp=clamp((.20+(a.three-40)*.0038+rnd(-.03,.03))*threeBodyScale,.16,.44);
@@ -5460,7 +5829,7 @@ function simulateSeason(){
      // 加上開局的隱藏天賦底子，確保天賦高的人更容易維持高星級
      const totalScore = ps + (G._basePotentialLevel || 3) * 3;
      
-     hsStars = hsRecruitStarsFromScore(totalScore);
+     hsStars = finalizeHsRecruitStars(totalScore,{ppg,rpg,apg,spg,bpg,seasonScore,prodScore},G);
      
      G._finalHsStars = hsStars; // 記錄下來，供畢業結算稱號使用
      let recruitRank = hsRecruitRankFromStars(hsStars,totalScore);
@@ -5587,19 +5956,32 @@ function _promoteBackgroundWinner(snapshot,state=G){
     const existing=Object.values(ensureLeagueUniverse(state).npcs).find(n=>n.name===winner.name);if(!existing){const n=createUniverseNpc({year:snapshot.year,age:winner.age,league:"NBA",team:winner.team,pos:winner.pos,name:winner.name,nameCulture:winner.nameCulture||"usa",originType:"emergentStar",potential:clamp(Math.round((winner.ov||86)+5),84,97)},state);n.attrs={...winner.attrs};n.role="star";snapshot.promotedNpcId=n.id;}
   }snapshot.backgroundPromotionChecked=true;
 }
+function nbaSixthManEligible(candidate,season=null,state=null){
+  const c=candidate||{},lg=c.league||(season&&season.league)||(state&&state.league)||"NBA";if(lg!=="NBA")return false;
+  const schedule=Math.max(1,Number(c.schedule)||82),minGp=Math.max(50,Math.round(schedule*.70)),gp=Number(c.gp)||0;if(gp<minGp)return false;
+  let role=String(c.roleProfile&&c.roleProfile.role||c.roleKey||c.reserveRole||""),mpg=Number(c.roleProfile&&c.roleProfile.mpg)||Number(c.mpg)||0;
+  if(!role){if(c.isPlayer)return false;if((Number(c.ppg)||0)>23||(Number(c.seasonScore)||0)>=90)return false;role="rotation";mpg=clamp(18+(Number(c.ppg)||0)*.32+(Number(c.apg)||0)*.10+(Number(c.rpg)||0)*.05,18,30);}
+  const allowed=new Set(["bench","rotation","sixthMan","benchRotation","rotationRise"]);if(!allowed.has(role))return false;
+  return mpg>=18&&mpg<=30.5;
+}
+function nbaSixthManRaceScore(candidate){
+  const c=candidate||{},ppg=Number(c.ppg)||0,apg=Number(c.apg)||0,rpg=Number(c.rpg)||0,spg=Number(c.spg)||0,bpg=Number(c.bpg)||0,fg=Number(c.fg)||45,tp=Number(c.tp)||34,winPct=Number(c.winPct)||0,ss=Number(c.seasonScore)||0,role=String(c.roleProfile&&c.roleProfile.role||c.roleKey||c.reserveRole||"rotation"),mpg=Number(c.roleProfile&&c.roleProfile.mpg)||Number(c.mpg)||clamp(18+ppg*.32+apg*.10+rpg*.05,18,30);
+  const box=ppg+apg*1.25+rpg*.70+spg*1.4+bpg*1.4,eff=clamp((fg-42)*.45+(tp-31)*.22,0,10),roleBonus=role==="sixthMan"?4:role==="bench"?2.5:1.5;
+  return Math.round((box*1.35+ss*.18+clamp(winPct,0,1)*12+eff+mpg*.25+roleBonus)*10)/10;
+}
 function buildNbaAwardSnapshot(season,state=G){
   const st=state||{},u=ensureLeagueUniverse(st),year=Number(season&&season.year)||Number(st.year)||2026,key=String(year);if(u.yearlySnapshots[key])return u.yearlySnapshots[key];
   bootstrapLeagueStars(st);simulateUniverseSeason(year,"NBA",st);
   const player=_playerAwardCandidate(season,st),npcCandidates=Object.values(u.npcs).filter(n=>n&&!n.retired&&n.active!==false&&n.league==="NBA").map(n=>{const line=(n.career.seasons||[]).find(x=>Number(x.year)===year);return line?_npcAwardCandidate(n,line):null;}).filter(Boolean),background=_backgroundAwardCandidates(year,st),candidates=[player,...npcCandidates,...background];
   const annualEligible=c=>c.gp>=65,statEligible=c=>c.gp>=58;
-  const MVP=_raceSorted(candidates,mvpRaceScore,annualEligible),DPOY=_raceSorted(candidates,dpoyRaceScore,annualEligible),ROTY=_raceSorted(candidates,rookieRaceScore,c=>c.rookie&&c.gp>=45&&nbaAllRookieEligible(c)),scoring=leaderboardRace(candidates,"ppg",58),assists=leaderboardRace(candidates,"apg",58),rebounds=leaderboardRace(candidates,"rpg",58),allNBA=_allNbaFromCandidates(candidates);
+  const MVP=_raceSorted(candidates,mvpRaceScore,annualEligible),DPOY=_raceSorted(candidates,dpoyRaceScore,annualEligible),ROTY=_raceSorted(candidates,rookieRaceScore,c=>c.rookie&&c.gp>=45&&nbaAllRookieEligible(c)),sixthMan=_raceSorted(candidates,nbaSixthManRaceScore,c=>nbaSixthManEligible(c,season,st)),scoring=leaderboardRace(candidates,"ppg",58),assists=leaderboardRace(candidates,"apg",58),rebounds=leaderboardRace(candidates,"rpg",58),allNBA=_allNbaFromCandidates(candidates);
   const allStar=_raceSorted(candidates,c=>_raceRound(mvpRaceScore(c)*.7+c.seasonScore*.3),c=>nbaAllStarEligible(c)).slice(0,24),rookies=_raceSorted(candidates,rookieRaceScore,c=>nbaAllRookieEligible(c));
   const allRookie={first:rookies.slice(0,5),second:rookies.slice(5,10)};
-  const winners={MVP:MVP[0]||null,DPOY:DPOY[0]||null,ROTY:ROTY[0]||null,scoring:scoring[0]||null,assists:assists[0]||null,rebounds:rebounds[0]||null};
-  const playerAwards=[];if(winners.MVP&&winners.MVP.id==="player")playerAwards.push("MVP");if(allStar.some(c=>c.id==="player"))playerAwards.push("明星賽");if(winners.DPOY&&winners.DPOY.id==="player")playerAwards.push("DPOY");if(winners.ROTY&&winners.ROTY.id==="player")playerAwards.push("ROTY");if(winners.scoring&&winners.scoring.id==="player")playerAwards.push("得分王");if(winners.rebounds&&winners.rebounds.id==="player")playerAwards.push("籃板王");if(winners.assists&&winners.assists.id==="player")playerAwards.push("助攻王");
+  const winners={MVP:MVP[0]||null,DPOY:DPOY[0]||null,ROTY:ROTY[0]||null,sixthMan:sixthMan[0]||null,scoring:scoring[0]||null,assists:assists[0]||null,rebounds:rebounds[0]||null};
+  const playerAwards=[];if(winners.MVP&&winners.MVP.id==="player")playerAwards.push("MVP");if(allStar.some(c=>c.id==="player"))playerAwards.push("明星賽");if(winners.DPOY&&winners.DPOY.id==="player")playerAwards.push("DPOY");if(winners.ROTY&&winners.ROTY.id==="player")playerAwards.push("ROTY");if(winners.sixthMan&&winners.sixthMan.id==="player")playerAwards.push("年度第六人");if(winners.scoring&&winners.scoring.id==="player")playerAwards.push("得分王");if(winners.rebounds&&winners.rebounds.id==="player")playerAwards.push("籃板王");if(winners.assists&&winners.assists.id==="player")playerAwards.push("助攻王");
   if(allNBA.first.some(c=>c.id==="player"))playerAwards.push("年度一隊");else if(allNBA.second.some(c=>c.id==="player"))playerAwards.push("年度二隊");else if(allNBA.third.some(c=>c.id==="player"))playerAwards.push("年度三隊");
   if(player.rookie){if(allRookie.first.some(c=>c.id==="player"))playerAwards.push("新秀一隊");else if(allRookie.second.some(c=>c.id==="player"))playerAwards.push("新秀二隊");}
-  const snapshot={version:1,year,league:"NBA",generatedAtVersion:VERSION,candidates:candidates.map(c=>({...c,attrs:{...c.attrs}})),races:{MVP,DPOY,ROTY,allNBA,allStar,allRookie,scoring,assists,rebounds},winners,playerAwards,playerEligible:annualEligible(player),playerStatEligible:statEligible(player),playerApplied:false,npcAwardsApplied:false};
+  const snapshot={version:1,year,league:"NBA",generatedAtVersion:VERSION,candidates:candidates.map(c=>({...c,attrs:{...c.attrs}})),races:{MVP,DPOY,ROTY,sixthMan,allNBA,allStar,allRookie,scoring,assists,rebounds},winners,playerAwards,playerEligible:annualEligible(player),playerStatEligible:statEligible(player),playerApplied:false,npcAwardsApplied:false};
   u.yearlySnapshots[key]=snapshot;_applyNpcSnapshotHonors(snapshot,st);_promoteBackgroundWinner(snapshot,st);syncLeaguePulseFromSnapshot(snapshot,st);
   // Career Thread 若與玩家同年 MVP Race 前二，寫入真正共享歷史。
   const top2=MVP.slice(0,2);if(top2.some(c=>c.id==="player")){for(const c of top2){if(c.id!=="player"&&u.careerThreads.includes(c.npcId||c.id))recordSharedHistory(c.npcId||c.id,"mvpTop2",{year,league:"NBA",note:`MVP Race #${top2.findIndex(x=>x.id===c.id)+1}`},st);}}
@@ -6424,7 +6806,8 @@ function developmentMagnitude(skill,state=G,focusRow=null,capacity=null,year=(st
   const st=state||{},capData=capacity||developmentCapacity(st,year),row=focusRow||developmentFocusScores(st,year).find(r=>r.skill===skill)||{components:{}},c=row.components||{},w=developmentStageWeights(st);
   const nonTraining=(Number(c.body)||0)+(Number(c.build)||0)+(Number(c.specialization)||0)+(Number(c.role)||0)+(Number(c.variance)||0),den=Math.max(1,100-w.training),focusStrength=clamp(nonTraining/den,0,1),focusMult=.88+focusStrength*.22;
   const health=clamp(Number(st.health)||70,0,100),morale=clamp(Number(st.morale)||70,0,100),cond=clamp(.72+health/600+morale/850,.72,1.08),nearCap=_developmentCapProximityMultiplier(skill,st),rr=universeRng(Number(year)||0,`development-magnitude-${skill}`,st),variance=.85+rr()*.30;
-  return round(Math.max(0,capData.baseMagnitude*capData.magnitudeMult*cond*nearCap*focusMult*variance),6);
+  const developmentMultiplier=careerDifficultyConfig(st).developmentMultiplier;
+  return round(Math.max(0,capData.baseMagnitude*capData.magnitudeMult*cond*nearCap*focusMult*variance*developmentMultiplier),6);
 }
 function applyDevelopmentFraction(skill,gain,state=G){
   const st=state||{},d=ensureDevelopmentState(st);let progress=Math.max(0,Number(d.progress[skill])||0)+Math.max(0,Number(gain)||0),actualDelta=0;
@@ -6585,6 +6968,16 @@ function hsRecruitRankFromStars(stars, score){
   return clamp(rank,lo,hi);
 }
 function hsRecruitStarsFromScore(score){const s=Number(score)||0,c=CAREER_ENTRY_BALANCE.hsRecruit||{fourStar:62,fiveStar:65};return s>=Number(c.fiveStar)?5:s>=Number(c.fourStar)?4:3;}
+function highSchoolRecruitProductionProof(season={},state=G){
+  const s=season||{},pos=String((state||{}).pos||""),ppg=Number(s.ppg)||0,rpg=Number(s.rpg)||0,apg=Number(s.apg)||0,spg=Number(s.spg)||0,bpg=Number(s.bpg)||0,ss=Number(s.seasonScore)||0,prod=Number(s.prodScore)||0;
+  const scoring=ppg>=12||(ppg>=10&&prod>=19);
+  const playmaking=apg>=5.5&&(ppg>=6||prod>=16);
+  const rebounding=rpg>=9.5&&(bpg>=1.1||["PF","C"].includes(pos)||ss>=66);
+  const defense=(spg>=1.8||bpg>=1.7)&&((ppg+rpg+apg)>=15||ss>=66);
+  const overallImpact=ss>=69||prod>=21;
+  return !!(scoring||playmaking||rebounding||defense||overallImpact);
+}
+function finalizeHsRecruitStars(score,season={},state=G){const raw=hsRecruitStarsFromScore(score);return raw>=5&&!highSchoolRecruitProductionProof(season,state)?4:raw;}
 function localCollegeRecruitScore(state=G,ov=null,prod=null){
   const st=state||{},currentOv=Number.isFinite(Number(ov))?Number(ov):(st.attr?overall(st.attr,st.pos):0),currentProd=Number.isFinite(Number(prod))?Number(prod):((st.seasonHistory&&st.seasonHistory.length)?Number(st.seasonHistory[st.seasonHistory.length-1].prodScore)||0:0),baseLevel=Number(st._basePotentialLevel)||3;
   return round(currentOv+clamp((currentProd-15)*.8,0,15)+baseLevel*3,2);
@@ -6761,6 +7154,21 @@ function provenRoleTrust(profile,targetLeague){
   const gap=src-target,tier=p.tier||"";let bonus=(tier==="nbaEstablished"?.13:tier==="nbaRotation"?.10:tier==="nbaFringe"?.06:tier==="highLevelStarter"?.08:tier==="highLevelProven"?.05:tier==="domesticStar"?.06:.03)+Math.min(.10,gap*.035);
   return round(clamp(1+bonus,1,1.28),2);
 }
+function crossLeagueRoleTranslation(state=G,targetLeague=null,profile=null){
+  const st=state||{},lg=targetLeague||st.league,p=profile||provenLevelProfile(st),src=Number(p.sourceRank)||0,target=LEAGUE_RANK[lg]||0;
+  if(!src||!target||target>=src||lg==="NBA")return {applies:false,role:"standard",roleLabel:"一般定位",mpg:30,usageModifier:1,minuteScale:1,source:"standard"};
+  const tier=String(p.tier||""),gap=Math.max(1,src-target),a=st.attr||{},wp=st.attr?nbaWeaponProfile(st):{weapons:[]},offensive=(wp.weapons||[]).some(w=>["shooting","three","pass"].includes(w.skill)&&["A","S"].includes(w.grade));
+  let mpg=30,usage=.94,role="rotation",label="輪替角色";
+  if(tier==="nbaEstablished"){mpg=34;usage=.99;role="provenCore";label="核心先發／主要持球";}
+  else if(tier==="nbaRotation"){mpg=33;usage=.97;role="provenStarter";label="主力先發／高輪替";}
+  else if(tier==="nbaFringe"){mpg=30.5;usage=.92;role="trustedRotation";label="輪替／先發競爭";}
+  else if(tier==="highLevelStarter"){mpg=33;usage=.97;role="provenStarter";label="高階聯盟主力轉入";}
+  else if(tier==="highLevelProven"){mpg=31.5;usage=.94;role="trustedRotation";label="可信任輪替";}
+  else if(tier==="domesticStar"){mpg=32;usage=.96;role="provenStarter";label="本土核心";}
+  else {const trust=provenRoleTrust(p,lg);mpg=30+(trust-1)*14;usage=clamp(.90+(trust-1)*.45,.90,1.02);}
+  mpg=round(clamp(mpg+Math.min(1.5,(gap-1)*.45),28,36),1);usage=round(clamp(usage+Math.min(.03,(gap-1)*.015)+(offensive?.01:0),.88,1.08),2);
+  const minuteScale=round(clamp(1+(mpg-30)*.015,.96,1.10),3);return {applies:true,role,roleLabel:label,mpg,usageModifier:usage,minuteScale,source:"crossLeagueRole",provenTier:tier,sourceLeague:p.sourceLeague||null,sourceRank:src,targetRank:target,offensiveWeapon:offensive};
+}
 function proTargetLeagues(ov){
   const t=[];
   if(ov>=90) t.push("NBA"); // NBA 自由市場門檻：需真實 OVR 90 以上
@@ -6931,11 +7339,17 @@ function nbaSurvivalOffers(state=G,marketProfile=nbaSurvivalMarketProfile(state)
   if(["fringeNba","twoWay","outsideNba"].includes(m.tier)){const devTeams=TEAMS["發展聯盟"]||[],devTeam=devTeams.length?devTeams[Math.floor(rr()*devTeams.length)]:"發展聯盟球隊";out.push({type:"pro",league:"發展聯盟",team:devTeam,years:1,tag:"Call-Up Track",cType:"normal",source:"nbaSurvival"});}
   return out;
 }
+function nbaOfferPromiseLabel(offer){
+  const o=offer||{},rank=Number(o.expectedRoleRank)||nbaCareerRankFromRoleKey(o.expectedRole,Array.isArray(o.expectedMpgRange)?(Number(o.expectedMpgRange[0])+Number(o.expectedMpgRange[1]))/2:0);
+  if(o.cType==="max")return "核心角色";if(o.cType==="contender")return "爭冠輪替競爭";if(o.cType==="vetmin")return "板凳／名單競爭";
+  return rank>=5?"先發承諾":rank>=3?"固定輪替承諾":rank>=2?"板凳／輪替競爭":rank>=1?"名單競爭":"雙向／名單競爭";
+}
+function syncNbaOfferPromiseDisplay(offer){const o=offer;if(!o||o.league!=="NBA")return o;const promise=nbaOfferPromiseLabel(o);o.rolePromise=promise;if(/^NBA 多隊競價/.test(String(o.tag||""))&&o.cType==="normal")o.tag=`NBA 多隊競價 · ${promise}`;return o;}
 function attachNbaOfferRoleMetadata(offer,state=G){
-  const o=offer,st=state||{};if(!o||o.league!=="NBA"||o.expectedRole)return o;
+  const o=offer,st=state||{};if(!o||o.league!=="NBA")return o;if(o.expectedRole)return /^NBA 多隊競價/.test(String(o.tag||""))?syncNbaOfferPromiseDisplay(o):o;
   const last=(st.seasonHistory||[]).slice().reverse().find(s=>s&&s.league==="NBA")||null,currentRank=nbaCareerRankFromRoleKey(st.nbaRoleState&&st.nbaRoleState.role||last&&last.roleProfile&&last.roleProfile.role,Number(st.nbaRoleState&&st.nbaRoleState.mpg)||Number(last&&last.roleProfile&&last.roleProfile.mpg)||0);
   let rank=currentRank;if(o.cType==="max")rank=clamp(Math.max(6,currentRank),6,7);else if(o.cType==="contender")rank=clamp(currentRank,3,5);else if(o.cType==="vetmin")rank=clamp(currentRank,1,2);else rank=clamp(currentRank,2,5);
-  const d=nbaRoleByRank(rank);o.expectedRole=d.key;o.expectedRoleRank=d.rank;o.expectedMpgRange=[d.minMpg,d.maxMpg];o.rolePromise=o.cType==="max"?"核心角色":o.cType==="contender"?"爭冠輪替競爭":o.cType==="vetmin"?"板凳／名單競爭":"依現有定位競爭";return o;
+  const d=nbaRoleByRank(rank);o.expectedRole=d.key;o.expectedRoleRank=d.rank;o.expectedMpgRange=[d.minMpg,d.maxMpg];return syncNbaOfferPromiseDisplay(o);
 }
 
 /* 自由市場：更加擬真的多維度報價邏輯 */
@@ -6991,7 +7405,7 @@ function proOffers(ovArg){
       let team=teamForMarketIntent("NBA",cType==="contender"?"contender":cType==="max"?"best":"balanced",used), guard=0;
       while(used.has(team)&&guard++<40) team=teamForMarketIntent("NBA",cType==="contender"?"contender":"balanced",used);
       used.add(team);
-      const tag=nbaDemand.elite?(i===0?"NBA 多隊競價 · 頂薪挖角":i===1?"NBA 爭冠強隊招募":"NBA 多隊競價"):(i===0?"NBA 多隊競價 · 先發承諾":"NBA 多隊競價 · 輪替角色");
+      const tag=nbaDemand.elite?(i===0?"NBA 多隊競價 · 頂薪挖角":i===1?"NBA 爭冠強隊招募":"NBA 多隊競價"):"NBA 多隊競價";
       offers.push({type:"pro",league:"NBA",team,years:getYears("NBA",cType==="contender"),tag,cType});
     }
   }
@@ -7224,8 +7638,9 @@ function combineBodyEffects(g=G){
   };
 }
 function combineRankFromQuality(q,rngFn=_rng,fieldSize=75){
-  const noise=(rngFn()-.5)*8;
-  return clamp(Math.round(fieldSize+1-q*.72+noise),1,fieldSize);
+  const quality=clamp(Number(q)||0,20,100),anchors=[[20,70],[50,53],[60,44],[70,34],[80,25],[85,18],[90,10.5],[95,5.5],[100,2.5]];let center=anchors[anchors.length-1][1];
+  if(quality<=anchors[0][0])center=anchors[0][1];else for(let i=1;i<anchors.length;i++){const [x1,y1]=anchors[i-1],[x2,y2]=anchors[i];if(quality<=x2){const f=(quality-x1)/(x2-x1);center=y1+(y2-y1)*f;break;}}
+  const noise=(rngFn()-.5)*10,scaled=1+(fieldSize-75)/75*.45;return clamp(Math.round(center*scaled+noise),1,fieldSize);
 }
 const NBA_COMBINE_TESTS=[
   {key:"vertical",name:"最高摸高／垂直彈跳",desc:"爆發力、起跳高度與籃板能力",unit:"",better:"high"},
@@ -7236,17 +7651,17 @@ const NBA_COMBINE_TESTS=[
 ];
 function simulateNbaCombine(rngFn=_rng){
   const fieldSize=75;
-  const bodyFx=combineBodyEffects(G);
+  const bodyFx=combineBodyEffects(G),difficultyBonus=Number(careerDifficultyConfig(G).combineQualityBonus)||0;
   const tests=NBA_COMBINE_TESTS.map(meta=>{
     const attrScore=combineAttrScore(meta.key,G);
     const die=combineBiasedDie(attrScore,rngFn);
-    const skillQuality=clamp(attrScore*.72+(die/6)*28,20,100);
+    const skillQuality=clamp(attrScore*.72+(die/6)*28,20,100),performanceQuality=clamp(skillQuality+difficultyBonus,20,100);
     const bodyMod=Number(bodyFx.quality[meta.key]||0);
-    const quality=clamp(skillQuality+bodyMod,20,100);
+    const quality=clamp(performanceQuality+bodyMod,20,100);
     let value, display, extra="", touchCm=null;
     if(meta.key==="vertical"){
-      // 臂展影響 Standing Reach / 最高摸高，但不憑空增加垂直彈跳英吋數。
-      const inches=round(22+skillQuality*.23,1);
+      // 臂展影響 Standing Reach；休閒模式的 Showcase bonus 只提高當天體測發揮，不改球員永久能力。
+      const inches=round(22+performanceQuality*.23,1);
       const reach=bodyFx.standingReachCm;
       const touch=round(reach+inches*2.54,0);
       touchCm=touch; value=inches; display=`${touch} cm`; extra=`Standing Reach ${reach} cm · Max Vert ${inches} in`;
@@ -7456,6 +7871,10 @@ function applyCombinePickDelta(pick,minPick,maxPick){
    ========================================================================= */
 /* ---------- 賽季啟動：先進入「能力加點」，再進入事件 ---------- */
 function startSeason(){
+  if(G._farewellTour&&G._farewellTour.active&&Number(G.year)===Number(G._farewellTour.finalSeasonYear)&&!G._farewellTour.momentsGenerated){
+    G._farewellTour.moments=farewellTourMomentsForSeason({year:G.year,league:G.league,team:G.team},G);G._farewellTour.momentsGenerated=true;
+    for(const m of G._farewellTour.moments){recordStoryBeat({key:`farewellTourMoment|${G.year}|${m.type}|${m.team||m.npcName||""}`,year:G.year,age:G.age,type:"farewellTourMoment",importance:72,region:_storyRegionForLeague(G.league),league:G.league,team:m.team||G.team,facts:{momentType:m.type,title:m.title,npcName:m.npcName||null,text:m.text},tags:["retirement","farewellTour","finalChapter"]},G);}
+  }
   if(G.careerMode==="positionless"&&beginPositionlessCoachEvents(G))return;
   const preThread=nextPreseasonCareerThreadEvent(G);if(preThread){G._activeThreadLifeEvent=preThread;G._threadLifeEventResult=null;G._threadLifeEventResume="startSeason";G.phase="careerThreadLifeEvent";render();return;}
   // 生涯中後期：跨入新的下滑階段時，先播放劇情卡，再進季前特訓
@@ -7479,7 +7898,8 @@ function computeSP(){
   let base = age<=17?6 : age<=19?6 : age<=22?5 : age<=28?4 : age<=31?3 : 2;
   // 士氣高、健康好會略增訓練效率
   base += (G.morale>=75?1:0) + (G.health>=80?1:0);
-  return base + rint(0,2);
+  const spBonus=careerDifficultyConfig(G).spBonus;
+  return base + rint(0,2) + spBonus;
 }
 function allocCost(cur,state=G){ // 舊版通用成本；保留給非專精歷史邏輯。
   let c = cur<65?1 : cur<78?2 : cur<88?3 : 4;
@@ -7906,7 +8326,7 @@ function applyPostseasonAwards(s){
   if(s.fmvp&&!s.awards.includes("FMVP")){G.careerAwards.FMVP=(G.careerAwards.FMVP||0)+1;s.awards.push("FMVP");logAward(lg,"FMVP",yr);grantAwardBreakthrough("FMVP",{year:yr,league:lg},G);}
 }
 function finalizeSeasonCompletion(s){
-  if(s&&s.league==="NBA"&&s._annualAwardsPending)finalizeDeferredNbaAwards(s,G);
+  if(s&&s.league==="NBA"&&s._annualAwardsPending)finalizeDeferredNbaAwards(s,G);commitSeasonStyleProfile(s,G);
   _seasonMasteryProof(s,G);recordCareerThreadSeasonFacts(s,G);advanceCareerThreads(s&&s.year,G);maybeQueueRemembranceEvent(s,G);
   if(s&&s.stage==="pro")maybeCareerThreadReunion(G);
   applySeasonLegacy(s);G.seasonHistory.push(s);G.lastReview=s;G._reviewFlow=null;syncNbaProofState(G);syncMediaNarrativeContexts(s,G);
@@ -7991,27 +8411,28 @@ function seasonInjuryCheck(){
       return {major: true, career: true, forcedEnd:true, part:"", emoji:"🚔", sevLabel:"生涯告終",
               text: "【生涯告終】你因為酒駕被逮，球團祭出重罰開除，永不錄用！你的籃球生涯就此身敗名裂。"};
     }
-    ATTR_KEYS.forEach(k=>{const fast=(k==="athletic"||k==="defense")?1.6:1;
-      G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,5)*fast),15,99);});
-    G.health=clamp(G.health-rnd(25,45),5,100);
     const career=forced==="career"&&isPro();
     const inj=pickInjury(career?"career":"major");
+    injuryPermanentAttributeLoss(inj,career,_rng,G);
+    G.health=clamp(G.health-rnd(25,45),5,100);
     return Object.assign(inj,{major:true,career});
   }
   // ---- 連續受傷機率：健康值越低、年齡越大，受傷率越高 ----
   const hLow = (100 - clamp(G.health,0,100)) / 100;   // 0（滿血）→ 1（瀕危）
   const ageF = Math.max(0, age-30);
-  const pMajor = clamp(.02 + hLow*.20 + ageF*.014, .02, .40);   // 重傷
-  const pMinor = clamp(.14 + hLow*.30 + ageF*.010, .14, .55);   // 輕傷
+  const difficulty=careerDifficultyConfig(G),majorInjuryMultiplier=difficulty.majorInjuryMultiplier,minorInjuryMultiplier=difficulty.minorInjuryMultiplier,careerInjuryMultiplier=difficulty.careerInjuryMultiplier;
+  const pMajorBase = clamp(.02 + hLow*.20 + ageF*.014, .02, .40);
+  const pMinorBase = clamp(.14 + hLow*.30 + ageF*.010, .14, .55);
+  const pMajor = clamp(pMajorBase*majorInjuryMultiplier, .005, .40);   // 重傷
+  const pMinor = clamp(pMinorBase*minorInjuryMultiplier, .04, .55);   // 輕傷
 
   if(chance(pMajor)){
     // 是否為毀滅性生涯大傷（僅職業；健康越低、年紀越大越可能）
-    const careerRisk = clamp(.08 + ageF*.05 + hLow*.18, .05, .78);
+    const careerRiskBase = clamp(.08 + ageF*.05 + hLow*.18, .05, .78);
+    const careerRisk = clamp(careerRiskBase*careerInjuryMultiplier,.02,.78);
     const career = isPro() && chance(careerRisk);
     const inj = pickInjury(career?"career":"major");
-    const heavy = career?1.5:1;
-    ATTR_KEYS.forEach(k=>{const fast=(k==="athletic"||k==="defense")?1.6:1;
-      G.attr[k]=clamp(Math.round(G.attr[k]-rnd(2,6)*fast*heavy),15,99);});
+    injuryPermanentAttributeLoss(inj,career,_rng,G);
     G.health=clamp(G.health-rnd(career?30:20, career?55:45),5,100);
     return Object.assign(inj,{major:true, career});
   }
@@ -8232,6 +8653,10 @@ function afterReview(){
   }
   // 手術失敗／放棄手術／酒駕等 → 生涯結束
   if(s.injury&&s.injury.career){ if(!G.retireReason) G.retireReason="生涯重傷，忍痛退役"; return endCareer(); }
+  // 公開宣布的最後一季已完成：先履行承諾，再進入正式退休流程。
+  if(G._farewellTour&&G._farewellTour.active&&Number(s.year)>=Number(G._farewellTour.finalSeasonYear)){
+    G._farewellTour.completed=true;G._farewellTour.active=false;G.retireReason="完成公開宣布的最後一季，正式退休";return endCareer();
+  }
   // 50 歲球季可以完整打完；回顧結束後立即謝幕，避免任何合約／自由市場流程把年齡推到 51。
   if(isAgeLimitRetirementDue()){
     G._ageLimitRetire=true;
@@ -8251,10 +8676,15 @@ function afterReview(){
   if(G.stage==="高中"){
     // 👇 新增判斷：華裔打美國高中是 4 年制，本土是 3 年制
     const maxGrade = G.background === "asian_american" ? 4 : 3;
-    if(G.grade >= maxGrade) q.push("hsDecision"); else q.push("advanceHS");
+    if(G.grade >= maxGrade){const aa=allAmericanSelectionDecision(G);if(aa.selected)q.push("allAmericanSelection");q.push("hsDecision");} else q.push("advanceHS");
   } else if(G.stage==="大學"){
     q.push("collegeDecision");
   } else { // 職業
+    // V6.4 最終章入口：聯盟級傳奇可自願宣布最後一季；合約接近尾聲的老將也可能收到昔日傳奇球隊 Last Ride 邀約。
+    const farewellElig=farewellTourEligibility(G),lastRideWindow=!G._farewellTour&&!G._lastRideOfferAccepted&&(!G.contract||Number(G.contract.yearsLeft)<=1);
+    if(!G._farewellTour&&G._farewellTourDecisionYear!==G.year&&farewellElig.eligible)G._farewellTourEligible= farewellElig;
+    if(lastRideWindow&&G._lastRideOfferEvaluatedYear!==G.year){G._lastRideOfferEvaluatedYear=G.year;G._lastRideOffer=lastRideOffer(G);}
+    if((G._farewellTourEligible&&G._farewellTourDecisionYear!==G.year)||G._lastRideOffer)q.push("finalChapterOffer");
     // 首輪新秀 2+1+1：打完前兩季後，第三年與第四年開始前由球隊決定是否執行選項。
     const optionYear=rookieOptionDue(G.contract);
     if(optionYear && G._rookieOptionHandledYear!==G.year){
@@ -8372,6 +8802,7 @@ function processOffseason(){
     case "usaBasketball": return startUsaBasketball();
     case "jones": return startJonesCup();
     case "intl": return doIntl();
+    case "allAmericanSelection": return startAllAmericanWeekend(G);
     case "advanceHS": {const priorStage=G.stage,priorGrade=G.grade;decayHeat();G._youthReserveStageOverride=priorStage;G._youthReserveGradeOverride=priorGrade;G.grade++;G.age++;G.year++;applyAging();delete G._youthReserveStageOverride;delete G._youthReserveGradeOverride;return processOffseason();}
     case "hsDecision": return hsDecision();
     case "collegeDecision": return collegeDecision();
@@ -8381,6 +8812,7 @@ function processOffseason(){
     case "trade": return doTrade();
     case "overseasOffer": return doOverseasOffer();
     case "retireOption": return retireOption();
+    case "finalChapterOffer": G.phase="finalChapterOffer";render();return;
     case "roseRule": G.phase="roseRule"; render(); return;
     case "nextSeason": return advanceToNextSeason();
   }
@@ -8400,6 +8832,7 @@ function advanceToNextSeason(){
 
 /* ---------- 高中畢業決策 ---------- */
 function hsDecision(){
+  advanceGraduatingClassPeers(G);
   const ov=overall();
   if(G._hsGraduationYear==null) G._hsGraduationYear=G.year;
   if(G.background==="asian_american"){
@@ -9276,8 +9709,8 @@ function acceptOverseas(){
 function declineOverseas(){ G._nbaCallUpProfile=null; toast("婉拒海外報價，續留原聯盟。"); processOffseason(); }
 
 /* ---------- 退休選項 ---------- */
-function retireOption(){ G.phase="retireOption"; render(); }
-function confirmRetire(){ G.retireReason="功成身退，宣布退休"; endCareer(); }
+function retireOption(){ if(G._lastRideOfferEvaluatedYear!==G.year){G._lastRideOfferEvaluatedYear=G.year;G._lastRideOffer=lastRideOffer(G);}G.phase="retireOption"; render(); }
+function confirmRetire(){ G.retireReason="功成身退，宣布退休";G._retirementPending=true;const one=oneDayContractOffer(G);if(one){G._oneDayContractOffer=one;G.phase="oneDayContract";render();return;}G._retirementPending=false;endCareer(); }
 function keepPlaying(){ processOffseason(); }
 
 /* ---------- USA Basketball / 夢之隊 ---------- */
@@ -9585,6 +10018,13 @@ function canonicalAwardEntries(){
     // 學生錦標賽的獎項有些版本只存在 tourney.awards。
     const tSeen={};
     ((s.tourney&&s.tourney.awards)||[]).forEach(a=>{ const award=String(a); tSeen[award]=(tSeen[award]||0)+1; ensure(league,award,year,tSeen[award],true); });
+  });
+
+  // V6.4.4 舊存檔救援：McDonald's 榮譽早期只寫進 amateurAwards，沒有進 awardLog。
+  normalizeAmateurAwardRecords(G);
+  (G.amateurAwards||[]).forEach(a=>{
+    if(!a)return;const award=String(a.award||"");
+    if(award==="McDonald’s All-American"||award==="McDonald’s All-American Game MVP")ensure("美國高中",award,a.year,1,true);
   });
 
   // 最後用 careerAwards 的聚合總數兜底。若舊檔連年份都缺失，就補到該獎項最常出現的聯盟，
@@ -10245,6 +10685,84 @@ const RETIRE_SCENES={
     {e:"🎒",t:"回到校園",x:(g)=>`籃球這條路走到了盡頭，你重拾書本回到校園。多年後你成了體育老師，把對籃球的熱愛，用另一種方式延續下去。`},
   ],
 };
+/* ---------- V6.4 · FRANCHISE LEGACY PROFILE ---------- */
+function franchiseLegacyProfiles(state=G){
+  const st=state||{},pro=(st.seasonHistory||[]).filter(s=>s&&s.stage==="pro"&&s.team),groups={};
+  for(const s of pro){const key=`${s.league||""}|${s.team}`;(groups[key]||(groups[key]={team:s.team,league:s.league||"",rows:[]})).rows.push(s);}
+  const major=new Set(["DPOY","年度一隊","年度二隊","年度三隊","最佳陣容","得分王","助攻王","籃板王","ROTY","年度第六人"]),beats=Array.isArray(st.storyBeats)?st.storyBeats:[];
+  const out=[];
+  for(const g of Object.values(groups)){
+    const rows=g.rows,seasons=rows.length,ssSum=rows.reduce((n,s)=>n+(Number(s.seasonScore)||0),0),avg=seasons?ssSum/seasons:0,elite=["NBA","日職 B.League","CBL","KRBL"].includes(g.league),starTh=elite?76:73,stars=rows.filter(s=>(Number(s.seasonScore)||0)>=starTh).length,champ=rows.filter(s=>s.champion||(s.awards||[]).includes("冠軍")).length,fmvp=rows.filter(s=>s.fmvp||(s.awards||[]).includes("FMVP")).length,mvp=rows.filter(s=>(s.awards||[]).includes("MVP")).length;
+    const otherAwards=rows.reduce((n,s)=>n+(s.awards||[]).filter(a=>major.has(a)).length,0),byJersey={};
+    for(const s of rows){const j=Number.isFinite(Number(s.jersey))?Number(s.jersey):0,k=String(j);if(!byJersey[k])byJersey[k]={seasons:0,ss:0,star:0,champ:0};const b=byJersey[k];b.seasons++;b.ss+=Number(s.seasonScore)||0;if((Number(s.seasonScore)||0)>=starTh)b.star++;if(s.champion||(s.awards||[]).includes("冠軍"))b.champ++;}
+    const jerseyEligible=Object.values(byJersey).some(b=>{const av=b.ss/Math.max(1,b.seasons),q=b.seasons>=6&&(b.champ>=1||b.star>=3||av>=(g.league==="NBA"?82:72)),loyal=b.seasons>=8&&av>=(g.league==="NBA"?70:60);return q||loyal;});
+    const storyLegend=beats.some(b=>b&&b.type==="franchiseLegend"&&b.team===g.team&&(!b.league||b.league===g.league));
+    let score=Math.min(50,seasons*5)+Math.min(32,stars*8)+champ*18+fmvp*25+mvp*20+Math.min(30,otherAwards*10)+clamp((avg-65)*1.2,0,24)+(seasons>=8?10:0)+(jerseyEligible?20:0)+(storyLegend?15:0);
+    if(seasons<3)score=Math.min(score,94);score=Math.round(score*10)/10;
+    const tier=score>=95?"legend":score>=65?"icon":score>=35?"important":"former";
+    out.push({team:g.team,league:g.league,score,tier,seasons,avgSeasonScore:Math.round(avg*10)/10,stars,championships:champ,fmvp,mvp,otherMajorAwards:otherAwards,jerseyEligible,storyLegend});
+  }
+  return out.sort((a,b)=>b.score-a.score||b.seasons-a.seasons||String(a.team).localeCompare(String(b.team)));
+}
+function franchiseLegacyProfile(team,league,state=G){
+  const rows=franchiseLegacyProfiles(state);return rows.find(x=>x.team===team&&(!league||x.league===league))||{team:team||"",league:league||"",score:0,tier:"former",seasons:0,avgSeasonScore:0,stars:0,championships:0,fmvp:0,mvp:0,otherMajorAwards:0,jerseyEligible:false,storyLegend:false};
+}
+function lastRideOffer(state=G,rngFn=null){
+  const st=state||{},rr=typeof rngFn==="function"?rngFn:(typeof _rng==="function"?_rng:Math.random),pro=(st.seasonHistory||[]).filter(s=>s&&s.stage==="pro");
+  if((Number(st.age)||0)<34||pro.length<10||(Number(st.health)||0)<50||st._injuryRetire||st._forcedCareerEnd)return null;
+  const eligible=franchiseLegacyProfiles(st).filter(x=>["icon","legend"].includes(x.tier)&&x.team!==st.team).sort((a,b)=>(b.tier==="legend")-(a.tier==="legend")||b.score-a.score);if(!eligible.length)return null;
+  const target=eligible[0],base=target.tier==="legend"?.52:.28,chance=clamp(base+(target.championships>0?.10:0)+(target.jerseyEligible?.10:0),0,.75);if(rr()>=chance)return null;
+  return {type:"lastRide",team:target.team,league:target.league,years:1,cType:"veteran",legacyTier:target.tier,legacyScore:target.score,chance};
+}
+function applyLastRideOffer(offer,state=G){
+  const st=state||{};if(!offer||!offer.team)return false;const ov=(typeof overall==="function"&&st.attr)?overall(st.attr,st.pos):72,contract=typeof makeContract==="function"?makeContract(offer.league,offer.team,1,ov,"veteran"):{league:offer.league,team:offer.team,years:1,yearsLeft:1,salary:Number(st.contract&&st.contract.salary)||0,cType:"veteran"};
+  st._lastRideFromTeam=st.team;st._lastRideOfferAccepted={...offer,year:Number(st.year)||0};st.team=offer.team;st.league=offer.league;st.contract=contract;if(Array.isArray(st.offseason))st.offseason=st.offseason.filter(x=>!["freeAgency","overseasOffer","trade","tradeRumor"].includes(x));
+  if(typeof recordStoryBeat==="function")recordStoryBeat({key:`lastRide|${Number(st.year)||0}|${offer.team}`,year:Number(st.year)||0,type:"lastRide",importance:86,region:typeof _storyRegionForLeague==="function"?_storyRegionForLeague(offer.league):null,league:offer.league,team:offer.team,facts:{legacyTier:offer.legacyTier,legacyScore:offer.legacyScore,fromTeam:st._lastRideFromTeam},tags:["retirement","homecoming","finalChapter"]},st);return true;
+}
+function oneDayContractOffer(state=G,rngFn=null){
+  const st=state||{},retiring=!!(st.retired||st._retirementPending||st.retireReason);if(!retiring)return null;const rr=typeof rngFn==="function"?rngFn:(typeof _rng==="function"?_rng:Math.random),eligible=franchiseLegacyProfiles(st).filter(x=>["icon","legend"].includes(x.tier)&&x.team!==st.team).sort((a,b)=>(b.tier==="legend")-(a.tier==="legend")||b.score-a.score);if(!eligible.length)return null;
+  const target=eligible[0];let chance=target.tier==="legend"?.70:.35;if(target.tier==="legend"&&target.jerseyEligible)chance=.90;if(rr()>=chance)return null;return {type:"oneDayContract",team:target.team,league:target.league,legacyTier:target.tier,legacyScore:target.score,chance};
+}
+function applyOneDayContract(offer,state=G){
+  const st=state||{};if(!offer||!offer.team)return false;st._formalRetirementTeam=offer.team;st._formalRetirementLeague=offer.league;st._oneDayContractAccepted={...offer,year:Number(st.year)||0};if(typeof recordStoryBeat==="function")recordStoryBeat({key:`oneDayContract|${Number(st.year)||0}|${offer.team}`,year:Number(st.year)||0,type:"oneDayContract",importance:82,region:typeof _storyRegionForLeague==="function"?_storyRegionForLeague(offer.league):null,league:offer.league,team:offer.team,facts:{legacyTier:offer.legacyTier,legacyScore:offer.legacyScore},tags:["retirement","franchise","finalChapter"]},st);return true;
+}
+
+function farewellTourEligibility(state=G){
+  const st=state||{},nba=(st.seasonHistory||[]).filter(s=>s&&s.stage==="pro"&&s.league==="NBA"),age=Number(st.age)||0;
+  if(age<34)return {eligible:false,reason:"age",markers:[],score:0,nbaSeasons:nba.length};
+  if(nba.length<10)return {eligible:false,reason:"tenure",markers:[],score:0,nbaSeasons:nba.length};
+  if(st._injuryRetire||st._forcedCareerEnd)return {eligible:false,reason:"forced-injury",markers:[],score:0,nbaSeasons:nba.length};
+  const legacy=typeof nbaLegacyProfile==="function"?nbaLegacyProfile(st):null,score=Number(legacy&&legacy.score)||0;
+  if(score<57)return {eligible:false,reason:"legacy",markers:[],score,nbaSeasons:nba.length};
+  const aw=(legacy&&legacy.awards)||((typeof nbaAwardCounts==="function")?nbaAwardCounts(st):{}),markers=[];
+  if((Number(aw.MVP)||0)>=1)markers.push("MVP");
+  if((Number(aw.FMVP)||0)>=1)markers.push("FMVP");
+  if((Number(aw["冠軍"])||0)>=2)markers.push("MULTI_CHAMP");
+  if((Number(aw["年度一隊"])||0)>=3)markers.push("ALL_NBA_1");
+  if((Number(aw["明星賽"])||0)>=8)markers.push("ALL_STAR_8");
+  const ranks=legacy&&legacy.ranks||{},top20=["PTS","REB","AST"].some(k=>ranks[k]&&ranks[k].exact&&Number(ranks[k].rank)<=20);if(top20)markers.push("TOP20_CAREER");
+  return {eligible:markers.length>=2,reason:markers.length>=2?"eligible":"markers",markers,score,nbaSeasons:nba.length,legacy};
+}
+function startFarewellTour(state=G){
+  const st=state||{},elig=farewellTourEligibility(st);if(!elig.eligible)return null;const y=Number(st.year)||0;
+  st._farewellTour={version:1,active:true,announcedYear:y,finalSeasonYear:y+1,moments:[],momentsGenerated:false,completed:false,eligibility:{score:elig.score,markers:[...elig.markers]}};
+  if(typeof recordStoryBeat==="function")recordStoryBeat({key:`farewellTourAnnounced|${y}`,year:y,age:st.age,type:"farewellTourAnnounced",importance:90,region:"us",league:"NBA",team:st.team||null,facts:{finalSeasonYear:y+1,legacyScore:elig.score,markers:[...elig.markers]},tags:["retirement","farewellTour","finalChapter"]},st);return st._farewellTour;
+}
+function farewellTourMomentsForSeason(season,state=G){
+  const st=state||{},s=season||{},moments=[],profiles=typeof franchiseLegacyProfiles==="function"?franchiseLegacyProfiles(st):[];
+  const former=profiles.filter(x=>x&&["icon","legend"].includes(x.tier)&&x.team!==s.team).sort((a,b)=>(b.tier==="legend")-(a.tier==="legend")||b.score-a.score)[0];
+  if(former)moments.push({type:"formerTeamTribute",priority:100,team:former.team,league:former.league,title:`最後一次回到 ${former.team}`,text:`你最後一次以現役球員身份走進 ${former.team} 的球館。這裡記得的不只是最後一季，而是你真正留在這支球隊的那些年份。`});
+  const beats=Array.isArray(st.storyBeats)?st.storyBeats:[],rival=beats.filter(b=>b&&["finalsMeeting","playoffMeeting","repeatedFinalsLoss","finalsThreeZeroCollapse"].includes(b.type)).slice().sort((a,b)=>(Number(b.importance)||0)-(Number(a.importance)||0))[0];
+  if(rival){const rt=(rival.facts&&(rival.facts.opponent||rival.facts.rivalTeam))||rival.team||"熟悉的宿敵";moments.push({type:"rivalFarewell",priority:80,team:rt,title:"最後一次面對熟悉的對手",text:`賽前握手比平常久了一點。你和 ${rt} 之間那些季後賽與關鍵夜晚，終於來到最後一次。`});}
+  let threads=Array.isArray(st._farewellThreadTest)?st._farewellThreadTest:null;
+  if(!threads&&typeof ensureV273LifeState==="function"){try{const u=ensureV273LifeState(st);threads=(u.careerThreads||[]).map(id=>u.npcs&&u.npcs[id]).filter(Boolean).map(n=>({name:n.name,score:Number(n.relationship&&n.relationship.score)||0,history:(n.relationship&&n.relationship.sharedHistory||[]).length,custom:!!n.customCareerThread}));}catch(_){threads=[];}}
+  const person=(threads||[]).filter(x=>x&&x.name&&(Number(x.score)>=55||Number(x.history)>=4||x.custom)).sort((a,b)=>(b.custom?1:0)-(a.custom?1:0)||(Number(b.score)||0)-(Number(a.score)||0)||(Number(b.history)||0)-(Number(a.history)||0))[0];
+  if(person)moments.push({type:"careerThreadFarewell",priority:70,npcName:person.name,title:`${person.name} 來看最後這一段路`,text:`從你們第一次真正進入彼此的籃球人生，到今天最後一季，${person.name} 的名字也留在這個結尾裡。`});
+  moments.push({type:"finalHomeGame",priority:50,team:s.team||st.team||null,title:"最後一場主場例行賽",text:"終場前的每一次換人、每一次掌聲都比平常慢了一點。這一次，球迷知道不會再有下一個主場球季。"});
+  const seen=new Set();return moments.filter(m=>{const k=`${m.type}|${m.team||m.npcName||""}`;if(seen.has(k))return false;seen.add(k);return true;}).sort((a,b)=>b.priority-a.priority).slice(0,4);
+}
+
+
 /* ---------- 球衣退休：依「各隊」效力年資 × 戰績 × 榮譽 判定 ---------- */
 function jerseyRetiredTeams(){
   const pro=G.seasonHistory.filter(s=>s.stage==="pro");
@@ -10673,6 +11191,7 @@ const LEAGUE_THEME_META={
   "pplus":{mark:"🇹🇼",code:"P-聯盟",name:"台灣職業籃球",tier:"TAIWAN · PRO"},
   "tpbl":{mark:"🇹🇼",code:"T-PBL",name:"台灣職業籃球",tier:"TAIWAN · PRO"},
   "us-prep":{mark:"🇺🇸",code:"US PREP",name:"美國高中籃球",tier:"VARSITY · PREP"},
+  "all-american":{mark:"⭐",code:"ALL-AMERICAN",name:"National Showcase Weekend",tier:"ELITE · HIGH SCHOOL"},
   "ncaa-d1":{mark:"🇺🇸",code:"D1",name:"美國大學一級籃球",tier:"COLLEGE · DIVISION I"},
   "ncaa-d2":{mark:"🇺🇸",code:"D2",name:"美國大學二級籃球",tier:"COLLEGE · DIVISION II"},
   "gleague":{mark:"🇺🇸",code:"美國發展聯盟",name:"",tier:"DEVELOPMENT · PRO"},
@@ -10690,6 +11209,7 @@ function currentRegion(){
 }
 function leagueThemeForState(){
   if(!G) return "hbl";
+  if(ALL_AMERICAN_PHASES.includes(G.phase)) return "all-american";
   if(G.phase==="jones" || G.phase==="intl") return "taiwan-national";
   if(["nbaCombine","nbaCombineRejected","nbaUndrafted","earlyEntryUndrafted","nbaDraftDecision","draftHoldoutDecision","draftHoldout","subsequentDraft","rookieFreeAgency"].includes(G.phase)) return "nba";
   if(G.phase==="draftDeclare" && G._draftPick && G._draftPick.NBA) return "nba";
@@ -10719,7 +11239,7 @@ function applyRegionTheme(){
   setTimeout(()=>{ document.body.dataset.region=r; bd.classList.remove("fade"); }, 250);
 }
 function render(opts={}){
-  if(G)migrateV270State(G);
+  if(G){migrateV270State(G);migrateV64State(G);}
   const preserveY=opts.preserveScroll?((typeof window!=="undefined"&&Number(window.scrollY))||0):0;
   applyRegionTheme();
   document.body.classList.remove("game-ui-active","start-ui-active","creation-builder-ui-active");
@@ -10756,6 +11276,11 @@ function render(opts={}){
     case "careerThreadLifeEvent": stage.innerHTML=careerThreadLifeEventHTML(); break;
     case "theQuestion": stage.innerHTML=theQuestionHTML(G); break;
     case "surgery": stage.innerHTML=surgeryHTML(); break;
+    case "allAmericanSelection": stage.innerHTML=allAmericanSelectionHTML(); break;
+    case "allAmericanPractice": stage.innerHTML=allAmericanPracticeHTML(); break;
+    case "allAmericanMedia": stage.innerHTML=allAmericanMediaHTML(); break;
+    case "allAmericanGame": stage.innerHTML=allAmericanGameHTML(); break;
+    case "allAmericanClosing": stage.innerHTML=allAmericanClosingHTML(); break;
     case "hsDecision": stage.innerHTML=hsDecisionHTML(); break;
     case "collegeDecision": stage.innerHTML=collegeDecisionHTML(); break;
     case "nbaWaived": stage.innerHTML=nbaWaivedHTML(); break;
@@ -10763,6 +11288,8 @@ function render(opts={}){
     case "homeTeamNoRenewal": stage.innerHTML=homeTeamNoRenewalHTML(); break;
     case "trade": stage.innerHTML=tradeHTML(); break;
     case "retireOption": stage.innerHTML=retireOptionHTML(); break;
+    case "finalChapterOffer": {const fw=G._farewellTourEligible,lr=G._lastRideOffer;stage.innerHTML=`<div class="season-hd"><span class="stage">FINAL CHAPTER · 生涯最終章</span><span class="yr">${G.year}</span></div><div class="panel"><div class="label">THE LAST CHOICE</div><h2 style="font-size:22px;margin:8px 0">有些生涯，需要自己決定最後一章怎麼開始。</h2>${fw?`<div class="mastery-check"><b>FAREWELL TOUR · 最後一季</b><p>你的 NBA 生涯已經達到聯盟級傳奇門檻。你可以現在公開宣布：下一季就是最後一季。巡演只改變敘事與人物回應，不提供能力、勝場或獎項加成。</p><button class="btn gold mt8" data-farewell-announce>公開宣布下一季為最後一季</button></div>`:""}${lr?`<div class="mastery-check mt12"><b>THE LAST RIDE · 最後一次回家</b><p>${lr.team} 願意給你一紙一年合約。這不是榮譽先發；角色與上場時間仍完全由你現在的能力決定。</p><button class="btn gold mt8" data-last-ride-accept>回到 ${lr.team}</button></div>`:""}<button class="btn ghost mt12" data-final-chapter-skip>現在不做決定，照原本生涯走</button></div>`;break;}
+    case "oneDayContract": {const o=G._oneDayContractOffer;stage.innerHTML=`<div class="season-hd"><span class="stage">ONE-DAY CONTRACT · 最後一紙合約</span><span class="yr">${G.year}</span></div><div class="panel center"><div class="label">以最重要的球衣說再見</div><h2 style="font-size:21px;margin:8px 0">${o?o.team:"昔日球隊"} 邀請你正式以球隊一員身份退休</h2><p class="muted">這是一紙象徵性合約：不增加賽季、不產生比賽、不增加薪資或數據，只決定生涯最後的正式歸屬。</p><div class="opts mt12"><button class="btn gold" data-one-day-accept="1">簽下合約，以 ${o?o.team:"這支球隊"} 球員身份退休</button><button class="btn ghost" data-one-day-decline="1">維持原本的退休歸屬</button></div></div>`;break;}
     case "usaBasketball": stage.innerHTML=usaBasketballHTML(); break;
     case "intl": stage.innerHTML=intlHTML(); break;
     case "jones": stage.innerHTML=jonesHTML(); break;
@@ -10785,6 +11312,12 @@ function render(opts={}){
   }
   bindActionbar();
   bindPersistentUiControls();
+  if(G.phase==="finalChapterOffer"){
+    const fa=document.querySelector("[data-farewell-announce]"),lr=document.querySelector("[data-last-ride-accept]"),sk=document.querySelector("[data-final-chapter-skip]");
+    if(fa)fa.addEventListener("click",()=>{startFarewellTour(G);G._farewellTourDecisionYear=G.year;G._farewellTourEligible=null;G._lastRideOffer=null;processOffseason();});
+    if(lr)lr.addEventListener("click",()=>{applyLastRideOffer(G._lastRideOffer,G);G._lastRideOffer=null;G._farewellTourDecisionYear=G.year;G._farewellTourEligible=null;processOffseason();});
+    if(sk)sk.addEventListener("click",()=>{G._farewellTourDecisionYear=G.year;G._farewellTourEligible=null;G._lastRideOffer=null;processOffseason();});
+  }
   if(opts.preserveScroll){
     const restore=()=>window.scrollTo(0,preserveY);
     if(typeof requestAnimationFrame==="function") requestAnimationFrame(restore); else restore();
@@ -10809,7 +11342,7 @@ function scoutingStatusHTML(state=G){
   if((st.league==="NCAA D1"||st.league==="NCAA D2")&&st.lastReview&&Number(st.lastReview.usRank)>0){const rank=Number(st.lastReview.usRank);return `<section class="context-card scouting-status"><div class="context-head">SCOUTING STATUS · 球探狀態</div><div class="context-body"><div class="scouting-status-main">Big Board #${rank}</div><div class="scouting-status-sub">全美排名 #${rank} · NBA 選秀圈目前評價</div></div></section>`;}return "";
 }
 function contextPhaseLabel(phase=(G&&G.phase)){
-  const labels={intro:"賽季準備",decline:"生涯轉折",commit:"新篇章",allocate:"能力分配",training:"賽季事件",postseason:"季後賽",postseasonEvent:"季後賽事件",finals:"總冠軍賽",finalsDecision:"關鍵時刻",review:"賽季回顧",careerThreadLifeEvent:"人物篇章",theQuestion:"生涯提問",surgery:"傷勢處理",hsDecision:"升學抉擇",collegeDecision:"大學抉擇",nbaWaived:"被球隊釋出",freeAgency:"自由市場",homeTeamNoRenewal:"合約抉擇",trade:"交易",retireOption:"生涯抉擇",usaBasketball:"國家隊",intl:"國際賽",jones:"瓊斯盃",draftDeclare:"選秀宣告",nbaCombine:"NBA Combine",nbaCombineRejected:"Combine 結果",rookieOption:"新人合約",rookieExtension:"提前續約",roseRule:"Rose Rule",nbaUndrafted:"NBA 落選",earlyEntryUndrafted:"提前參選結果",nbaDraftDecision:"NBA 選秀決定",draftHoldoutDecision:"選秀協商",draftHoldout:"等待選秀",subsequentDraft:"再次參選",rookieFreeAgency:"新人自由市場",negotiation:"合約談判",draftResults:"選秀結果",overseasOffer:"海外邀約"};
+  const labels={intro:"賽季準備",decline:"生涯轉折",commit:"新篇章",allocate:"能力分配",training:"賽季事件",postseason:"季後賽",postseasonEvent:"季後賽事件",finals:"總冠軍賽",finalsDecision:"關鍵時刻",review:"賽季回顧",careerThreadLifeEvent:"人物篇章",theQuestion:"生涯提問",surgery:"傷勢處理",allAmericanSelection:"全美明星入選",allAmericanPractice:"Showcase 合練",allAmericanMedia:"明星週媒體日",allAmericanGame:"All-American Game",allAmericanClosing:"明星週結算",hsDecision:"升學抉擇",collegeDecision:"大學抉擇",nbaWaived:"被球隊釋出",freeAgency:"自由市場",homeTeamNoRenewal:"合約抉擇",trade:"交易",retireOption:"生涯抉擇",finalChapterOffer:"生涯最終章",oneDayContract:"最後一紙合約",usaBasketball:"國家隊",intl:"國際賽",jones:"瓊斯盃",draftDeclare:"選秀宣告",nbaCombine:"NBA Combine",nbaCombineRejected:"Combine 結果",rookieOption:"新人合約",rookieExtension:"提前續約",roseRule:"Rose Rule",nbaUndrafted:"NBA 落選",earlyEntryUndrafted:"提前參選結果",nbaDraftDecision:"NBA 選秀決定",draftHoldoutDecision:"選秀協商",draftHoldout:"等待選秀",subsequentDraft:"再次參選",rookieFreeAgency:"新人自由市場",negotiation:"合約談判",draftResults:"選秀結果",overseasOffer:"海外邀約"};
   return labels[phase]||"生涯進行中";
 }
 const NBA_ROLE_ZH={franchise:"建隊核心",star:"明星核心",coreStarter:"核心先發",starter:"先發",sixthMan:"第六人",rotation:"輪替",bench:"板凳",fringe:"名單邊緣",twoWay:"雙向／發展聯盟"};
@@ -11005,9 +11538,28 @@ function positionlessCoachEventHTML(){
 }
 function bindPositionlessCoachEvent(){const s=$("#stage");if(!s)return;s.querySelectorAll("[data-coach-choice]").forEach(b=>b.addEventListener("click",()=>{resolvePositionlessCoachChoice(b.dataset.coachChoice,G);render();}));}
 
+/* ---------- BUILD IDENTITY preview collapse state ---------- */
+let _identityPreviewOpen=null;
+function identityPreviewDefaultOpen(){
+  try{return !(window&&window.matchMedia&&window.matchMedia("(max-width:699px)").matches);}catch(_){return true;}
+}
+function identityPreviewIsOpen(){return _identityPreviewOpen===null?identityPreviewDefaultOpen():!!_identityPreviewOpen;}
+function identityPreviewShellHTML(name,body,kicker="BUILD IDENTITY 3.0 · 球風預覽"){
+  const open=identityPreviewIsOpen();
+  return `<div class="identity-preview-shell"><button type="button" class="identity-preview-toggle" data-identity-preview-toggle aria-expanded="${open}"><span><small>${kicker}</small><b>${name||"未定型"}</b></span><i>${open?"▲":"▼"}</i></button><div class="identity-preview-body${open?"":" hidden"}" data-identity-preview-body>${body}</div></div>`;
+}
+function bindIdentityPreviewToggle(root=document){
+  const scope=root||document;if(!scope||!scope.querySelectorAll)return;
+  scope.querySelectorAll("[data-identity-preview-toggle]").forEach(b=>{b.onclick=()=>{const shell=b.closest&&b.closest(".identity-preview-shell"),body=shell&&shell.querySelector("[data-identity-preview-body]");if(!body)return;const opening=body.classList.contains("hidden");body.classList.toggle("hidden",!opening);_identityPreviewOpen=opening;b.setAttribute("aria-expanded",String(opening));const ico=b.querySelector("i");if(ico)ico.textContent=opening?"▲":"▼";};});
+}
+
 /* ---------- Training ---------- */
 function trainingHTML(){
   const ev=G.seasonEvents[G.eventIdx];
+  const _styleNow=derivedStyleProfile(G.pos,G,G.attr,G),_identityNow=derivedBuildIdentity(G.pos,_styleNow,G.attr,G,G),_officialName=G._officialBuildIdentity&&G._officialBuildIdentity.name,_trend=_officialName&&_officialName!==_identityNow.name?`${_officialName} → ${_identityNow.name}`:_identityNow.name;
+  const _identityBody=`${derivedStyleGradesHTML(_styleNow,true)}<div class="small mt8">目前趨勢：${_trend} · 正式 Build 於賽季結束後定型。</div>`;
+  const _identityPanel=`<div class="panel mt8 identity-preview-panel">${identityPreviewShellHTML(_identityNow.name,_identityBody)}</div>`;
+  const _farewellPanel=G._farewellTour&&G._farewellTour.active&&Number(G.year)===Number(G._farewellTour.finalSeasonYear)?`<div class="panel mt8"><div class="label">FAREWELL TOUR · 最後一季</div><div style="font-weight:800;font-size:18px;margin-top:5px">公開宣布的最後一季</div><p class="muted">巡演只留下故事、關係與回憶，不提供能力、SP、勝場或獎項加成。</p>${(G._farewellTour.moments||[]).map(m=>`<div class="over-note"><b>${m.title}</b><span>${m.text}</span></div>`).join("")}</div>`:"";
   const done=G.eventIdx;
   const track=G.seasonEvents.map((_,i)=>`<div class="t ${i<done?"done":""}"></div>`).join("");
   const gradeNames = G.background === "asian_american" ? ["高一(Fr.)","高二(So.)","高三(Jr.)","高四(Sr.)"] : ["高一","高二","高三"];
@@ -11015,7 +11567,7 @@ function trainingHTML(){
     G.stage==="大學"?`大學 ${["大一","大二","大三","大四"][Math.min(G.collegeYears-1,3)]}`:lname(G.league);
   if(!ev){ // 已完成，準備打賽季
     return `<div class="season-hd"><span class="stage">${stageName}</span><span class="yr">${G.year} 賽季</span></div>
-      <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
+      <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>${_identityPanel}${_farewellPanel}
       <div class="turn-track">${track}</div>
       <div class="panel center">
         <div class="label">季前訓練完成</div>
@@ -11024,7 +11576,7 @@ function trainingHTML(){
       </div>`;
   }
   return `<div class="season-hd"><span class="stage">${stageName}</span><span class="yr">${G.year} 賽季 · 訓練 ${done+1}/${G.seasonEvents.length}</span></div>
-    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>
+    <div class="team-line"><span class="team-dot" style="background:${teamColors(G.team).p}"></span>${G.team}${getContractText()}</div>${_identityPanel}${_farewellPanel}
     <div class="turn-track">${track}</div>
     <div class="panel" id="evpanel">
       <div class="label">${["事件","事件","事件"][0]} · 抉擇</div>
@@ -11055,6 +11607,7 @@ function trainingHTML(){
     </div>`;
 }
 function bindTraining(){
+  bindIdentityPreviewToggle($("#stage"));
   const ev=G.seasonEvents[G.eventIdx];
   if(!ev){ setAction([{t:"開始賽季 ▶",cls:"gold",fn:playSeason}]); return; }
   setAction([]); // 訓練時無底部按鈕
@@ -11644,12 +12197,13 @@ function tradeHTML(){
 /* ---------- 退休選項 ---------- */
 function retireOptionHTML(){
   const t=careerTotals();
-  const abroad=["NBA","日職 B.League","發展聯盟","CBL","KRBL"].includes(G.league) && hasTaiwanBasketballIdentity(G);
+  const abroad=["NBA","日職 B.League","發展聯盟","CBL","KRBL"].includes(G.league) && hasTaiwanBasketballIdentity(G),lr=G._lastRideOffer;
   return `<div class="season-hd"><span class="stage">生涯抉擇</span><span class="yr">${G.age}歲</span></div>
     <div class="panel center"><div class="label">老將的十字路口</div>
       <h2 style="font-size:20px;margin:8px 0">要繼續打，還是功成身退？</h2>
       <p class="muted">生涯 ${t.proSeasons} 個職業賽季，場均 ${t.proPpg} 分。年紀漸長，身體恢復變慢，你可以選擇再拚、${abroad?"回台獻技，":""}或體面退休。</p>
     </div>
+    ${lr?`<div class="panel" style="border-color:var(--gold);margin-bottom:10px"><div class="label">THE LAST RIDE · 最後一次回家</div><p class="muted mt8">${lr.team} 希望你回到這段生涯最重要的地方，簽下一年老將合約走完最後一段路。角色與上場時間仍依你現在的實力決定。</p><button class="btn gold mt8" data-last-ride="1">接受 ${lr.team} 的最後一季邀請 🏠</button></div>`:""}
     <div class="opts">
       <button class="btn" data-keep="1">再戰一季 💪</button>
       ${abroad?`<button class="btn" data-hometw="1" style="background:linear-gradient(135deg,#D8323F,#B0202C)">回台獻技 🇹🇼</button>`:""}
@@ -12140,15 +12694,22 @@ function overseasOfferHTML(){
 
 /* ---------- 生涯數據總表 ---------- */
 let statsTab="pro";
+function seasonShotDetailHTML(season,rows=[]){
+  if(!season)return `<div class="panel mt12"><div class="label">SEASON SHOT DNA · 單季投籃圖</div><p class="muted">尚無可檢視的完成賽季。</p></div>`;
+  const list=(rows||[]).filter(Boolean),sp=season.styleProfile||{},build=sp.buildName||"歷史球風推估",grades=sp.grades||{},profile=Object.keys(grades).length?{grades}:null;
+  const selector=list.length>1?`<select id="seasonShotSelect" style="width:100%;margin-top:8px">${list.slice().sort((a,b)=>Number(b.year)-Number(a.year)).map(s=>`<option value="${s.year}" ${Number(s.year)===Number(season.year)?"selected":""}>${s.year} · ${s.stage==="pro"?(s.team||s.league):(s.team||s.league||s.stage)}</option>`).join("")}</select>`:"";
+  return `<div class="panel mt12"><div class="label">SEASON SHOT DNA · 單季投籃圖</div><div style="display:flex;justify-content:space-between;gap:10px;align-items:end;flex-wrap:wrap"><div><h3 style="margin:6px 0 0">${season.year} · ${build}</h3><div class="small">${season.team||""}${season.league?` · ${season.league}`:""}</div></div><div class="small">FG ${Number(season.fg)||0}% · 3P ${Number(season.tp)||0}%</div></div>${selector}${profile?derivedStyleGradesHTML(profile,true):`<div class="small mt8">此舊賽季沒有正式 Style Snapshot；投籃資料仍保留原紀錄。</div>`}<div class="tab-bar" style="justify-content:center;margin:10px 0 6px"><button class="tab season-sc-mode" data-scmode="hot">🔥 熱區</button><button class="tab season-sc-mode" data-scmode="dots">🎯 落點</button></div><canvas id="seasonShotCanvas" style="width:100%;margin-top:4px"></canvas></div>`;
+}
 function renderStats(){
   document.body.classList.add("game-ui-active");
   app.innerHTML=`<div class="game-shell">${hudHTML({hideAttrs:true})}<main class="game-main"><div class="wrap" id="stage"></div>${actionbarHTML()}</main>${contextRailHTML()}</div>`;
-  const stage=$("#stage");
-  const tabs=[["pro","職業"],["amateur","學生"],["intl","國際賽"]];
-  const rows=statsTab==="intl"?intlTableHTML():seasonTableHTML(statsTab);
+  const stage=$("#stage"),tabs=[["pro","職業"],["amateur","學生"],["intl","國際賽"]],rows=statsTab==="intl"?intlTableHTML():seasonTableHTML(statsTab),shotRows=statsTab==="intl"?[]:G.seasonHistory.filter(s=>statsTab==="pro"?s.stage==="pro":s.stage!=="pro");
+  if(shotRows.length&&!shotRows.some(s=>Number(s.year)===Number(selectedShotSeasonYear)))selectedShotSeasonYear=shotRows[shotRows.length-1].year;
+  const selectedSeason=shotRows.find(s=>Number(s.year)===Number(selectedShotSeasonYear))||shotRows[shotRows.length-1]||null;
   stage.innerHTML=`<div class="season-hd"><span class="stage">生涯數據總表</span></div>
     <div class="tab-bar">${tabs.map(([k,l])=>`<button class="tab ${statsTab===k?"on":""}" data-tab="${k}">${l}</button>`).join("")}</div>
     <div class="tbl-wrap">${rows}</div>
+    ${statsTab==="intl"?"":seasonShotDetailHTML(selectedSeason,shotRows)}
     <div class="panel mt12">${careerSummaryHTML()}</div>
     <div class="panel center mt12">
       <div class="label">生涯結算圖</div>
@@ -12160,7 +12721,10 @@ function renderStats(){
       <canvas id="summaryCanvas" style="width:100%;margin-top:6px"></canvas>
       <button class="btn gold mt12" id="dlSummary">下載生涯結算圖 📄</button>
     </div>`;
-  stage.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{statsTab=b.dataset.tab;renderStats();}));
+  stage.querySelectorAll(".tab[data-tab]").forEach(b=>b.addEventListener("click",()=>{statsTab=b.dataset.tab;selectedShotSeasonYear=null;renderStats();}));
+  const ss=$("#seasonShotSelect");if(ss)ss.addEventListener("change",()=>{selectedShotSeasonYear=Number(ss.value);renderStats();});
+  const ssc=$("#seasonShotCanvas");if(ssc&&selectedSeason&&selectedSeason.shotProfile){ssc.width=1000;ssc.height=640;const x=ssc.getContext("2d");x.clearRect(0,0,ssc.width,ssc.height);drawShotChart(x,40,80,920,500,selectedSeason.shotProfile,`${selectedSeason.year} 單季投籃分布`);}
+  document.querySelectorAll(".season-sc-mode").forEach(b=>{b.classList.toggle("on",b.dataset.scmode===shotChartMode);b.addEventListener("click",()=>{shotChartMode=b.dataset.scmode;renderStats();});});
   const sc=$("#summaryCanvas"); if(sc) drawCareerSummary(sc);
   const dl=$("#dlSummary"); if(dl) dl.addEventListener("click",downloadSummary);
   document.querySelectorAll(".sc-mode").forEach(b=>{
@@ -12434,7 +12998,7 @@ function renderRetireScene(){
       <div class="rs-day">
         <div class="rs-day-label">引退日</div>
         <div class="rs-day-main">${G.year} 年 · ${G.age} 歲</div>
-        <div class="rs-day-sub">最終效力 ${G.team}（${G.league==="高中"||G.league==="大學"?G.stage:G.league}）</div>
+        <div class="rs-day-sub">最終效力 ${G.team}（${G.league==="高中"||G.league==="大學"?G.stage:G.league}）</div>${G._formalRetirementTeam?`<div class="rs-day-sub" style="color:var(--gold)">最後一紙合約：以 ${G._formalRetirementTeam}（${G._formalRetirementLeague||""}）球員身份正式退休</div>`:""}
         <div class="rs-day-sub">生涯 ${careerTotals().proSeasons} 個職業賽季 · ${G.retireReason}</div>
       </div>
       <button class="btn gold mt16" id="toEnd">播放生涯紀錄片 ▶</button>
@@ -12834,6 +13398,7 @@ function renderEnd(){
 /* ---------- 生涯球員卡 canvas ---------- */
 /* ---------- 生涯投籃分布圖 · V.2.0.18 逐季累積模型 ---------- */
 let shotChartMode = 'hot';   // 'hot'=熱區著色, 'dots'=點狀命中
+let selectedShotSeasonYear = null; // V6.4 單季投籃圖選擇
 const _scCl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 const SHOT_ZONE_KEYS=["rim","paint","midL","midC","midR","cornerL","cornerR","wingL","wingR","top"];
 const THREE_ZONE_KEYS=["cornerL","cornerR","wingL","wingR","top"];
@@ -12855,28 +13420,40 @@ function _allocCapped(total,capacities,weights){
   }
   return out;
 }
-function _shotWeights(attr,pos,state=G){
-  const a=attr||{},guard=pos==="PG"||pos==="SG",wing=pos==="SF",big=pos==="PF"||pos==="C",pb=positionBreakthroughProfile({...state,attr:a,pos});
-  const t3=Math.max(0,(a.three||40)-42),ath=a.athletic||50,sh=a.shooting||50,pass=a.pass||50,space=clamp(Number(pb.threeBreakthrough)||0,0,1);
-  return {
-    rim:Math.max(3,15+ath*.50+(big?28:guard?2:10)-t3*.22-(big?14:4)*space),
-    paint:Math.max(2,10+ath*.18+(big?18:0)-t3*.10-(big?8:2)*space),
-    midL:Math.max(2,5+sh*.20+(wing?3:0)),midC:Math.max(2,6+sh*.24+(pass>78?2:0)),midR:Math.max(2,5+sh*.20+(wing?3:0)),
-    cornerL:Math.max(1,3+t3*.18+(wing?3:guard?2:0)+(big?3:1)*space),cornerR:Math.max(1,3+t3*.18+(wing?3:guard?2:0)+(big?3:1)*space),
-    wingL:Math.max(1,4+t3*.34+(guard?5:wing?3:0)+(big?7:2)*space),wingR:Math.max(1,4+t3*.34+(guard?5:wing?3:0)+(big?7:2)*space),top:Math.max(1,4+t3*.30+(guard?6:0)+(big?8:2)*space)
+function shotDnaForProfile(profile,attr,pos,body){
+  const p=profile&&profile.scores||{},a=attr||{},r=clamp((Number(p.rimPressure)||60)/100,0,1),m=clamp((Number(p.midRangeCreation)||60)/100,0,1),t=clamp((Number(p.perimeterGravity)||60)/100,0,1),c=clamp((Number(p.onBallCreation)||60)/100,0,1),guard=pos==="PG"||pos==="SG",big=pos==="PF"||pos==="C";
+  let rw=.20+1.55*r*r,mw=.15+1.12*m*m,tw=.15+1.55*t*t;
+  if(big){rw*=1.10;tw*=.92;}else if(guard){tw*=1.03;}
+  const fam=rw+mw+tw,rimShare=rw/fam,midShare=mw/fam,threeShare=tw/fam;
+  const paintPart=clamp(.34-(r-.60)*.12+(big?.08:0),.20,.46),rimPart=1-paintPart;
+  const centerMid=clamp(.34+(c-.60)*.08,.28,.44),sideMid=(1-centerMid)/2;
+  const cornerFrac=clamp(.40-(c-.50)*.38+(guard?0:.03),.14,.48),remainingThree=1-cornerFrac,topFrac=clamp(.26+(c-.50)*.24,.18,.38),wingFrac=Math.max(.10,remainingThree-topFrac),wingEach=wingFrac/2,cornerEach=cornerFrac/2;
+  const zones={
+    rim:rimShare*rimPart,paint:rimShare*paintPart,
+    midL:midShare*sideMid,midC:midShare*centerMid,midR:midShare*sideMid,
+    cornerL:threeShare*cornerEach,cornerR:threeShare*cornerEach,
+    wingL:threeShare*wingEach,wingR:threeShare*wingEach,top:threeShare*topFrac
   };
+  const sum=Object.values(zones).reduce((n,v)=>n+v,0)||1;Object.keys(zones).forEach(k=>zones[k]/=sum);
+  return {version:1,zones,rimShare,midShare,threeShare,creation:c};
 }
-function _zoneSkillRates(attr,season){
-  const a=attr||{},fg=(Number(season.fg)||45)/100,tp=(Number(season.tp)||33)/100;
+function _shotWeights(attr,pos,state=G,styleProfile=null){
+  const a=attr||{},st=state||G,style=styleProfile&&styleProfile.scores?styleProfile:derivedStyleProfile(pos,st,a,st),dna=shotDnaForProfile(style,a,pos,st),pb=positionBreakthroughProfile({...st,attr:a,pos}),space=clamp(Number(pb.threeBreakthrough)||0,0,1),big=pos==="PF"||pos==="C";
+  const z={...dna.zones};
+  if(space>0){const boost=(big?.18:.07)*space,from=(z.rim+z.paint)*boost;z.rim=Math.max(.001,z.rim-from*.64);z.paint=Math.max(.001,z.paint-from*.36);const each=from/5;for(const k of ["cornerL","cornerR","wingL","wingR","top"])z[k]+=each;}
+  const sum=Object.values(z).reduce((n,v)=>n+v,0)||1;return Object.fromEntries(Object.entries(z).map(([k,v])=>[k,Math.max(.001,v/sum)*100]));
+}
+function _zoneSkillRates(attr,season,styleProfile){
+  const a=attr||{},fg=(Number(season.fg)||45)/100,tp=(Number(season.tp)||33)/100,p=styleProfile&&styleProfile.scores||{},rim=(Number(p.rimPressure)||60)-60,mid=(Number(p.midRangeCreation)||60)-60,creation=(Number(p.onBallCreation)||60)-60;
   return {
-    rim:_scCl(.46+(a.athletic-50)*.0045+(a.shooting-50)*.0015,.38,.78),paint:_scCl(.36+(a.shooting-50)*.003+(a.athletic-50)*.0015,.28,.64),
-    midL:_scCl(.32+(a.shooting-50)*.0034,.25,.58),midC:_scCl(.33+(a.shooting-50)*.0036,.25,.60),midR:_scCl(.32+(a.shooting-50)*.0034,.25,.58),
+    rim:_scCl(.46+(a.athletic-50)*.0045+(a.shooting-50)*.0015+rim*.0009,.38,.80),paint:_scCl(.36+(a.shooting-50)*.003+(a.athletic-50)*.0015+rim*.0005,.28,.66),
+    midL:_scCl(.32+(a.shooting-50)*.0034+mid*.0010,.25,.60),midC:_scCl(.33+(a.shooting-50)*.0036+mid*.0012,.25,.62),midR:_scCl(.32+(a.shooting-50)*.0034+mid*.0010,.25,.60),
     cornerL:_scCl(tp*1.04+(a.three-70)*.0005,.22,.52),cornerR:_scCl(tp*1.04+(a.three-70)*.0005,.22,.52),
-    wingL:_scCl(tp+(a.three-70)*.0003,.20,.50),wingR:_scCl(tp+(a.three-70)*.0003,.20,.50),top:_scCl(tp*.97+(a.three-70)*.0003,.19,.49),fgTarget:fg,tpTarget:tp
+    wingL:_scCl(tp+(a.three-70)*.0003-creation*.00015,.20,.50),wingR:_scCl(tp+(a.three-70)*.0003-creation*.00015,.20,.50),top:_scCl(tp*.97+(a.three-70)*.0003-creation*.0002,.19,.49),fgTarget:fg,tpTarget:tp
   };
 }
 function buildSeasonShotProfile(season,attrSnapshot,estimated=false){
-  const zones=_shotEmptyZones(),weights=_shotWeights(attrSnapshot||G.attr,season.pos||G.pos,G),rates=_zoneSkillRates(attrSnapshot||G.attr,season);
+  const _attr=attrSnapshot||G.attr,_pos=season.pos||G.pos,_style=season.styleProfile&&season.styleProfile.scores?{version:1,scores:season.styleProfile.scores,grades:season.styleProfile.grades||{}}:derivedStyleProfile(_pos,G,_attr,G),zones=_shotEmptyZones(),weights=_shotWeights(_attr,_pos,G,_style),rates=_zoneSkillRates(_attr,season,_style);
   const gp=Math.max(0,Number(season.gp)||0),ppg=Math.max(0,Number(season.ppg)||0),fg=_scCl((Number(season.fg)||45)/100,.20,.75);
   if(!gp)return {estimated:!!estimated,zones,totalAtt:0,totalMade:0,threeAtt:0,threeMade:0};
   // 沒有逐回合 play-by-play 的前提下，用得分與效率估計當季 FGA；資料在該季就固定，不受退休時屬性影響。
@@ -12929,26 +13506,37 @@ function _isBehindBackboardPoint(fx,fy){
   return fy<4.05;
 }
 function _zonePoint(zone,R){
-  const polar=(r0,r1,t0,t1)=>{const r=r0+R()*(r1-r0),t=t0+R()*(t1-t0);return [r*Math.sin(t),5.25+r*Math.cos(t)];};
+  const polarPoint=(r,t)=>[r*Math.sin(t),5.25+r*Math.cos(t)];
+  const range=(lo,hi,pow=1)=>lo+Math.pow(R(),pow)*(hi-lo);
+  const angle=(lo,hi,pow=1)=>{const u=R()*2-1,q=Math.sign(u)*Math.pow(Math.abs(u),pow),mid=(lo+hi)/2,half=(hi-lo)/2;return mid+q*half;};
   if(zone==='rim'){
-    // 仍保留籃框兩側與籃下 reverse finish，但任何落到籃板後方的點都重抽。
-    for(let i=0;i<24;i++){const p=polar(.3,4.2,-Math.PI,Math.PI);if(!_isBehindBackboardPoint(p[0],p[1]))return p;}
+    // 真實籃下出手高度集中在 restricted area，少量 reverse / 延伸終結。
+    for(let i=0;i<24;i++){const p=polarPoint(range(.2,4.15,1.8),angle(-Math.PI,Math.PI,.82));if(!_isBehindBackboardPoint(p[0],p[1]))return p;}
     return [0,5.25];
   }
-  if(zone==='paint')return polar(4.4,13.2,-.68,.68);
-  if(zone==='midL')return polar(13.5,21.5,-1.25,-.35);if(zone==='midC')return polar(13.5,21.5,-.35,.35);if(zone==='midR')return polar(13.5,21.5,.35,1.25);
-  // 底角直接用真實 22 呎線外的 x 座標，不再讓 corner 點落進 22 呎線內。
-  if(zone==='cornerL')return [-(22.05+R()*2.5),.7+R()*12.5];if(zone==='cornerR')return [22.05+R()*2.5,.7+R()*12.5];
-  if(zone==='wingL')return polar(23.85,26.2,-1.18,-.45);if(zone==='wingR')return polar(23.85,26.2,.45,1.18);return polar(23.85,26.5,-.45,.45);
+  if(zone==='paint')return polarPoint(range(4.35,13.0,1.45),angle(-.68,.68,1.35));
+  if(zone==='midL')return polarPoint(range(13.6,21.2,1.25),angle(-1.22,-.38,1.15));
+  if(zone==='midC')return polarPoint(range(13.6,21.0,1.30),angle(-.38,.38,1.30));
+  if(zone==='midR')return polarPoint(range(13.6,21.2,1.25),angle(.38,1.22,1.15));
+  // 三分落點大多貼在線外 0~1.4 呎；只有極少數是超遠三分。
+  const arc3=(lo,hi)=>{let r=range(23.82,25.17,2.25);if(R()<.035)r+=range(.25,2.1,1.4);return polarPoint(r,angle(lo,hi,1.05));};
+  const corner=(side)=>{let extra=range(.03,1.20,2.20);if(R()<.035)extra+=range(.20,1.45,1.3);const x=side*(22+extra),y=range(.7,13.45,.92);return [x,y];};
+  if(zone==='cornerL')return corner(-1);if(zone==='cornerR')return corner(1);
+  if(zone==='wingL')return arc3(-1.17,-.45);if(zone==='wingR')return arc3(.45,1.17);return arc3(-.45,.45);
 }
-function drawShotChart(x,ox,oy,w,h){
-  const p=careerShotProfile(),cs=careerShooting();x.fillStyle="#9DB0CC";x.font="700 24px 'Noto Sans TC',sans-serif";x.textAlign="left";
-  const modeTxt=shotChartMode==='hot'?'熱區':'落點',source=p.estimated?'推估（含舊賽季）':'逐季累積';x.fillText(`生涯投籃分布（${modeTxt}） · ${source}　FG ${cs.fg||'—'}%・3P ${cs.tp||'—'}%・3PM ${Number(p.threeMade||0).toLocaleString()}`,ox,oy-14);
+function shotDotSampleSize(totalAtt){
+  const total=Math.max(0,Number(totalAtt)||0);if(!total)return 0;
+  const target=Math.round(180+Math.sqrt(total)*7.3);return Math.min(total,Math.max(Math.min(total,140),Math.min(960,target)));
+}
+function drawShotChart(x,ox,oy,w,h,profile=null,label="生涯投籃分布"){
+  const p=profile||careerShotProfile(),cs=profile?{fg:p.totalAtt?Math.round((Number(p.totalMade)||0)/p.totalAtt*100):0,tp:p.threeAtt?Math.round((Number(p.threeMade)||0)/p.threeAtt*100):0}:careerShooting();x.fillStyle="#9DB0CC";x.font="700 24px 'Noto Sans TC',sans-serif";x.textAlign="left";
+  const modeTxt=shotChartMode==='hot'?'熱區':'落點',source=profile?(p.estimated?'歷史推估':'該季紀錄'):(p.estimated?'推估（含舊賽季）':'逐季累積');x.fillText(`${label}（${modeTxt}） · ${source}　FG ${cs.fg||'—'}%・3P ${cs.tp||'—'}%・3PM ${Number(p.threeMade||0).toLocaleString()}`,ox,oy-14);
   x.fillStyle='#0d1626';roundRect(x,ox,oy,w,h,10);x.fill();x.save();roundRect(x,ox,oy,w,h,10);x.clip();if(shotChartMode==='hot')_drawShotHot(x,ox,oy,w,h,p);else _drawShotDots(x,ox,oy,w,h,p);x.restore();
 }
 function _drawShotDots(x,ox,oy,w,h,p=careerShotProfile()){
-  const R=_scRng(G.name+G.jersey+G.pos+'d2'),{PX,PY}=_scCourt(x,ox,oy,w,h),sample=Math.min(420,Math.max(80,p.totalAtt||0));
-  const tot=Math.max(1,p.totalAtt);for(let i=0;i<sample;i++){let roll=R()*tot,z='midC';for(const k of SHOT_ZONE_KEYS){roll-=p.zones[k].att;if(roll<=0){z=k;break;}}const [fx,fy]=_zonePoint(z,R),zz=p.zones[z],made=R()<(zz.att?zz.made/zz.att:0);x.beginPath();x.arc(PX(fx),PY(fy),4,0,7);if(made){x.fillStyle='#FF6A2C';x.fill();}else{x.strokeStyle='#455270';x.lineWidth=1.6;x.stroke();}}
+  const R=_scRng(G.name+G.jersey+G.pos+'d3'),{PX,PY}=_scCourt(x,ox,oy,w,h),sample=shotDotSampleSize(p.totalAtt||0);
+  const zoneSamples=_allocInt(sample,Object.fromEntries(SHOT_ZONE_KEYS.map(k=>[k,Math.max(0,Number(p.zones&&p.zones[k]&&p.zones[k].att)||0)])));
+  for(const z of SHOT_ZONE_KEYS){const zz=p.zones&&p.zones[z]||{att:0,made:0},n=zoneSamples[z]||0,rate=zz.att?zz.made/zz.att:0;for(let i=0;i<n;i++){const [fx,fy]=_zonePoint(z,R),made=R()<rate;x.beginPath();x.arc(PX(fx),PY(fy),2.55,0,7);if(made){x.fillStyle='#FF6A2C';x.fill();}else{x.strokeStyle='rgba(86,108,148,.78)';x.lineWidth=1.15;x.stroke();}}}
   x.textAlign="left";x.font="600 18px 'Noto Sans TC',sans-serif";x.fillStyle='#FF6A2C';x.beginPath();x.arc(ox+14,oy+h-16,5,0,7);x.fill();x.fillStyle='#9DB0CC';x.fillText("命中",ox+26,oy+h-11);x.strokeStyle='#455270';x.beginPath();x.arc(ox+94,oy+h-16,5,0,7);x.stroke();x.fillStyle='#9DB0CC';x.fillText("未進",ox+106,oy+h-11);
 }
 function _heatColor(d){const k=_scCl(d/0.14,-1,1),lerp=(A,B,t)=>A.map((v,i)=>Math.round(v+(B[i]-v)*t)),gray=[118,138,166];return k>=0?lerp(gray,[255,74,44],k):lerp(gray,[52,120,210],-k);}
@@ -12987,6 +13575,7 @@ function drawCareerCard(){
   // 標題
   x.fillStyle="#F2B84B";x.font=F(700,26);x.textAlign="left";
   x.fillText("HARDWOOD LIFE · 生涯球員卡",50,70);
+  x.fillStyle="#9DB0CC";x.font=F(600,18);x.textAlign="right";x.fillText(`DIFFICULTY · ${careerDifficultyLabel(G)}`,W-50,70);x.textAlign="left";
   // 球衣號 + 名字
   const tc=teamColors(G.team);
   // 隊伍配色小色塊（球衣框）
@@ -13179,7 +13768,7 @@ function drawCareerSummary(cv){
     x.fillRect(L,y-12,4,15); x.fillStyle=DIM2;x.font=NF(700,20);x.fillText(title,L+12,y); y+=12; line(y+4); y+=30; };
   // 頁首
   x.fillStyle=FAINT2;x.font=MF(600,19);x.textAlign="left";x.fillText("HARDWOOD LIFE　生涯結算",L,y);
-  x.textAlign="right";x.fillStyle=FAINT2;x.font=MF(500,17);x.fillText("seed "+(G.seed||"------")+"　"+VERSION,W-L,y);
+  x.textAlign="right";x.fillStyle=FAINT2;x.font=MF(500,17);x.fillText(`DIFFICULTY · ${careerDifficultyLabel(G)}　seed ${G.seed||"------"}　${VERSION}`,W-L,y);
   x.textAlign="left"; y+=54;
   x.fillStyle=GOLD;x.font=NF(900,54);x.fillText(G.name,L,y);
   // 背號色塊
@@ -13399,6 +13988,11 @@ function defaultPhaseActions(){
     case "careerThreadLifeEvent": return G._threadLifeEventResult?[{t:G._threadLifeEventResume==="startSeason"?"繼續季前準備 ▶":"繼續休賽期 ▶",cls:"gold",fn:continueCareerThreadLifeEvent}]:[];
     case "theQuestion": return G._theQuestionResult?[{t:"繼續休賽期 ▶",cls:"gold",fn:continueTheQuestion}]:[];
     case "surgery": return G._surgeryDone?surgeryContinueAction():[];
+    case "allAmericanSelection": return [{t:"進入 Showcase Practice ▶",cls:"gold",fn:continueAllAmericanSelection}];
+    case "allAmericanPractice": return [];
+    case "allAmericanMedia": return [];
+    case "allAmericanGame": return G._allAmerican&&G._allAmerican.game&&G._allAmerican.game.resolved?[{t:"前往 Weekend Closing ▶",cls:"gold",fn:()=>{G.phase="allAmericanClosing";G._allAmerican.phase="closing";render();}}]:[];
+    case "allAmericanClosing": return [{t:"結束明星週，進入升學抉擇 ▶",cls:"gold",fn:()=>finalizeAllAmericanWeekend(G)}];
     case "nbaWaived": return [{t:"查看自由市場 ▶",cls:"gold",fn:continueAfterNbaWaived}];
     case "homeTeamNoRenewal": return [{t:"就到這裡吧，宣布退休",cls:"ghost",fn:retireAfterHomeTeamNoRenewal},{t:"看看其他球隊 ▶",cls:"gold",fn:continueAfterHomeTeamNoRenewal}];
     case "draftDeclare": return [{t:"確認參加選秀 ▶",cls:"gold",fn:confirmDraft}];
@@ -13453,6 +14047,9 @@ function bindPhaseSpecific(){
   const db=s.querySelector("[data-declare]");if(db)db.addEventListener("click",declareFromCollege);
   const st=s.querySelector("[data-stay]");if(st)st.addEventListener("click",stayInCollege);
   const kp=s.querySelector("[data-keep]");if(kp)kp.addEventListener("click",()=>{keepPlaying();});
+  const lr=s.querySelector("[data-last-ride]");if(lr)lr.addEventListener("click",()=>{if(G._lastRideOffer&&applyLastRideOffer(G._lastRideOffer,G)){G._lastRideOffer=null;toast("最後一季，回到熟悉的球衣。",2600);processOffseason();}});
+  const oda=s.querySelector("[data-one-day-accept]");if(oda)oda.addEventListener("click",()=>{if(G._oneDayContractOffer)applyOneDayContract(G._oneDayContractOffer,G);G._retirementPending=false;G._oneDayContractOffer=null;endCareer();});
+  const odd=s.querySelector("[data-one-day-decline]");if(odd)odd.addEventListener("click",()=>{G._retirementPending=false;G._oneDayContractOffer=null;endCareer();});
   const htw=s.querySelector("[data-hometw]");if(htw)htw.addEventListener("click",returnToTaiwan);
   const rt=s.querySelector("[data-retire]");if(rt)rt.addEventListener("click",confirmRetire);
   const far=s.querySelector("[data-fa-retire]");if(far)far.addEventListener("click",confirmRetire);
@@ -13461,6 +14058,9 @@ function bindPhaseSpecific(){
   const pi=s.querySelector("#playIntl");if(pi)pi.addEventListener("click",playIntl);
   const di=s.querySelector("#declineIntl");if(di)di.addEventListener("click",declineIntl);
   if(G.phase==="jones") jonesBind();
+  if(G.phase==="allAmericanPractice")s.querySelectorAll("[data-aa-practice]").forEach(b=>b.addEventListener("click",()=>allAmericanPracticeChoice(b.dataset.aaPractice,G)));
+  if(G.phase==="allAmericanMedia")s.querySelectorAll("[data-aa-media]").forEach(b=>b.addEventListener("click",()=>allAmericanMediaChoice(b.dataset.aaMedia,G)));
+  if(G.phase==="allAmericanGame")s.querySelectorAll("[data-aa-game]").forEach(b=>b.addEventListener("click",()=>allAmericanGameDecision(b.dataset.aaGame,G)));
   // 選秀：台灣聯盟複選
   s.querySelectorAll("[data-dleague]").forEach(b=>b.addEventListener("click",()=>toggleDraftLeague(b.dataset.dleague)));
   // 選秀結果：加盟
@@ -13486,16 +14086,18 @@ function _creationHero(sub){return `<div class="ver-badge">${VERSION}</div><div 
 function renderStart(identity=_creationIdentity||{}){
   document.body.classList.remove("game-ui-active","creation-builder-ui-active");
   document.body.classList.add("start-ui-active");
-  const initial={name:identity.name||"林逐夢",jersey:identity.jersey??7,bg:identity.bg||"local",home:identity.home||"",seed:identity.seed||"",favoriteNbaTeam:identity.favoriteNbaTeam||""};
+  const initial={name:identity.name||"林逐夢",jersey:identity.jersey??7,bg:identity.bg||"local",home:identity.home||"",seed:identity.seed||"",difficultyMode:normalizeCareerDifficulty(identity.difficultyMode||"realistic"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:normalizeCustomCareerThreadDrafts(identity.customCareerThreads)};
   app.innerHTML=`<div class="start-shell"><section class="start-visual">${_creationHero("從高中走向世界最高舞台。每一次抉擇，都會改寫你的生涯。")}</section><section class="start-form"><div class="panel"><div class="creation-step"><b>01 IDENTITY</b><i></i><span>02 BUILDER</span><i></i><span>03 RESULT</span></div>
     <div class="start-identity-grid"><div class="field"><label class="label">球員名字</label><div class="name-row"><input type="text" id="pName" maxlength="10"><button class="dice-btn" id="nameDice">🎲</button></div></div><div class="field"><label class="label">背號</label><div class="name-row"><input type="number" id="pJersey" min="0" max="99"><button class="dice-btn" id="jerseyDice">🎲</button></div></div></div>
     <div class="field"><label class="label">球員背景</label><select id="iptBg" style="width:100%;background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font-size:16px"><option value="local">本土生（台灣高中出發）</option><option value="asian_american">華裔球員（美國高中出發）</option></select></div>
     <div class="field"><label class="label" id="homeLabel">出身地</label><div class="chips" id="homeChips"></div></div>
-    <details class="start-advanced"><summary>進階設定 <span>NBA 偏好 · Seed</span></summary><div class="start-advanced-body"><div class="field"><label class="label">最喜歡的 NBA 球隊（選填）</label><select id="favoriteNbaTeam" style="width:100%;background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font-size:16px"><option value="">無特別支持</option>${(TEAMS.NBA||[]).map(t=>`<option value="${_escCreation(t)}">${_escCreation(t)}</option>`).join("")}</select><p class="small mt8">只會在原本具備 NBA 市場資格時，小幅提高該隊出現在報價中的機會；不影響選秀順位，也不保證加盟。</p></div><div class="field"><label class="label">種子碼</label><div class="name-row"><input type="text" id="pSeed" maxlength="12" placeholder="留空隨機"><button class="dice-btn" id="seedDice">🎲</button></div><p class="small mt8">相同種子碼＋相同選擇，會得到相同命運序列。</p></div></div></details>
+    <div class="field"><label class="label">生涯難度</label><div class="difficulty-mode-grid"><button type="button" class="difficulty-mode ${initial.difficultyMode==="casual"?"on":""}" data-difficulty-mode="casual"><div class="dm-k">CASUAL · 休閒</div><div class="dm-t">爽度優先</div><div class="dm-d">數據更容易打開、每季訓練點較多、自然成長較快，重大傷病也較少。</div></button><button type="button" class="difficulty-mode ${initial.difficultyMode==="realistic"?"on":""}" data-difficulty-mode="realistic"><div class="dm-k">REALISTIC · 寫實</div><div class="dm-t">現行完整平衡</div><div class="dm-d">保留目前競爭、成長速度與傷病風險；適合想接受職業生涯殘酷度的玩家。</div></button></div></div>
+    <details class="start-advanced"><summary>進階設定 <span>NBA 偏好 · 生涯人物 · Seed</span></summary><div class="start-advanced-body"><div class="field"><label class="label">最喜歡的 NBA 球隊（選填）</label><select id="favoriteNbaTeam" style="width:100%;background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font-size:16px"><option value="">無特別支持</option>${(TEAMS.NBA||[]).map(t=>`<option value="${_escCreation(t)}">${_escCreation(t)}</option>`).join("")}</select><p class="small mt8">只會在原本具備 NBA 市場資格時，小幅提高該隊出現在報價中的機會；不影響選秀順位，也不保證加盟。</p></div>${customThreadCreationHTML(initial.customCareerThreads)}<div class="field"><label class="label">種子碼</label><div class="name-row"><input type="text" id="pSeed" maxlength="12" placeholder="留空隨機"><button class="dice-btn" id="seedDice">🎲</button></div><p class="small mt8">相同種子碼＋相同選擇，會得到相同命運序列。</p></div></div></details>
     <button class="btn gold" id="identityNext">建立我的球員 ▶</button><p class="small center mt12">先決定身份，再進入球員 Builder。</p></div></section><div class="home-links start-links"><a class="home-link thread" href="https://www.threads.com/@twbasketball__life" target="_blank" rel="noopener noreferrer">Threads · @twbasketball__life</a><a class="home-link coffee" href="https://buymeacoffee.com/lintallen" target="_blank" rel="noopener noreferrer">支持作者繼續開發</a><p class="home-links-note">籃球人生 · Hardwood Life　—　${VERSION}</p></div></div>`;
   const nameEl=$("#pName"),jerseyEl=$("#pJersey"),bgEl=$("#iptBg"),seedEl=$("#pSeed"),favoriteEl=$("#favoriteNbaTeam"),hc=$("#homeChips");
-  nameEl.value=initial.name;jerseyEl.value=initial.jersey;bgEl.value=initial.bg;seedEl.value=initial.seed;favoriteEl.value=(TEAMS.NBA||[]).includes(initial.favoriteNbaTeam)?initial.favoriteNbaTeam:"";
-  let home=initial.home;
+  nameEl.value=initial.name;jerseyEl.value=initial.jersey;bgEl.value=initial.bg;seedEl.value=initial.seed;favoriteEl.value=(TEAMS.NBA||[]).includes(initial.favoriteNbaTeam)?initial.favoriteNbaTeam:"";bindCustomThreadCreationValues(app,initial.customCareerThreads);
+  let home=initial.home,difficultyMode=initial.difficultyMode;
+  app.querySelectorAll("[data-difficulty-mode]").forEach(b=>b.onclick=()=>{difficultyMode=normalizeCareerDifficulty(b.dataset.difficultyMode);app.querySelectorAll("[data-difficulty-mode]").forEach(x=>x.classList.toggle("on",x===b));});
   function rebuildHomes(){
     const bg=bgEl.value,homes=START_HOMES[bg]||START_HOMES.local;if(!homes.includes(home))home=homes[0];
     hc.innerHTML="";$("#homeLabel").textContent=bg==="asian_american"?"美國成長地":"出身地";
@@ -13505,7 +14107,7 @@ function renderStart(identity=_creationIdentity||{}){
   $("#nameDice").onclick=()=>{nameEl.value=randomName()};$("#jerseyDice").onclick=()=>{jerseyEl.value=rint(0,99)};$("#seedDice").onclick=()=>{seedEl.value=makeSeed()};
   $("#identityNext").onclick=()=>{
     const seed=normalizeSeed(seedEl.value)||makeSeed();
-    _creationIdentity={name:(nameEl.value||"").trim()||randomName(),jersey:clamp(parseInt(jerseyEl.value)||0,0,99),bg:bgEl.value,home,seed,favoriteNbaTeam:(TEAMS.NBA||[]).includes(favoriteEl.value)?favoriteEl.value:""};
+    _creationIdentity={name:(nameEl.value||"").trim()||randomName(),jersey:clamp(parseInt(jerseyEl.value)||0,0,99),bg:bgEl.value,home,seed,difficultyMode:difficultyMode,favoriteNbaTeam:(TEAMS.NBA||[]).includes(favoriteEl.value)?favoriteEl.value:"",customCareerThreads:readCustomThreadCreationInputs(app)};
     renderCreationBuilderScreen(_creationIdentity,_creationDraft);
   };
   window.scrollTo(0,0);
@@ -13559,10 +14161,11 @@ function renderCreationBuilderScreen(identity=_creationIdentity||{},existingDraf
     function clampCreationToBody(){for(const k of ATTR_KEYS)customAttr[k]=clamp(customAttr[k],creationBaseAttr(pos,creationBg)[k],creationCap(k,{pos,...customBody,background:creationBg}));}
     function renderImpact(){const p=bodyProfile(customBody,pos),items=[["投射",p.shooting],["機動",p.mobility],["籃板",p.rebound],["護框",p.rim],["對抗",p.strength]];$("#bodyImpact").innerHTML=items.map(([n,v])=>`<div class="bi ${impactClass(v)}"><b>${impactText(v)}</b><span>${n}</span></div>`).join("");}
     function renderAttrs(){
-      clampCreationToBody();const base=creationBaseAttr(pos,creationBg),spent=creationSpentPoints(pos,customAttr,creationBg),left=Math.max(0,creationPointPool(pos)-spent),analysis=analyzeCreationBuild(pos,customBody,customAttr);
+      clampCreationToBody();const base=creationBaseAttr(pos,creationBg),spent=creationSpentPoints(pos,customAttr,creationBg),left=Math.max(0,creationPointPool(pos)-spent),analysis=analyzeCreationBuild(pos,customBody,customAttr),preview3=creationPreviewIdentity(pos,customBody,customAttr,creationBg),style=preview3.style,identity3=preview3.identity;
       $("#creationPointsLeft").textContent=left;$("#creationOvr").textContent=overall(customAttr,pos);
       $("#creationAttrList").innerHTML=ATTR_KEYS.map(k=>{const v=customAttr[k],cap=creationCap(k,{pos,...customBody,background:creationBg}),cost=creationPointCost(v),canPlus=v<cap&&left>=cost,canMinus=v>base[k];return `<div class="creation-attr"><div class="ca-name">${ATTR_LABEL[k]}</div><div class="ca-bar"><i style="width:${v}%"></i><em style="left:${cap}%"></em></div><div class="ca-v">${v}</div><div class="ca-btns"><button data-create-minus="${k}" ${canMinus?"":"disabled"}>−</button><button class="plus" data-create-plus="${k}" ${canPlus?"":"disabled"}>＋</button></div><div class="ca-meta"><span>基礎 ${base[k]} · 理論 ${capGrade(cap)}</span><span class="cost">${v>=cap?"身材上限":`下一級 ${cost} 點`}</span></div></div>`}).join("");
-      $("#buildAnalysis").innerHTML=`<div class="ba-kicker">LIVE BUILD ANALYSIS</div><div class="ba-name">${analysis.name}</div><div class="ba-types">主類型：${analysis.primaryLabel}　·　副類型：${analysis.secondaryLabel}</div><div class="ba-tags">${analysis.strengths.map(x=>`<span class="ba-tag">＋ ${x}</span>`).join("")}${analysis.weaknesses.map(x=>`<span class="ba-tag weak">－ ${x}</span>`).join("")}</div>`;
+      const identityBody=`${derivedStyleGradesHTML(style,true,true)}<div class="small" style="margin-top:8px">建角預覽依 36 點可達範圍校準；進入生涯後改用正式成熟尺度。六項球風仍由七項能力與身材推導，不能直接配點。</div><div class="ba-tags">${identity3.strengths.map(k=>`<span class="ba-tag">＋ ${({rimPressure:"攻框威脅",midRangeCreation:"中距離創造",perimeterGravity:"外線牽制",onBallCreation:"持球創造",defensivePressure:"防守壓迫",reboundingPhysicality:"籃板對抗"})[k]}</span>`).join("")}${identity3.weaknesses.map(k=>`<span class="ba-tag weak">－ ${({rimPressure:"攻框威脅",midRangeCreation:"中距離創造",perimeterGravity:"外線牽制",onBallCreation:"持球創造",defensivePressure:"防守壓迫",reboundingPhysicality:"籃板對抗"})[k]}</span>`).join("")}</div>`;
+      $("#buildAnalysis").innerHTML=identityPreviewShellHTML(identity3.name,identityBody,"BUILD IDENTITY 3.0 · LIVE PREVIEW");bindIdentityPreviewToggle($("#buildAnalysis"));
       $("#creationAttrList").querySelectorAll("[data-create-plus]").forEach(b=>b.onclick=()=>{const k=b.dataset.createPlus,c=creationPointCost(customAttr[k]);if(creationPointPool(pos)-creationSpentPoints(pos,customAttr,creationBg)>=c&&customAttr[k]<creationCap(k,{pos,...customBody,background:creationBg})){customAttr[k]++;renderAttrs();}});
       $("#creationAttrList").querySelectorAll("[data-create-minus]").forEach(b=>b.onclick=()=>{const k=b.dataset.createMinus;if(customAttr[k]>base[k]){customAttr[k]--;renderAttrs();}});
     }
@@ -13595,35 +14198,35 @@ function renderCreationBuilderScreen(identity=_creationIdentity||{},existingDraf
   }
   renderPositions();renderModePanel();
   app.querySelectorAll("[data-career-mode]").forEach(b=>b.onclick=()=>{const next=b.dataset.careerMode;if(next===mode)return;mode=next;_startMode=mode;app.querySelectorAll("[data-career-mode]").forEach(x=>x.classList.toggle("on",x===b));if(mode==="myplayer"&&(!existingDraft||existingDraft.mode!=="myplayer")){customBody=defaultBodyForPosition(pos);customAttr=creationBaseAttr(pos,creationBg);}if(mode==="positionless"&&(!existingDraft||existingDraft.mode!=="positionless")){positionlessBody=defaultPositionlessBody();youthExperience="balanced";}classicProfile=null;renderModePanel();});
-  $("#builderBack").onclick=()=>{const creation=mode==="myplayer"?{mode:"myplayer",...customBody,attr:{...customAttr},favoriteNbaTeam:identity.favoriteNbaTeam||""}:mode==="positionless"?{mode:"positionless",...positionlessBody,youthExperience,favoriteNbaTeam:identity.favoriteNbaTeam||""}:{mode:"classic",favoriteNbaTeam:identity.favoriteNbaTeam||""};_creationDraft={identity:{...identity},mode,pos,creation};renderStart(identity)};
+  $("#builderBack").onclick=()=>{const creation=mode==="myplayer"?{mode:"myplayer",...customBody,attr:{...customAttr},difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]}:mode==="positionless"?{mode:"positionless",...positionlessBody,youthExperience,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]}:{mode:"classic",difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};_creationDraft={identity:{...identity},mode,pos,creation};renderStart(identity)};
   $("#builderNext").onclick=()=>{
     if(mode==="classic"){
-      const creation={...prepareClassicCreation(pos,identity.bg,identity.seed),favoriteNbaTeam:identity.favoriteNbaTeam||""};
+      const creation={...prepareClassicCreation(pos,identity.bg,identity.seed),difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
       _creationDraft={identity:{...identity},mode,pos,creation};
       newGame(identity.name,pos,identity.home,identity.jersey,identity.seed,identity.bg,creation);
       _creationDraft=null;
       return;
     }
     if(mode==="positionless"){
-      const body=normalizePositionlessBody(positionlessBody),creation={mode:"positionless",...body,youthExperience,favoriteNbaTeam:identity.favoriteNbaTeam||""};
+      const body=normalizePositionlessBody(positionlessBody),creation={mode:"positionless",...body,youthExperience,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
       _creationDraft={identity:{...identity},mode,pos,creation};
       newGame(identity.name,pos,identity.home,identity.jersey,identity.seed,identity.bg,creation);
       _creationDraft=null;
       return;
     }
-    const body=normalizeBody(pos,customBody),attr=normalizeCreationAttributes(pos,body,customAttr,creationBg),analysis=analyzeCreationBuild(pos,body,attr),creationComp=creationComparison(pos,body,attr,analysis),legendaryMatch=matchLegendarySignature(pos,body,attr,analysis);
-    const creation={mode:"myplayer",...body,attr,creationBuild:analysis,creationBuildName:analysis.name,creationComp,legendaryMatch,favoriteNbaTeam:identity.favoriteNbaTeam||""};
+    const body=normalizeBody(pos,customBody),attr=normalizeCreationAttributes(pos,body,customAttr,creationBg),analysis=analyzeCreationBuild(pos,body,attr),creationComp=creationComparison(pos,body,attr,analysis,creationBg),legendaryMatch=matchLegendarySignature(pos,body,attr,analysis);
+    const creation={mode:"myplayer",...body,attr,creationBuild:analysis,creationBuildName:analysis.name,creationComp,legendaryMatch,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
     _creationDraft={identity:{...identity},mode,pos,creation};renderBuildComplete(_creationDraft);
   };
   window.scrollTo(0,0);
 }
 function renderBuildComplete(draft=_creationDraft){
   document.body.classList.remove("creation-builder-ui-active","start-ui-active","game-ui-active");
-  if(!draft||!draft.creation){renderStart();return;}_creationDraft=draft;const {identity,mode,pos,creation}=draft,body=normalizeBody(pos,creation),attr=mode==="classic"?(creation.previewAttr||creation.attr):creation.attr,analysis=creation.creationBuild||analyzeCreationBuild(pos,body,attr),comp=creation.creationComp||creationComparison(pos,body,attr,analysis);
+  if(!draft||!draft.creation){renderStart();return;}_creationDraft=draft;const {identity,mode,pos,creation}=draft,body=normalizeBody(pos,creation),attr=mode==="classic"?(creation.previewAttr||creation.attr):creation.attr,analysis=creation.creationBuild||analyzeCreationBuild(pos,body,attr),comp=creation.creationComp||creationComparison(pos,body,attr,analysis,identity&&identity.bg),resultPreview=mode==="myplayer"?creationPreviewIdentity(pos,body,attr,identity&&identity.bg):null,style3=resultPreview?resultPreview.style:derivedStyleProfile(pos,body,attr,{}),identity3=resultPreview?resultPreview.identity:derivedBuildIdentity(pos,style3,attr,body,{});
   const myLegend=mode==="myplayer"?creation.legendaryMatch:null,classicDef=mode==="classic"&&creation.eggTitle&&typeof TITLE_DEFS!=="undefined"?TITLE_DEFS[creation.eggTitle]:null;
   const legendHTML=myLegend?`<div class="legendary-discovery"><div class="ld-k">✨ LEGENDARY SIGNATURE DISCOVERED</div><div class="ld-title">${_escCreation(myLegend.title)}</div><div class="ld-player">NBA 原型：${_escCreation(formatPlayerTemplateName(myLegend.player))} · 僅為建立紀錄，不增加能力或 Potential。</div></div>`:classicDef?`<div class="legendary-discovery"><div class="ld-k">✨ CLASSIC LEGENDARY EASTER EGG</div><div class="ld-title">${_escCreation(classicDef.name)}</div><div class="ld-player">CLASSIC 命運彩蛋；正式生涯會保留原有效果。</div></div>`:"";
-  app.innerHTML=`<div class="wrap creation-compact-page"><div class="creation-step"><span>01 IDENTITY</span><i></i><span>02 BUILDER</span><i></i><b>03 RESULT</b></div><div class="build-complete"><div class="bc-kicker">BUILD COMPLETE</div><div class="bc-name">${_escCreation(identity.name)}</div><div class="bc-meta">#${identity.jersey} · ${POSITIONS[pos].abbr} ${POSITIONS[pos].name} · ${body.height} CM · ${body.weight} KG · WINGSPAN ${body.wingspan} CM</div>
-    <div class="bc-build"><div class="bc-kicker">CREATION BUILD</div><div class="title">${_escCreation(analysis.name||creation.creationBuildName||"未定型")}</div><div class="bc-types">主類型：${_escCreation(analysis.primaryLabel||"")}　·　副類型：${_escCreation(analysis.secondaryLabel||"")}</div><div class="ba-tags">${(analysis.strengths||[]).map(x=>`<span class="ba-tag">＋ ${_escCreation(x)}</span>`).join("")}${(analysis.weaknesses||[]).map(x=>`<span class="ba-tag weak">－ ${_escCreation(x)}</span>`).join("")}</div></div>
+  app.innerHTML=`<div class="wrap creation-compact-page"><div class="creation-step"><span>01 IDENTITY</span><i></i><span>02 BUILDER</span><i></i><b>03 RESULT</b></div><div class="build-complete"><div class="bc-kicker">BUILD COMPLETE</div><div class="bc-name">${_escCreation(identity.name)}</div><div class="bc-meta">#${identity.jersey} · ${POSITIONS[pos].abbr} ${POSITIONS[pos].name} · ${body.height} CM · ${body.weight} KG · WINGSPAN ${body.wingspan} CM · ${_escCreation(careerDifficultyLabel({difficultyMode:identity.difficultyMode}))}</div>
+    <div class="bc-build"><div class="bc-kicker">CREATION BUILD · BUILD IDENTITY 3.0</div><div class="title">${_escCreation(identity3.name||"未定型")}</div>${derivedStyleGradesHTML(style3,false)}<div class="small" style="margin-top:8px">衍生球風由七項能力與身材推導，不能直接配點。</div></div>
     <div class="bc-section-title">NBA 球風參考 · CREATION COMPARISON</div>${_creationCompHTML(comp)}<p class="creation-disclaimer">僅代表建立時的身材與場上球風相似，不代表天賦、實力或生涯發展。這套 Creation Comparison 與生涯中的球探報告是兩個獨立系統。</p>
     ${legendHTML}<div class="hidden-talent-card"><span>HIDDEN TALENT · 真正天賦</span><b>???</b></div>
   </div><div class="builder-nav"><button class="btn ghost" id="resultBack">← 返回調整</button><button class="btn gold" id="confirmCreation">開始籃球人生 ▶</button></div></div>`;
