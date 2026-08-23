@@ -1351,6 +1351,19 @@ function createPositionlessGrowthPlan(body){
   const adultHeight=clamp(b.height+baseGrowth,b.height,POSITIONLESS_BODY_RANGES.height.max);
   return {adultHeight,matureAge:rint(19,21),wingspanOffset:b.wingspan-b.height};
 }
+function applyPositionlessGrowthStep(state=G,rngFn=_rng){
+  const st=state||{};if(st.careerMode!=="positionless")return 0;
+  st._positionlessLastGrowthCm=0;st.positionlessGrowth=st.positionlessGrowth||createPositionlessGrowthPlan(st);
+  const plan=st.positionlessGrowth,age=Number(st.age)||15,matureAge=clamp(Number(plan.matureAge)||20,19,21),adultHeight=clamp(Number(plan.adultHeight)||Number(st.height)||155,Number(st.height)||155,POSITIONLESS_BODY_RANGES.height.max);
+  if(age>matureAge)return 0;
+  const remaining=Math.max(0,adultHeight-(Number(st.height)||0));if(remaining<=0)return 0;
+  const rr=()=>clamp(Number((typeof rngFn==="function"?rngFn:_rng)())||0,0,.999999),yearsLeft=Math.max(1,matureAge-age+1),catchUp=age>=matureAge-2?Math.ceil(remaining/yearsLeft):0;
+  const growthChance=clamp(.60-(age-16)*.085+(Number(st._growthBoost)||0)+Math.min(.20,remaining*.018),.18,.98),ageMax=age<=16?5:age<=18?4:age<=20?3:2;
+  const rolled=rr()<growthChance,randomGain=rolled?Math.min(remaining,1+Math.floor(rr()*ageMax)):0,gainH=Math.min(remaining,Math.max(catchUp,randomGain));if(gainH<=0)return 0;
+  const oldH=Number(st.height)||0,baseOffset=Number(plan.wingspanOffset),reachExtra=rr()<.5?0:1,gainW=Math.max(1,Math.round(gainH*.70)+Math.floor(rr()*3));
+  st.height=oldH+gainH;st.weight=(Number(st.weight)||0)+gainW;st.wingspan=st.height+(Number.isFinite(baseOffset)?baseOffset:((Number(st.wingspan)||oldH)-oldH))+reachExtra;
+  const nb=normalizePositionlessBody(st);st.height=nb.height;st.weight=nb.weight;st.wingspan=nb.wingspan;st._positionlessLastGrowthCm=Math.max(0,st.height-oldH);return st._positionlessLastGrowthCm;
+}
 function randomCoachNeeds(){return Object.fromEntries(Object.keys(POSITIONS).map(p=>[p,rint(-3,3)]));}
 function ensurePositionlessCoachState(state=G){
   const st=state||{};if(st.careerMode!=="positionless")return st;
@@ -1500,14 +1513,17 @@ function bodyProfile(body,pos){
   const iw=idealWeight(pos,b.height),wr=bodyWeightRange(pos,b.height),wSpan=Math.max(6,(wr.max-wr.min)/2);
   const weightN=clamp((b.weight-iw)/wSpan,-1,1);
   const off=b.wingspan-b.height,wsMid=(r.wingspan.minOffset+r.wingspan.maxOffset)/2,wsSpan=Math.max(1,(r.wingspan.maxOffset-r.wingspan.minOffset)/2);
-  const reachN=clamp((off-wsMid)/wsSpan,isPositionless?-1.4:-1,isPositionless?1.6:1);
-  const mobilityHeightCost=isPositionless?.08:.065;
+  const reachN=clamp((off-wsMid)/wsSpan,isPositionless?-1.4:-1,isPositionless?1.6:1),mobilityHeightCost=isPositionless?.08:.065;
+  const rawRebound=clamp(1+heightN*.10+reachN*.09+weightN*.045,.78,isPositionless?1.34:1.24),rawRim=clamp(1+heightN*.11+reachN*.11+weightN*.025,.74,isPositionless?1.38:1.28);
+  // Positionless 可以打非典型位置，但極端 undersized 的禁區角色不能保留完整 C/PF 物理紅利。
+  const heightDeficit=isPositionless?Math.max(0,Number(r.height.min)-Number(b.height)):0,extremeUndersize=isPositionless?clamp((heightDeficit-5)/35,0,1):0;
+  const reboundSizeFit=1-extremeUndersize*.48,rimSizeFit=1-extremeUndersize*.52;
   return {
-    ...b,heightN,weightN,reachN,reachDelta:reachN,
+    ...b,heightN,weightN,reachN,reachDelta:reachN,positionSizeFit:round(1-extremeUndersize*.50,3),
     mobility:clamp(1-heightN*mobilityHeightCost-weightN*.075,isPositionless?.76:.82,1.15),
     strength:clamp(1+weightN*.10+heightN*.025,.84,isPositionless?1.20:1.16),
-    rebound:clamp(1+heightN*.10+reachN*.09+weightN*.045,.78,isPositionless?1.34:1.24),
-    rim:clamp(1+heightN*.11+reachN*.11+weightN*.025,.74,isPositionless?1.38:1.28),
+    rebound:clamp(rawRebound*reboundSizeFit,isPositionless?.36:.78,isPositionless?1.34:1.24),
+    rim:clamp(rawRim*rimSizeFit,isPositionless?.30:.74,isPositionless?1.38:1.28),
     steal:clamp(1+reachN*.07-heightN*.025-weightN*.025,.80,1.16),
     shooting:clamp(1-heightN*.028-reachN*.018-weightN*.010,.88,1.07),
   };
@@ -2788,6 +2804,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
    ========================================================================= */
 /* 隨機球員名字庫 */
 const VERSION="V.2.8.0";
+/* V2.7.36 · GROWTH/APG FIX：Positionless 青少年成年身高 catch-up；極端 undersized 禁區物理修正；NBA APG 11.5 硬上限改為 bounded soft ceiling。 */
 /* V2.8.6.2 · SPECIALIZATION PRIME WINDOW: 專精 III 經驗 50 · 能力 89 開放 III 專項加練 · 26–28 歲基礎 SP 4 · 保留 II/III 抗老化 20%/35%。 */
 /* V2.8.6.1 · SPECIALIZATION LONGEVITY: 專精 II / III 自然老化衰退減緩 20% / 35%；不設能力硬地板。 */
 /* V2.8.6 · LIVING CAREER: Promise Reunion Landmark · Relationship Arc/Short Beats · Finals Game Personality · Rookie UI Localization · Compact Career Archive */
@@ -6857,6 +6874,10 @@ function rookieRoleNarrativeHTML(s){
 function softScoreVolume(raw){
   const v=Math.max(1.5,Number(raw)||0);if(v<=30)return v;return 30+10*Math.log1p((v-30)/10);
 }
+function softAssistVolume(raw){
+  const v=Math.max(.3,Number(raw)||0);if(v<=11.5)return v;
+  return Math.min(15.5,11.5+2.6*Math.log1p((v-11.5)/2.5));
+}
 function simulateSeason(){
   const a=G.attr, diff=leagueStatDifficulty(G.league), m=posMult(), ov=overall();
   let baseUsage=clamp((ov-45)/45,.25,1.15); // 能力先決定基礎進攻參與度，角色只做窄幅修正
@@ -6884,7 +6905,7 @@ function simulateSeason(){
   const threeBodyScale=1+(bp.shooting-1)*(1-clamp(Number(m.three)||0,0,1)*.75);
   const tp=clamp((.20+(a.three-40)*.0038+rnd(-.03,.03))*threeBodyScale,.16,.44);
 
-  ppg=softScoreVolume(ppg); rpg=clamp(rpg,.5,17); apg=clamp(apg,.3,11.5);
+  ppg=softScoreVolume(ppg); rpg=clamp(rpg,.5,17); apg=softAssistVolume(apg);
   spg=clamp(spg,.1,2.8); bpg=clamp(bpg,0,3.8);
 
   // 隊伍強度與戰績（含事件影響：交易補強、內鬨、關鍵戰等）
@@ -7973,20 +7994,9 @@ function applyAging(){
   // MY PLAYER 的身材是玩家選定的 Build 硬體；只有 CLASSIC 保留隨機發育。
   if(!isCreationBodyLocked(G)){
     if(G.careerMode==="positionless"){
-      G._positionlessLastGrowthCm=0;
-      G.positionlessGrowth=G.positionlessGrowth||createPositionlessGrowthPlan(G);
-      const matureAge=clamp(Number(G.positionlessGrowth.matureAge)||20,19,21);
-      if(age<=matureAge){
-        const remaining=Math.max(0,(Number(G.positionlessGrowth.adultHeight)||G.height)-G.height);
-        const growthChance=clamp(.60-(age-16)*.085+(G._growthBoost||0)+Math.min(.20,remaining*.018),.18,.98);
-        if(remaining>0&&chance(growthChance)){
-          const ageMax=age<=16?5:age<=18?4:age<=20?3:2,gainH=Math.min(remaining,rint(1,ageMax)),gainW=Math.max(1,Math.round(gainH*.70)+rint(0,2));
-          const oldH=G.height,baseOffset=Number(G.positionlessGrowth.wingspanOffset);
-          G.height+=gainH;G.weight+=gainW;G.wingspan=G.height+(Number.isFinite(baseOffset)?baseOffset:((Number(G.wingspan)||oldH)-oldH))+rint(0,1);
-          const nb=normalizePositionlessBody(G);G.height=nb.height;G.weight=nb.weight;G.wingspan=nb.wingspan;G._positionlessLastGrowthCm=gainH;
-          toast(`發育期！你長高了 ${gainH} 公分！目前 ${G.height}cm`,3500);
-        }
-      }else if(age<=24&&chance(.4)){G.weight+=rint(1,2);const nb=normalizePositionlessBody(G);G.weight=nb.weight;G.wingspan=nb.wingspan;}
+      const matureAge=clamp(Number(G.positionlessGrowth&&G.positionlessGrowth.matureAge)||20,19,21),gainH=applyPositionlessGrowthStep(G);
+      if(gainH>0)toast(`發育期！你長高了 ${gainH} 公分！目前 ${G.height}cm`,3500);
+      if(age>matureAge&&age<=24&&chance(.4)){G.weight+=rint(1,2);const nb=normalizePositionlessBody(G);G.weight=nb.weight;G.wingspan=nb.wingspan;}
     }else if(age<=19){
       let growthChance=.5-(age-16)*.15+(G._growthBoost||0);
       if(chance(growthChance)){
