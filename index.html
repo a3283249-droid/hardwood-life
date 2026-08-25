@@ -1042,6 +1042,8 @@ body.start-ui-active #app{max-width:520px;padding-bottom:24px}
 .start-links .home-link{padding:9px 8px;font-size:11px}
 .start-links .home-links-note{grid-column:1/-1;margin-top:0}
 .difficulty-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.social-density-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:620px){.social-density-grid{grid-template-columns:1fr}}
 .difficulty-mode{appearance:none;border:1px solid rgba(127,193,255,.18);border-radius:12px;background:#0b1422;color:var(--ink);padding:11px 12px;text-align:left;cursor:pointer;transition:.15s ease;min-width:0}
 .difficulty-mode:hover{border-color:rgba(242,184,75,.38)}
 .difficulty-mode.on{border-color:rgba(242,184,75,.72);background:rgba(242,184,75,.08);box-shadow:inset 0 0 0 1px rgba(242,184,75,.12)}
@@ -2821,7 +2823,7 @@ const DRAFT_LEAGUES={"P+":{teams:4,bar:73},"TPBL":{teams:7,bar:73},"SBL":{teams:
 
 /* =========================================================================
    遊戲狀態
-   ======================================================================== */
+   ========================================================================= */
 /* 隨機球員名字庫 */
 const VERSION="V.2.9.0";
 /* V2.8.1 · REALISM BALANCE PASS 1：寫實模式事件成長成本化、35+ 抗逆老化、傷病負荷延續、NBA 角色成熟度補足、NCAA 身體潛力評估、NBA 美元薪資模型。 */
@@ -2897,8 +2899,62 @@ function normalizeAmateurAwardRecords(state=G){
   for(const row of src){let rec=null;if(typeof row==="string"){const award=String(row).trim();if(!award)continue;rec={year:fallbackYear,award};}else if(row&&typeof row==="object"){const award=String(row.award||"").trim();if(!award)continue;rec={...row,year:Number(row.year)||fallbackYear,award};}if(!rec)continue;const key=`${rec.year}|${rec.award}`;if(seen.has(key))continue;seen.add(key);out.push(rec);}
   st.amateurAwards=out;return out;
 }
+
+/* SOCIAL STORY DENSITY · 人際故事密度 */
+function normalizeSocialStoryDensity(value,fallback="standard"){
+  const v=String(value||"").toLowerCase();if(["lite","standard","full"].includes(v))return v;
+  const f=String(fallback||"standard").toLowerCase();return ["lite","standard","full"].includes(f)?f:"standard";
+}
+function socialStoryDensityLabel(value){const v=normalizeSocialStoryDensity(value);return v==="lite"?"精簡":v==="full"?"完整":"標準";}
+function socialStoryDensityDescription(value){const v=normalizeSocialStoryDensity(value);return v==="lite"?"重大人物事件才會優先打斷流程，適合專注籃球。":v==="full"?"更多人物互動與人生事件，適合沉浸式生涯敘事。":"保留重要關係故事，同時控制事件頻率。";}
+function ensureSocialStoryDensityState(state=G,options={}){
+  const st=state||{};if(!st.settings||typeof st.settings!=="object"||Array.isArray(st.settings))st.settings={};
+  if(!Object.prototype.hasOwnProperty.call(st.settings,"socialStoryDensity"))st.settings.socialStoryDensity=options&&options.newCareer?"standard":"full";
+  else st.settings.socialStoryDensity=normalizeSocialStoryDensity(st.settings.socialStoryDensity,options&&options.newCareer?"standard":"full");
+  return st.settings.socialStoryDensity;
+}
+function ensureSocialStoryPacing(state=G){
+  const st=state||{},year=Number(st.offseasonContext&&st.offseasonContext.seasonYear)||Number(st.year)||0;
+  if(!st.storyPacing||typeof st.storyPacing!=="object"||Number(st.storyPacing.season)!==year)st.storyPacing={season:year,foregroundSocialEvents:0,foregroundMajorEvents:0,foregroundMediumEvents:0,recentKeys:[],backgroundSocialEvents:0};
+  if(!Array.isArray(st.storyPacing.recentKeys))st.storyPacing.recentKeys=[];return st.storyPacing;
+}
+function socialStoryImportance(eventOrKey,state=G){
+  const e=typeof eventOrKey==="string"?{key:eventOrKey}:eventOrKey||{},explicit=String(e.importance||e.socialImportance||"").toLowerCase();if(["minor","medium","major"].includes(explicit))return explicit;
+  const key=String(e.key||e.type||e.eventType||"").toLowerCase(),priority=Number(e.priority)||0;
+  if(priority>=90||/(wedding|marriagecrisis|familyarrival|newchild|proposal|engag|romanceended|breakup|relationshipending|careerthreaddeath|death|majorbetrayal|publicfeud|playermentorinvitation|mentorformation|mentorrolereversal|formerlovereunion|finals.*rival|rival.*finals)/.test(key))return "major";
+  if(/(commitment|injurysupport|relocation|partneropportunity|familyplanning|privacy|drama|reconciliation|mentor|protege|companion|rival|careerthread|lifecallback|milestone|relationship|meet)/.test(key))return "medium";
+  return "minor";
+}
+function socialStoryPresentation(eventMeta,state=G){
+  const st=state||{},mode=ensureSocialStoryDensityState(st),pace=ensureSocialStoryPacing(st),meta=eventMeta||{},importance=socialStoryImportance(meta,st),meaningful=meta.meaningful!==false,key=String(meta.key||meta.type||meta.id||"social"),subject=meta.npcId||meta.partnerId||null,year=Number(meta.year)||Number(st.offseasonContext&&st.offseasonContext.seasonYear)||Number(st.year)||0;
+  if(importance==="major"||meta.persistentStateChange===true)return {mode:"foreground",importance,reason:"重大人物／人生事件保留前台"};
+  const bg=st.storyMeta&&Array.isArray(st.storyMeta.socialBackgroundHistory)?st.storyMeta.socialBackgroundHistory:[],recent=bg.some(x=>x&&x.key===key&&(!subject||x.npcId===subject||x.partnerId===subject)&&year-Number(x.year||0)>=0&&year-Number(x.year||0)<=2);if(mode!=="full"&&recent)return {mode:"suppress",importance,reason:"近期同類人物事件已留在背景，避免重複打斷"};
+  if(mode==="full")return {mode:"foreground",importance,reason:"完整模式維持原有人際事件密度"};
+  if(importance==="minor")return {mode:meaningful?"background":"suppress",importance,reason:mode==="lite"?"精簡模式將低重要度互動留在背景":"標準模式避免低重要度事件堆疊"};
+  const used=Number(pace.foregroundMediumEvents)||0,majorUsed=Number(pace.foregroundMajorEvents)||0,limit=mode==="lite"?1:2;
+  if(used>=limit||(mode==="lite"&&majorUsed>=1))return {mode:"background",importance,reason:`${socialStoryDensityLabel(mode)}模式本季的人際前台額度已使用`};
+  return {mode:"foreground",importance,reason:"本季仍保留有意義的人際互動空間"};
+}
+function registerSocialStoryForeground(eventMeta,state=G){
+  const st=state||{},pace=ensureSocialStoryPacing(st),meta=eventMeta||{},importance=socialStoryImportance(meta,st),key=String(meta.key||meta.type||meta.id||"social");
+  pace.foregroundSocialEvents=(Number(pace.foregroundSocialEvents)||0)+1;if(importance==="major")pace.foregroundMajorEvents=(Number(pace.foregroundMajorEvents)||0)+1;if(importance==="medium")pace.foregroundMediumEvents=(Number(pace.foregroundMediumEvents)||0)+1;
+  pace.recentKeys.push(key);if(pace.recentKeys.length>12)pace.recentKeys=pace.recentKeys.slice(-12);return pace;
+}
+function backgroundSocialStoryEvent(eventMeta,state=G){
+  const st=state||{},meta=eventMeta||{},year=Number(meta.year)||Number(st.offseasonContext&&st.offseasonContext.seasonYear)||Number(st.year)||0,key=String(meta.key||meta.type||meta.id||"social"),importance=socialStoryImportance(meta,st);
+  if(!st.storyMeta||typeof st.storyMeta!=="object"||Array.isArray(st.storyMeta))st.storyMeta={};if(!Array.isArray(st.storyMeta.socialBackgroundHistory))st.storyMeta.socialBackgroundHistory=[];
+  const id=`social-bg|${year}|${key}|${meta.npcId||meta.partnerId||"world"}`,old=st.storyMeta.socialBackgroundHistory.find(x=>x&&x.id===id);if(old)return old;
+  const row={id,year,key,domain:meta.domain||"social",importance,title:meta.title||"人物關係在背景裡繼續發展",text:meta.text||meta.summary||"這件事沒有打斷球季流程，但仍被留進共同歷史。",npcId:meta.npcId||null,partnerId:meta.partnerId||null,interactive:false};st.storyMeta.socialBackgroundHistory.push(row);if(st.storyMeta.socialBackgroundHistory.length>100)st.storyMeta.socialBackgroundHistory=st.storyMeta.socialBackgroundHistory.slice(-100);ensureSocialStoryPacing(st).backgroundSocialEvents++;
+  if(meta.meaningful!==false&&typeof recordStoryBeat==="function")recordStoryBeat({key:id,year,age:Number(st.age)||null,type:"socialBackgroundMoment",importance:importance==="major"?78:importance==="medium"?54:32,region:typeof _storyRegionForLeague==="function"?_storyRegionForLeague(st.league):null,league:st.league||null,team:st.team||null,refs:{npcIds:meta.npcId?[meta.npcId]:[],partnerId:meta.partnerId||null},facts:{title:row.title,text:row.text,backgrounded:true,sourceKey:key,domain:row.domain},tags:["people","background","socialDensity"]},st);
+  return row;
+}
+function socialStoryMetaForCareerThreadEvent(event,state=G){const e=event||{},t=String(e.type||""),minor=["companionCheckIn","companionQuietCelebration","routineHangout","smallSupport"].includes(t),major=["death","retirement","mentorFormation","playerMentorInvitation","mentorRoleReversal"].includes(t)||careerThreadEventPresentationClass(e)==="landmark"||Number(e.priority)>=90;return {key:t||e.id||"careerThread",id:e.id,domain:"careerThread",year:e.year||state&&state.year,title:e.title||e.kicker||"人物篇章",text:e.text||e.scene||"這段人物關係在背景裡繼續發展。",npcId:e.npcId||null,importance:e.socialImportance||(major?"major":minor?"minor":"medium"),meaningful:true,persistentStateChange:["death","retirement","mentorFormation","playerMentorInvitation"].includes(t)};}
+function socialStoryMetaForRomanceEvent(event,state=G){const e=event||{},major=["wedding","proposal","marriageCrisis","familyArrival","formerLoveReunion"].includes(String(e.type)),persistent=["commitment","wedding","proposal","romanceEnded","formerLoveReunion"].includes(String(e.type));return {key:e.type||e.id||"romance",id:e.id,domain:"romance",year:e.year||state&&state.year,title:e.title||e.kicker||"私人生活",text:e.text||"關係在球季之外繼續發展。",partnerId:e.partnerId||null,importance:major?"major":(String(e.type)==="privacy"?"minor":"medium"),meaningful:true,persistentStateChange:persistent};}
+function socialStoryMetaForFamilyEvent(event,state=G){const e=event||{},major=["familyArrival","marriageCrisis"].includes(String(e.type));return {key:e.type||e.id||"family",id:e.id,domain:"family",year:e.year||state&&state.year,title:e.title||e.kicker||"家庭人生",text:e.text||"家庭生活在球季之外繼續累積。",partnerId:e.partnerId||null,importance:major?"major":"medium",meaningful:true,persistentStateChange:major};}
+
 function ensureStoryState(state=G){
   const st=state||{};
+  ensureSocialStoryDensityState(st,{newCareer:false});
   normalizeAmateurAwardRecords(st);
   if(!Array.isArray(st.storyBeats))st.storyBeats=[];
   if(!("developmentPath" in st))st.developmentPath=null;
@@ -3140,6 +3196,7 @@ function documentaryNarrativeForBeat(beat,state=G){
     case"lifeCallback":return`${b.year} 年，一段以前累積的城市／生活關係重新回到眼前。${f.fromCity&&f.toCity?`${f.fromCity} 到 ${f.toCity} 之間的移動，讓舊關係再次被看見。`:"有些場外記憶沒有在轉隊那天結束。"}`;
     case"lifeArcCause":return`${b.year} 年、${b.age!=null?`${b.age} 歲`:"那時"}，你在 ${f.place||team||"當時的生活環境"} 做出「${f.choice||"一個場外選擇"}」。當時沒有人知道，它要到幾年後才會真正有答案。`;
     case"lifeArcConsequence":{const life=typeof ensureLongTermLifeArcState==="function"?ensureLongTermLifeArcState(state):null,stored=(life&&life.arcConsequences||[]).find(x=>x&&(x.id===f.consequenceId||x.causeId===f.causeId&&Number(x.year)===Number(b.year))),cause=(life&&life.causalLedger||[]).find(x=>x&&x.id===(f.causeId||stored&&stored.causeId)),causeYear=f.causeYear||cause&&cause.year||Math.max(0,Number(b.year||0)-Number(f.elapsed||stored&&stored.elapsed||0))||"幾年前",causeAge=f.causeAge!=null?`、${f.causeAge} 歲`:cause&&cause.age!=null?`、${cause.age} 歲`:"",causePlace=f.causePlace||cause&&cause.place||stored&&stored.cause&&stored.cause.place||"當時的生活環境",choice=f.causeChoice||cause&&cause.choice||stored&&stored.cause&&stored.cause.choice||"一個會影響後來生活的選擇",result=f.resultText||f.text||stored&&stored.text||f.title||stored&&stored.title||"後來的生活真的因此改變";return`${causeYear} 年${causeAge}，你在 ${causePlace} 選擇「${choice}」。到了 ${b.year} 年，${result}${/[。！？]$/.test(String(result))?"":"。"} 兩件事之所以連在一起，是因為這幾年間的城市、關係與後續選擇持續累積，最後才把當年的決定變成現在看得見的結果。`;}
+    case"socialBackgroundMoment":return`${b.year} 年，${f.text||f.title||"一段人物關係在背景裡繼續發展。"}這件事當時沒有被做成強制互動畫面，但它仍然屬於這段生涯的共同歷史。`;
     case"romanceStarted":return`${b.year} 年，你在球場之外真正認識了 ${f.partnerName||"一個重要的人"}。你選擇讓這次相遇繼續發展；當時沒有人知道，這個名字之後會跟多少次搬家、傷病與生涯選擇連在一起。`;
     case"romanceCommitted":return`${b.year} 年，你和 ${f.partnerName||"伴侶"} 決定把關係正式定下來。從那之後，自由市場與交易不再只是換一件球衣，也可能是兩個人的生活重新安排。`;
     case"romanceBoundary":return`${b.year} 年，名氣開始碰到私人生活。你和 ${f.partnerName||"伴侶"} 選擇了「${f.choice||"自己的公開方式"}」，也替之後媒體、品牌與隱私之間的界線種下原因。`;
@@ -4787,7 +4844,7 @@ function newGame(name,pos,home,jersey,seed,bg,creation){
     }
   }
   G={
-    name,pos:initialPos,home,jersey:jn,careerMode:creationProfile.mode,difficultyMode:normalizeCareerDifficulty(creation&&creation.difficultyMode),
+    name,pos:initialPos,home,jersey:jn,careerMode:creationProfile.mode,difficultyMode:normalizeCareerDifficulty(creation&&creation.difficultyMode),settings:{socialStoryDensity:normalizeSocialStoryDensity(creation&&creation.socialStoryDensity,"standard")},
     height,weight,wingspan,_growthBoost:0,buildId,creationBuild,creationBuildName,
     youthExperience:positionless?creationProfile.youthExperience:null,positionlessGrowth:positionless?{...creationProfile.positionlessGrowth}:null,
     _coachNeeds:positionless?{...creationProfile.coachNeeds}:null,positionHistory:[],
@@ -17351,18 +17408,20 @@ function _creationHero(sub){return `<div class="ver-badge">${VERSION}</div><div 
 function renderStart(identity=_creationIdentity||{}){
   document.body.classList.remove("game-ui-active","creation-builder-ui-active");
   document.body.classList.add("start-ui-active");
-  const initial={name:identity.name||"林逐夢",jersey:identity.jersey??7,bg:identity.bg||"local",home:identity.home||"",seed:identity.seed||"",difficultyMode:normalizeCareerDifficulty(identity.difficultyMode||"realistic"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:normalizeCustomCareerThreadDrafts(identity.customCareerThreads)};
+  const initial={name:identity.name||"林逐夢",jersey:identity.jersey??7,bg:identity.bg||"local",home:identity.home||"",seed:identity.seed||"",difficultyMode:normalizeCareerDifficulty(identity.difficultyMode||"realistic"),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:normalizeCustomCareerThreadDrafts(identity.customCareerThreads)};
   app.innerHTML=`<div class="start-shell"><section class="start-visual">${_creationHero("從高中走向世界最高舞台。每一次抉擇，都會改寫你的生涯。")}</section><section class="start-form"><div class="panel"><div class="creation-step"><b>01 IDENTITY</b><i></i><span>02 BUILDER</span><i></i><span>03 RESULT</span></div>
     <div class="start-identity-grid"><div class="field"><label class="label">球員名字</label><div class="name-row"><input type="text" id="pName" maxlength="10"><button class="dice-btn" id="nameDice">🎲</button></div></div><div class="field"><label class="label">背號</label><div class="name-row"><input type="number" id="pJersey" min="0" max="99"><button class="dice-btn" id="jerseyDice">🎲</button></div></div></div>
     <div class="field"><label class="label">球員背景</label><select id="iptBg" style="width:100%;background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font-size:16px"><option value="local">本土生（台灣高中出發）</option><option value="asian_american">華裔球員（美國高中出發）</option></select></div>
     <div class="field"><label class="label" id="homeLabel">出身地</label><div class="chips" id="homeChips"></div></div>
     <div class="field"><label class="label">生涯難度</label><div class="difficulty-mode-grid"><button type="button" class="difficulty-mode ${initial.difficultyMode==="casual"?"on":""}" data-difficulty-mode="casual"><div class="dm-k">CASUAL · 休閒</div><div class="dm-t">較寬鬆 · 高容錯</div><div class="dm-d">成長更快、傷病較少、復健較寬鬆，球隊更願意給機會，讓你證明自己。</div></button><button type="button" class="difficulty-mode ${initial.difficultyMode==="realistic"?"on":""}" data-difficulty-mode="realistic"><div class="dm-k">REALISTIC · 寫實</div><div class="dm-t">因果寫實 · 競爭嚴格</div><div class="dm-d">角色、健康、合約與履歷會合理影響生涯；失敗存在，但不靠重複懲罰或惡意骰子。</div></button></div></div>
+    <div class="field"><label class="label">人際故事密度</label><div class="difficulty-mode-grid social-density-grid"><button type="button" class="difficulty-mode ${initial.socialStoryDensity==="lite"?"on":""}" data-social-density="lite"><div class="dm-k">BASKETBALL FIRST · 精簡</div><div class="dm-t">少一點打斷</div><div class="dm-d">重大人物事件才會優先打斷流程，適合專注籃球。</div></button><button type="button" class="difficulty-mode ${initial.socialStoryDensity==="standard"?"on":""}" data-social-density="standard"><div class="dm-k">RECOMMENDED · 標準</div><div class="dm-t">故事與節奏平衡</div><div class="dm-d">保留重要關係故事，同時控制事件頻率。</div></button><button type="button" class="difficulty-mode ${initial.socialStoryDensity==="full"?"on":""}" data-social-density="full"><div class="dm-k">FULL LIFE · 完整</div><div class="dm-t">完整人物人生</div><div class="dm-d">更多人物互動與人生事件，適合沉浸式生涯敘事。</div></button></div><p class="small mt8">只調整人物／人生事件的前台出現頻率，不影響能力、合約、獎項或比賽結果。</p></div>
     <details class="start-advanced"><summary>進階設定 <span>NBA 偏好 · 生涯人物 · Seed</span></summary><div class="start-advanced-body"><div class="field"><label class="label">最喜歡的 NBA 球隊（選填）</label><select id="favoriteNbaTeam" style="width:100%;background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font-size:16px"><option value="">無特別支持</option>${(TEAMS.NBA||[]).map(t=>`<option value="${_escCreation(t)}">${_escCreation(t)}</option>`).join("")}</select><p class="small mt8">只會在原本具備 NBA 市場資格時，小幅提高該隊出現在報價中的機會；不影響選秀順位，也不保證加盟。</p></div>${customThreadCreationHTML(initial.customCareerThreads)}<div class="field"><label class="label">種子碼</label><div class="name-row"><input type="text" id="pSeed" maxlength="12" placeholder="留空隨機"><button class="dice-btn" id="seedDice">🎲</button></div><p class="small mt8">相同種子碼＋相同選擇，會得到相同命運序列。</p></div></div></details>
     <button class="btn gold" id="identityNext">建立我的球員 ▶</button><p class="small center mt12">先決定身份，再進入球員 Builder。</p></div></section><div class="home-links start-links"><a class="home-link thread" href="https://www.threads.com/@twbasketball__life" target="_blank" rel="noopener noreferrer">Threads · @twbasketball__life</a><a class="home-link coffee" href="https://buymeacoffee.com/lintallen" target="_blank" rel="noopener noreferrer">支持作者繼續開發</a><p class="home-links-note">籃球人生 · Hardwood Life　—　${VERSION}</p></div></div>`;
   const nameEl=$("#pName"),jerseyEl=$("#pJersey"),bgEl=$("#iptBg"),seedEl=$("#pSeed"),favoriteEl=$("#favoriteNbaTeam"),hc=$("#homeChips");
   nameEl.value=initial.name;jerseyEl.value=initial.jersey;bgEl.value=initial.bg;seedEl.value=initial.seed;favoriteEl.value=(TEAMS.NBA||[]).includes(initial.favoriteNbaTeam)?initial.favoriteNbaTeam:"";bindCustomThreadCreationValues(app,initial.customCareerThreads);
-  let home=initial.home,difficultyMode=initial.difficultyMode;
+  let home=initial.home,difficultyMode=initial.difficultyMode,socialStoryDensity=initial.socialStoryDensity;
   app.querySelectorAll("[data-difficulty-mode]").forEach(b=>b.onclick=()=>{difficultyMode=normalizeCareerDifficulty(b.dataset.difficultyMode);app.querySelectorAll("[data-difficulty-mode]").forEach(x=>x.classList.toggle("on",x===b));});
+  app.querySelectorAll("[data-social-density]").forEach(b=>b.onclick=()=>{socialStoryDensity=normalizeSocialStoryDensity(b.dataset.socialDensity,"standard");app.querySelectorAll("[data-social-density]").forEach(x=>x.classList.toggle("on",x===b));});
   function rebuildHomes(){
     const bg=bgEl.value,homes=START_HOMES[bg]||START_HOMES.local;if(!homes.includes(home))home=homes[0];
     hc.innerHTML="";$("#homeLabel").textContent=bg==="asian_american"?"美國成長地":"出身地";
@@ -17372,7 +17431,7 @@ function renderStart(identity=_creationIdentity||{}){
   $("#nameDice").onclick=()=>{nameEl.value=randomName()};$("#jerseyDice").onclick=()=>{jerseyEl.value=rint(0,99)};$("#seedDice").onclick=()=>{seedEl.value=makeSeed()};
   $("#identityNext").onclick=()=>{
     const seed=normalizeSeed(seedEl.value)||makeSeed();
-    _creationIdentity={name:(nameEl.value||"").trim()||randomName(),jersey:clamp(parseInt(jerseyEl.value)||0,0,99),bg:bgEl.value,home,seed,difficultyMode:difficultyMode,favoriteNbaTeam:(TEAMS.NBA||[]).includes(favoriteEl.value)?favoriteEl.value:"",customCareerThreads:readCustomThreadCreationInputs(app)};
+    _creationIdentity={name:(nameEl.value||"").trim()||randomName(),jersey:clamp(parseInt(jerseyEl.value)||0,0,99),bg:bgEl.value,home,seed,difficultyMode:difficultyMode,socialStoryDensity:socialStoryDensity,favoriteNbaTeam:(TEAMS.NBA||[]).includes(favoriteEl.value)?favoriteEl.value:"",customCareerThreads:readCustomThreadCreationInputs(app)};
     renderCreationBuilderScreen(_creationIdentity,_creationDraft);
   };
   window.scrollTo(0,0);
@@ -17395,7 +17454,7 @@ function renderCreationBuilderScreen(identity=_creationIdentity||{},existingDraf
   let customAttr=existingDraft&&existingDraft.mode==="myplayer"?normalizeCreationAttributes(pos,customBody,(existingDraft.creation||{}).attr,creationBg):creationBaseAttr(pos,creationBg);
   let classicProfile=null;
   app.innerHTML=`<div class="wrap creation-compact-page creation-builder-page"><div class="panel creation-builder-shell"><div class="creation-step builder-step"><span>01 IDENTITY</span><i></i><b>02 BUILDER</b><i></i><span>03 RESULT</span></div>
-    <aside class="builder-control-rail"><div class="builder-topline"><div><h2>PLAYER BUILDER</h2><p class="small">${_escCreation(identity.name)} · #${identity.jersey} · ${identity.bg==="asian_american"?"華裔美國路線":"台灣本土路線"}${identity.favoriteNbaTeam?` · ❤️ ${_escCreation(identity.favoriteNbaTeam)}`:""}</p></div><div class="pill">SEED ${_escCreation(identity.seed)}</div></div>
+    <aside class="builder-control-rail"><div class="builder-topline"><div><h2>PLAYER BUILDER</h2><p class="small">${_escCreation(identity.name)} · #${identity.jersey} · ${identity.bg==="asian_american"?"華裔美國路線":"台灣本土路線"}${identity.favoriteNbaTeam?` · ❤️ ${_escCreation(identity.favoriteNbaTeam)}`:""} · 人際故事：${socialStoryDensityLabel(identity.socialStoryDensity||"standard")}</p></div><div class="pill">SEED ${_escCreation(identity.seed)}</div></div>
     <div class="field"><label class="label">建立方式</label><div class="creation-mode-grid"><button class="creation-mode ${mode==="classic"?"on":""}" data-career-mode="classic"><div class="cm-k">🎲 CLASSIC</div><div class="cm-t">經典隨機生涯</div><div class="cm-d">你選位置，系統生成身材與球風，保留發育與傳奇彩蛋。</div></button><button class="creation-mode ${mode==="myplayer"?"on":""}" data-career-mode="myplayer"><div class="cm-k">🛠 MY PLAYER</div><div class="cm-t">自由建立球員</div><div class="cm-d">位置、身材與配點由你決定，真正天賦仍交給命運。</div></button><button class="creation-mode ${mode==="positionless"?"on":""}" data-career-mode="positionless"><div class="cm-k">🌱 POSITIONLESS</div><div class="cm-t">自然成長</div><div class="cm-d">只決定 15 歲起點；能力、長高與教練位置安排會在生涯中成形。</div></button></div></div>
     <div class="field" id="positionField"><label class="label">場上位置</label><div class="chips" id="posChips"></div><p class="small mt8" id="posDesc"></p></div><div class="builder-rail-note"><b>BUILD WORKSTATION</b><span>桌機版會把建立方式與位置固定在左側；右側專心調整身材與能力。手機仍自動堆疊為單欄。</span></div></aside>
     <main class="builder-workspace"><div id="builderModePanel"></div></main>
@@ -17463,24 +17522,24 @@ function renderCreationBuilderScreen(identity=_creationIdentity||{},existingDraf
   }
   renderPositions();renderModePanel();
   app.querySelectorAll("[data-career-mode]").forEach(b=>b.onclick=()=>{const next=b.dataset.careerMode;if(next===mode)return;mode=next;_startMode=mode;app.querySelectorAll("[data-career-mode]").forEach(x=>x.classList.toggle("on",x===b));if(mode==="myplayer"&&(!existingDraft||existingDraft.mode!=="myplayer")){customBody=defaultBodyForPosition(pos);customAttr=creationBaseAttr(pos,creationBg);}if(mode==="positionless"&&(!existingDraft||existingDraft.mode!=="positionless")){positionlessBody=defaultPositionlessBody();youthExperience="balanced";}classicProfile=null;renderModePanel();});
-  $("#builderBack").onclick=()=>{const creation=mode==="myplayer"?{mode:"myplayer",...customBody,attr:{...customAttr},difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]}:mode==="positionless"?{mode:"positionless",...positionlessBody,youthExperience,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]}:{mode:"classic",difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};_creationDraft={identity:{...identity},mode,pos,creation};renderStart(identity)};
+  $("#builderBack").onclick=()=>{const creation=mode==="myplayer"?{mode:"myplayer",...customBody,attr:{...customAttr},difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]}:mode==="positionless"?{mode:"positionless",...positionlessBody,youthExperience,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]}:{mode:"classic",difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};_creationDraft={identity:{...identity},mode,pos,creation};renderStart(identity)};
   $("#builderNext").onclick=()=>{
     if(mode==="classic"){
-      const creation={...prepareClassicCreation(pos,identity.bg,identity.seed),difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
+      const creation={...prepareClassicCreation(pos,identity.bg,identity.seed),difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
       _creationDraft={identity:{...identity},mode,pos,creation};
       newGame(identity.name,pos,identity.home,identity.jersey,identity.seed,identity.bg,creation);
       _creationDraft=null;
       return;
     }
     if(mode==="positionless"){
-      const body=normalizePositionlessBody(positionlessBody),creation={mode:"positionless",...body,youthExperience,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
+      const body=normalizePositionlessBody(positionlessBody),creation={mode:"positionless",...body,youthExperience,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
       _creationDraft={identity:{...identity},mode,pos,creation};
       newGame(identity.name,pos,identity.home,identity.jersey,identity.seed,identity.bg,creation);
       _creationDraft=null;
       return;
     }
     const body=normalizeBody(pos,customBody),attr=normalizeCreationAttributes(pos,body,customAttr,creationBg),analysis=analyzeCreationBuild(pos,body,attr),creationComp=creationComparison(pos,body,attr,analysis,creationBg),legendaryMatch=matchLegendarySignature(pos,body,attr,analysis);
-    const creation={mode:"myplayer",...body,attr,creationBuild:analysis,creationBuildName:analysis.name,creationComp,legendaryMatch,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
+    const creation={mode:"myplayer",...body,attr,creationBuild:analysis,creationBuildName:analysis.name,creationComp,legendaryMatch,difficultyMode:normalizeCareerDifficulty(identity.difficultyMode),socialStoryDensity:normalizeSocialStoryDensity(identity.socialStoryDensity||"standard","standard"),favoriteNbaTeam:identity.favoriteNbaTeam||"",customCareerThreads:identity.customCareerThreads||[]};
     _creationDraft={identity:{...identity},mode,pos,creation};renderBuildComplete(_creationDraft);
   };
   window.scrollTo(0,0);
@@ -17490,7 +17549,7 @@ function renderBuildComplete(draft=_creationDraft){
   if(!draft||!draft.creation){renderStart();return;}_creationDraft=draft;const {identity,mode,pos,creation}=draft,body=normalizeBody(pos,creation),attr=mode==="classic"?(creation.previewAttr||creation.attr):creation.attr,analysis=creation.creationBuild||analyzeCreationBuild(pos,body,attr),comp=creation.creationComp||creationComparison(pos,body,attr,analysis,identity&&identity.bg),resultPreview=mode==="myplayer"?creationPreviewIdentity(pos,body,attr,identity&&identity.bg):null,style3=resultPreview?resultPreview.style:derivedStyleProfile(pos,body,attr,{}),identity3=resultPreview?resultPreview.identity:derivedBuildIdentity(pos,style3,attr,body,{});
   const myLegend=mode==="myplayer"?creation.legendaryMatch:null,classicDef=mode==="classic"&&creation.eggTitle&&typeof TITLE_DEFS!=="undefined"?TITLE_DEFS[creation.eggTitle]:null;
   const legendHTML=myLegend?`<div class="legendary-discovery"><div class="ld-k">✨ LEGENDARY SIGNATURE DISCOVERED</div><div class="ld-title">${_escCreation(myLegend.title)}</div><div class="ld-player">NBA 原型：${_escCreation(formatPlayerTemplateName(myLegend.player))} · 僅為建立紀錄，不增加能力或 Potential。</div></div>`:classicDef?`<div class="legendary-discovery"><div class="ld-k">✨ CLASSIC LEGENDARY EASTER EGG</div><div class="ld-title">${_escCreation(classicDef.name)}</div><div class="ld-player">CLASSIC 命運彩蛋；正式生涯會保留原有效果。</div></div>`:"";
-  app.innerHTML=`<div class="wrap creation-compact-page"><div class="creation-step"><span>01 IDENTITY</span><i></i><span>02 BUILDER</span><i></i><b>03 RESULT</b></div><div class="build-complete"><div class="bc-kicker">BUILD COMPLETE</div><div class="bc-name">${_escCreation(identity.name)}</div><div class="bc-meta">#${identity.jersey} · ${POSITIONS[pos].abbr} ${POSITIONS[pos].name} · ${body.height} CM · ${body.weight} KG · WINGSPAN ${body.wingspan} CM · ${_escCreation(careerDifficultyLabel({difficultyMode:identity.difficultyMode}))}</div>
+  app.innerHTML=`<div class="wrap creation-compact-page"><div class="creation-step"><span>01 IDENTITY</span><i></i><span>02 BUILDER</span><i></i><b>03 RESULT</b></div><div class="build-complete"><div class="bc-kicker">BUILD COMPLETE</div><div class="bc-name">${_escCreation(identity.name)}</div><div class="bc-meta">#${identity.jersey} · ${POSITIONS[pos].abbr} ${POSITIONS[pos].name} · ${body.height} CM · ${body.weight} KG · WINGSPAN ${body.wingspan} CM · ${_escCreation(careerDifficultyLabel({difficultyMode:identity.difficultyMode}))} · 人際故事 ${socialStoryDensityLabel(identity.socialStoryDensity||"standard")}</div>
     <div class="bc-build"><div class="bc-kicker">CREATION BUILD · BUILD IDENTITY 3.0</div><div class="title">${_escCreation(identity3.name||"未定型")}</div>${derivedStyleGradesHTML(style3,false)}<div class="small" style="margin-top:8px">衍生球風由七項能力與身材推導，不能直接配點。</div></div>
     <div class="bc-section-title">NBA 球風參考 · CREATION COMPARISON</div>${_creationCompHTML(comp)}<p class="creation-disclaimer">僅代表建立時的身材與場上球風相似，不代表天賦、實力或生涯發展。這套 Creation Comparison 與生涯中的球探報告是兩個獨立系統。</p>
     ${legendHTML}<div class="hidden-talent-card"><span>HIDDEN TALENT · 真正天賦</span><b>???</b></div>
@@ -17669,6 +17728,20 @@ if(!(typeof window!=="undefined" && window.__HARDWOOD_TEST__)) render();
 if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener("load",()=>{ navigator.serviceWorker.register("./sw.js").catch(()=>{}); });
 }
+
+
+/* SOCIAL STORY DENSITY · final presentation gates */
+const _socialDensityNextCareerThreadEventBase=nextCareerThreadEvent;
+nextCareerThreadEvent=function(state=G){const st=state||{};while(true){const e=_socialDensityNextCareerThreadEventBase(st);if(!e)return null;if(e._socialDensityDecision==="foreground")return e;const meta=socialStoryMetaForCareerThreadEvent(e,st),decision=socialStoryPresentation(meta,st);e._socialDensityDecision=decision.mode;if(decision.mode==="foreground"){if(!e._socialDensityCounted){registerSocialStoryForeground(meta,st);e._socialDensityCounted=true;}return e;}e.shown=true;e.socialBackgrounded=decision.mode==="background";e.socialSuppressed=decision.mode==="suppress";e.backgroundedYear=Number(st.year)||Number(e.year)||0;if(decision.mode==="background")backgroundSocialStoryEvent(meta,st);}}
+const _socialDensityNextPreseasonCareerThreadEventBase=nextPreseasonCareerThreadEvent;
+nextPreseasonCareerThreadEvent=function(state=G){const st=state||{};while(true){const e=_socialDensityNextPreseasonCareerThreadEventBase(st);if(!e)return null;if(e._socialDensityDecision==="foreground")return e;const meta=socialStoryMetaForCareerThreadEvent(e,st),decision=socialStoryPresentation(meta,st);e._socialDensityDecision=decision.mode;if(decision.mode==="foreground"){if(!e._socialDensityCounted){registerSocialStoryForeground(meta,st);e._socialDensityCounted=true;}return e;}e.shown=true;e.socialBackgrounded=decision.mode==="background";e.socialSuppressed=decision.mode==="suppress";e.backgroundedYear=Number(st.year)||Number(e.year)||0;if(decision.mode==="background")backgroundSocialStoryEvent(meta,st);}}
+const _socialDensityPrepareRomanceEventBase=prepareRomanceEvent;
+prepareRomanceEvent=function(state=G,year=null,options={}){const st=state||{},ev=_socialDensityPrepareRomanceEventBase(st,year,options);if(!ev)return null;if(ev._socialDensityDecision==="foreground")return ev;const meta=socialStoryMetaForRomanceEvent(ev,st),decision=socialStoryPresentation(meta,st);ev._socialDensityDecision=decision.mode;if(decision.mode==="foreground"){if(!ev._socialDensityCounted){registerSocialStoryForeground(meta,st);ev._socialDensityCounted=true;}return ev;}if(decision.mode==="background")backgroundSocialStoryEvent(meta,st);ev.socialBackgrounded=decision.mode==="background";ev.socialSuppressed=decision.mode==="suppress";ev.resolved=true;ev.result={label:decision.mode==="background"?"背景紀錄":"略過",text:decision.mode==="background"?"這段關係在背景裡繼續發展，沒有打斷球季流程。":"近期同類互動已略過，避免重複打斷。",backgrounded:decision.mode==="background"};if(st._activeRomanceEvent===ev)st._activeRomanceEvent=null;return null;};
+const _socialDensityPrepareFamilyEventBase=prepareFamilyEvent;
+prepareFamilyEvent=function(state=G,year=null,options={}){const st=state||{},ev=_socialDensityPrepareFamilyEventBase(st,year,options);if(!ev)return null;if(ev._socialDensityDecision==="foreground")return ev;const meta=socialStoryMetaForFamilyEvent(ev,st),decision=socialStoryPresentation(meta,st);ev._socialDensityDecision=decision.mode;if(decision.mode==="foreground"){if(!ev._socialDensityCounted){registerSocialStoryForeground(meta,st);ev._socialDensityCounted=true;}return ev;}if(decision.mode==="background")backgroundSocialStoryEvent(meta,st);ev.socialBackgrounded=decision.mode==="background";ev.socialSuppressed=decision.mode==="suppress";if(ev.type==="familyPlanning"&&typeof ensureFamilyState==="function"){const f=ensureFamilyState(st),y=Number(ev.year)||Number(st.year)||0;f.nextPlanningYear=Math.max(Number(f.nextPlanningYear)||0,y+2);}ev.resolved=true;ev.result={label:decision.mode==="background"?"背景紀錄":"略過",text:decision.mode==="background"?"這段家庭生活被留在背景歷史裡，沒有打斷球季流程。":"近期同類家庭互動已略過，避免重複打斷。",backgrounded:decision.mode==="background"};if(st._activeFamilyEvent===ev)st._activeFamilyEvent=null;return null;};
+
+const _socialDensityNextPendingLifeArcCallbackBase=nextPendingLifeArcCallback;
+nextPendingLifeArcCallback=function(state=G,year=null){const st=state||{},y=Number(year)||Number(st.year)||0;while(true){const cb=_socialDensityNextPendingLifeArcCallbackBase(st,y);if(!cb)return null;if(!["relationship","family"].includes(String(cb.arc||"")))return cb;if(cb._socialDensityDecision==="foreground")return cb;const meta={key:`lifeArc:${cb.arc||"life"}:${cb.variant||cb.id||"callback"}`,id:cb.id,domain:cb.arc||"life",year:cb.year||y,title:cb.title||"長期人生支線",text:cb.text||"以前的人生選擇在多年後留下新的結果。",importance:Number(cb.importance)>=76?"major":"medium",meaningful:true,partnerId:cb.partnerId||cb.cause&&cb.cause.partnerId||null},decision=socialStoryPresentation(meta,st);cb._socialDensityDecision=decision.mode;if(decision.mode==="foreground"){if(!cb._socialDensityCounted){registerSocialStoryForeground(meta,st);cb._socialDensityCounted=true;}return cb;}cb.status="shown";cb.socialBackgrounded=decision.mode==="background";cb.socialSuppressed=decision.mode==="suppress";cb.shownYear=y;if(decision.mode==="background")backgroundSocialStoryEvent(meta,st);try{const l=ensureLongTermLifeArcState(st);l.pendingArcCallbacks=(l.pendingArcCallbacks||[]).filter(x=>x&&x.id!==cb.id);const row=(l.arcConsequences||[]).find(x=>x&&x.id===cb.id);if(row){row.status="shown";row.shownYear=y;row.socialBackgrounded=cb.socialBackgrounded;}}catch(_){} }};
 </script>
 </body>
 </html>
