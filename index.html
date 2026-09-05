@@ -15195,7 +15195,7 @@ function resolveNegotiation(ask){
   G._negotiationResult={team,...r};G._negotiation=null;
   if(r.outcome==="withdraw"&&(!G._offers||!G._offers.length)){
     const resolution=resolveEmptyFreeAgencyMarket("negotiation");
-    toast(r.text+(resolution==="fallback"?" 系統已提供最後一張可簽的短約機會。":""),3600);
+    toast(r.text+(resolution==="floor"?" 系統已提供最後一張可簽的短約機會。":""),3600);
     if(resolution==="retired")return;
   }
   G.phase="freeAgency";render();toast(r.text,3200);
@@ -15317,6 +15317,32 @@ function resolveEmptyFreeAgencyMarket(reason="market"){
   if(G._offers&&G._offers.length)return "offers";
   const floor=careerFloorOffers();if(floor.length){G._offers=floor;return "floor";}
   const life=careerContinuationProfile();G.retireReason=G._waived?`遭球隊釋出後，健康（${Math.round(life.health)}）與近期表現已難再換到職業合約，最終高掛球鞋`:`自由市場沒有球隊提出可行合約；健康（${Math.round(life.health)}）與近期表現都已走到生涯底線`;G._washedOut=true;endCareer();return "retired";
+}
+/* Multiplayer / snapshot self-heal: a synchronized player can occasionally land
+   directly on phase="freeAgency" with an empty _offers array.  In that case the
+   normal freeAgency() entry function is bypassed, so the page renders a title but
+   no contract cards and there is no way to advance.  Rebuild the market once when
+   the free-agency screen is rendered; if the ordinary market is still empty, reuse
+   the existing career-floor / retirement resolution instead of leaving a dead end. */
+function recoverEmptyFreeAgencyMarket(state=G,reason="renderRecovery"){
+  const st=state||G;if(!st||st.phase!=="freeAgency"||st.stage!=="pro"||st.retired)return "skip";
+  if(Array.isArray(st._offers)&&st._offers.length)return "offers";
+  const previousG=G;if(st!==G)G=st;
+  try{
+    const key=freeAgencyEntryKey(st);
+    if(!st._freeAgencyFromTeam)st._freeAgencyFromTeam=st.team;
+    if(!st._freeAgencyFromLeague)st._freeAgencyFromLeague=st.league;
+    if(st._freeAgencyEntryWaived==null)st._freeAgencyEntryWaived=!!st._waived;
+    if(!Array.isArray(st._negotiatedTeams))st._negotiatedTeams=[];
+    st._offers=proOffers();
+    if(!Array.isArray(st._offers))st._offers=[];
+    if(!st._offers.length){const resolution=resolveEmptyFreeAgencyMarket(reason);if(resolution==="retired")return "retired";}
+    st._freeAgencyOfferKey=key;
+    return st._offers&&st._offers.length?"offers":"empty";
+  }catch(err){
+    console.error("[Hardwood] free-agency market recovery failed",err);
+    return "error";
+  }finally{if(st!==previousG)G=previousG;}
 }
 function freeAgencyEntryKey(state=G){const st=state||{},reason=(st._freeAgencyEntryWaived||st._waived)?"waived":"expired";return `${Number(st.year)||0}|${st.league||""}|${st.team||""}|${reason}`;}
 function shouldShowHomeTeamNoRenewal(state=G){
@@ -17249,7 +17275,7 @@ function render(opts={}){
     case "hsDecision": stage.innerHTML=hsDecisionHTML(); break;
     case "collegeDecision": stage.innerHTML=collegeDecisionHTML(); break;
     case "nbaWaived": stage.innerHTML=nbaWaivedHTML(); break;
-    case "freeAgency": stage.innerHTML=freeAgencyHTML(); break;
+    case "freeAgency": {const faRecovery=recoverEmptyFreeAgencyMarket(G,"renderRecovery");if(faRecovery==="retired")return;stage.innerHTML=freeAgencyHTML();break;}
     case "signingReport": stage.innerHTML=signingReportHTML(); break;
     case "homeTeamNoRenewal": stage.innerHTML=homeTeamNoRenewalHTML(); break;
     case "trade": stage.innerHTML=tradeHTML(); break;
